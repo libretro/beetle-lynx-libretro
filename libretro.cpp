@@ -58,7 +58,6 @@ static bool PrevInterlaced;
 static Deinterlacer deint;
 #endif
 
-#if defined(WANT_LYNX_EMU)
 #define MEDNAFEN_CORE_NAME_MODULE "lynx"
 #define MEDNAFEN_CORE_NAME "Mednafen Lynx"
 #define MEDNAFEN_CORE_VERSION "v0.9.32"
@@ -71,23 +70,6 @@ static Deinterlacer deint;
 #define MEDNAFEN_CORE_GEOMETRY_ASPECT_RATIO (4.0 / 3.0)
 #define FB_WIDTH 160
 #define FB_HEIGHT 102
-static bool is_pal = false;
-
-#elif defined(WANT_SNES_EMU)
-#define MEDNAFEN_CORE_NAME_MODULE "snes"
-#define MEDNAFEN_CORE_NAME "Mednafen bSNES"
-#define MEDNAFEN_CORE_VERSION "v0.9.26"
-#define MEDNAFEN_CORE_EXTENSIONS "smc|fig|bs|st|sfc"
-#define MEDNAFEN_CORE_TIMING_FPS 60.10
-#define MEDNAFEN_CORE_GEOMETRY_BASE_W (game->nominal_width)
-#define MEDNAFEN_CORE_GEOMETRY_BASE_H (game->nominal_height)
-#define MEDNAFEN_CORE_GEOMETRY_MAX_W 512
-#define MEDNAFEN_CORE_GEOMETRY_MAX_H 512
-#define MEDNAFEN_CORE_GEOMETRY_ASPECT_RATIO (4.0 / 3.0)
-#define FB_WIDTH 512
-#define FB_HEIGHT 512
-#endif
-
 
 #define FB_MAX_HEIGHT FB_HEIGHT
 
@@ -189,25 +171,10 @@ static void check_variables(void)
    struct retro_variable var = {0};
 }
 
-#if defined(WANT_LYNX_EMU)
-
 #define MAX_PLAYERS 1
 #define MAX_BUTTONS 9
 static uint8_t input_buf[MAX_PLAYERS][2] = {0};
 
-#elif defined(WANT_SNES_EMU)
-
-#define MAX_PLAYERS 5
-#define MAX_BUTTONS 14
-static uint8_t input_buf[MAX_PLAYERS][2];
-
-#else
-
-#define MAX_PLAYERS 1
-#define MAX_BUTTONS 7
-
-static uint16_t input_buf[1];
-#endif
 
 static void hookup_ports(bool force)
 {
@@ -216,16 +183,7 @@ static void hookup_ports(bool force)
    if (initial_ports_hookup && !force)
       return;
 
-#if defined(WANT_LYNX_EMU)
    currgame->SetInput(0, "gamepad", &input_buf);
-#elif defined(WANT_SNES_EMU)
-   // Possible endian bug ...
-   for (unsigned i = 0; i < MAX_PLAYERS; i++)
-      currgame->SetInput(i, "gamepad", &input_buf[i][0]);
-#else
-   // Possible endian bug ...
-   currgame->SetInput(0, "gamepad", &input_buf[0]);
-#endif
 
    initial_ports_hookup = true;
 }
@@ -286,7 +244,6 @@ void retro_unload_game()
 static void update_input(void)
 {
    MDFNGI *currgame = (MDFNGI*)game;
-#if defined(WANT_LYNX_EMU)
    static unsigned map[] = {
       RETRO_DEVICE_ID_JOYPAD_A,
       RETRO_DEVICE_ID_JOYPAD_B,
@@ -309,61 +266,6 @@ static void update_input(void)
       input_buf[j][0] = (input_state >> 0) & 0xff;
       input_buf[j][1] = (input_state >> 8) & 0xff;
    }
-#elif defined(WANT_SNES_EMU)
-
-   static unsigned map[] = {
-      RETRO_DEVICE_ID_JOYPAD_B,
-      RETRO_DEVICE_ID_JOYPAD_Y,
-      RETRO_DEVICE_ID_JOYPAD_SELECT,
-      RETRO_DEVICE_ID_JOYPAD_START,
-      RETRO_DEVICE_ID_JOYPAD_UP,
-      RETRO_DEVICE_ID_JOYPAD_DOWN,
-      RETRO_DEVICE_ID_JOYPAD_LEFT,
-      RETRO_DEVICE_ID_JOYPAD_RIGHT,
-      RETRO_DEVICE_ID_JOYPAD_A,
-      RETRO_DEVICE_ID_JOYPAD_X,
-      RETRO_DEVICE_ID_JOYPAD_L,
-      RETRO_DEVICE_ID_JOYPAD_R,
-   };
-
-   for (unsigned j = 0; j < MAX_PLAYERS; j++)
-   {
-      uint16_t input_state = 0;
-      for (unsigned i = 0; i < MAX_BUTTONS; i++)
-         input_state |= input_state_cb(j, RETRO_DEVICE_JOYPAD, 0, map[i]) ? (1 << i) : 0;
-
-#ifdef MSB_FIRST
-      union {
-         uint8_t b[2];
-         uint16_t s;
-      } u;
-      u.s = input_buf[j];
-      input_buf[j] = u.b[0] | u.b[1] << 8;
-#else
-      input_buf[j][0] = (input_state >> 0) & 0xff;
-      input_buf[j][1] = (input_state >> 8) & 0xff;
-#endif
-   }
-#else
-   input_buf[0] = 0;
-   static unsigned map[] = {
-      RETRO_DEVICE_ID_JOYPAD_UP,
-      RETRO_DEVICE_ID_JOYPAD_DOWN,
-      RETRO_DEVICE_ID_JOYPAD_LEFT,
-      RETRO_DEVICE_ID_JOYPAD_RIGHT,
-      RETRO_DEVICE_ID_JOYPAD_A, //A button
-      RETRO_DEVICE_ID_JOYPAD_B, //B button
-      RETRO_DEVICE_ID_JOYPAD_START, //Option button
-   };
-
-   for (unsigned j = 0; j < MAX_PLAYERS; j++)
-   {
-      for (unsigned i = 0; i < MAX_BUTTONS; i++)
-         input_buf[j] |= map[i] != -1u &&
-            input_state_cb(j, RETRO_DEVICE_JOYPAD, 0, map[i]) ? (1 << i) : 0;
-   }
-
-#endif
 }
 
 static uint64_t video_frames, audio_frames;
