@@ -109,9 +109,10 @@ CCart::CCart(const uint8 *gamedata, uint32 gamesize)
 	
 	// Checkout the header bytes
 	if(gamesize <= HEADER_RAW_SIZE)
-	{
-	 throw MDFN_Error(0, _("Lynx ROM image is too small: %u bytes"), gamesize);
-	}
+   {
+      /* Lynx ROM image is too small. */
+      return;
+   }
 
 	header = DecodeHeader(gamedata);
 	gamedata += HEADER_RAW_SIZE;
@@ -121,9 +122,9 @@ CCart::CCart(const uint8 *gamedata, uint32 gamesize)
 
 	// Sanity checks on the header
 	if(header.magic[0]!='L' || header.magic[1]!='Y' || header.magic[2]!='N' || header.magic[3]!='X' || header.version!=1)
-	{
-                throw MDFN_Error(0, _("Missing or corrupted \"LYNX\" header magic."));
-	}
+   {
+      /* Missing or corrupted LYNX header magic. */
+   }
 
 	// Setup name & manufacturer
 	strncpy(mName,(char*)&header.cartname, 32);
@@ -138,41 +139,40 @@ CCart::CCart(const uint8 *gamedata, uint32 gamesize)
 	CTYPE banktype0,banktype1;
 
 	switch(header.page_size_bank0)
-	{
-		case 0x000:
-			banktype0=UNUSED;
-			mMaskBank0=0;
-			mShiftCount0=0;
-			mCountMask0=0;
-			break;
-		case 0x100:
-			banktype0=C64K;
-			mMaskBank0=0x00ffff;
-			mShiftCount0=8;
-			mCountMask0=0x0ff;
-			break;
-		case 0x200:
-			banktype0=C128K;
-			mMaskBank0=0x01ffff;
-			mShiftCount0=9;
-			mCountMask0=0x1ff;
-			break;
-		case 0x400:
-			banktype0=C256K;
-			mMaskBank0=0x03ffff;
-			mShiftCount0=10;
-			mCountMask0=0x3ff;
-			break;
-		case 0x800:
-			banktype0=C512K;
-			mMaskBank0=0x07ffff;
-			mShiftCount0=11;
-			mCountMask0=0x7ff;
-			break;
-		default:
-			throw MDFN_Error(0, _("Lynx file format invalid (Bank0)"));
-			break;
-	}
+   {
+      case 0x000:
+         banktype0=UNUSED;
+         mMaskBank0=0;
+         mShiftCount0=0;
+         mCountMask0=0;
+         break;
+      case 0x100:
+         banktype0=C64K;
+         mMaskBank0=0x00ffff;
+         mShiftCount0=8;
+         mCountMask0=0x0ff;
+         break;
+      case 0x200:
+         banktype0=C128K;
+         mMaskBank0=0x01ffff;
+         mShiftCount0=9;
+         mCountMask0=0x1ff;
+         break;
+      case 0x400:
+         banktype0=C256K;
+         mMaskBank0=0x03ffff;
+         mShiftCount0=10;
+         mCountMask0=0x3ff;
+         break;
+      case 0x800:
+         banktype0=C512K;
+         mMaskBank0=0x07ffff;
+         mShiftCount0=11;
+         mCountMask0=0x7ff;
+         break;
+      default:
+         break;
+   }
 
 	switch(header.page_size_bank1)
 	{
@@ -207,7 +207,6 @@ CCart::CCart(const uint8 *gamedata, uint32 gamesize)
 			mCountMask1=0x7ff;
 			break;
 		default:
-			throw MDFN_Error(0, _("Lynx file format invalid (Bank1)"));
 			break;
 	}
 

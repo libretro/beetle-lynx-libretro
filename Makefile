@@ -272,7 +272,6 @@ endif
 
 
 MEDNAFEN_SOURCES := $(MEDNAFEN_DIR)/mednafen.cpp \
-	$(MEDNAFEN_DIR)/error.cpp \
 	$(MEDNAFEN_DIR)/settings.cpp \
 	$(MEDNAFEN_DIR)/general.cpp \
 	$(MEDNAFEN_DIR)/state.cpp \

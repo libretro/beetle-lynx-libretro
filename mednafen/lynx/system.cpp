@@ -72,7 +72,10 @@ CSystem::CSystem(const uint8 *filememory, int32 filesize)
 	mFileType=HANDY_FILETYPE_LNX;
 
 	if(filesize < 11)
-	 MDFN_Error(0, _("Lynx ROM image is too short: %u bytes"), filesize);
+   {
+      /* Lynx ROM image is too short. */
+      return;
+   }
 
 	char clip[11];
 	memcpy(clip,filememory,11);
@@ -83,7 +86,8 @@ CSystem::CSystem(const uint8 *filememory, int32 filesize)
 	else if(!strcmp(&clip[0],"LYNX")) mFileType=HANDY_FILETYPE_LNX;
 	else
 	{
-		throw MDFN_Error(0, _("File format is unknown to module \"%s\"."), MDFNGameInfo->shortname);
+      /* File format is unknown to module. */
+      return;
 	}
 
 	MDFNMP_Init(65536, 1);

@@ -54,29 +54,33 @@
 
 CRom::CRom(const char *romfile)
 {
-	mWriteEnable=FALSE;
-	Reset();
+   unsigned loop;
+   mWriteEnable=FALSE;
+   Reset();
 
-	// Initialise ROM
-	for(int loop=0;loop<ROM_SIZE;loop++) mRomData[loop]=DEFAULT_ROM_CONTENTS;
+   // Initialise ROM
+   for(loop = 0;loop < ROM_SIZE;loop++)
+      mRomData[loop]=DEFAULT_ROM_CONTENTS;
 
-	// Load up the file
+   // Load up the file
 
-	MDFNFILE BIOSFile;
+   MDFNFILE BIOSFile;
 
-	if(!BIOSFile.Open(romfile, NULL, _("Lynx Boot ROM")))
-	{
-	 throw MDFN_Error(0, "");	// FIXME: (make MDFNFILE throw exceptions instead of calling MDFN_PrintError())
-	}
+   if(!BIOSFile.Open(romfile, NULL, _("Lynx Boot ROM")))
+   {
+      /* Could not open Lynx boot ROM. */
+      return;
+   }
 
-	if(BIOSFile.f_size < 512)
-	{
-	 throw MDFN_Error(0, _("The Lynx Boot ROM Image is an incorrect size."));
-	}
+   if(BIOSFile.f_size < 512)
+   {
+      /* Lynx Boot ROM image is of an incorrect size. */
+      return;
+   }
 
-	memcpy(mRomData, BIOSFile.f_data, 512);
+   memcpy(mRomData, BIOSFile.f_data, 512);
 
-	BIOSFile.Close();
+   BIOSFile.Close();
 }
 
 void CRom::Reset(void)
