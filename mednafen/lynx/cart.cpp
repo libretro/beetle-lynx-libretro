@@ -50,7 +50,6 @@
 #include <string.h>
 #include "cart.h"
 #include "../state.h"
-#include "../md5.h"
 #include "../../scrc32.h"
 
 LYNX_HEADER CCart::DecodeHeader(const uint8 *data)
@@ -229,14 +228,10 @@ CCart::CCart(const uint8 *gamedata, uint32 gamesize)
 
 	// Read in the BANK0 bytes
 
-        md5_context md5;
-        md5.starts();
-
         if(mMaskBank0)
         {
          int size = std::min(gamesize, mMaskBank0+1);
          memcpy(mCartBank0, gamedata, size);
-         md5.update(mCartBank0, size);
          gamedata += size;
          gamesize -= size;
         }
@@ -246,11 +241,8 @@ CCart::CCart(const uint8 *gamedata, uint32 gamesize)
         {
          int size = std::min(gamesize, mMaskBank1+1);
          memcpy(mCartBank1, gamedata, size);
-         md5.update(mCartBank1, size);
          gamedata += size;
         }
-
-        md5.finish(MD5);
 
 	// As this is a cartridge boot unset the boot address
 

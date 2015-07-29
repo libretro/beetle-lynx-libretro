@@ -2,7 +2,6 @@
 #include "mednafen/mempatcher.h"
 #include "mednafen/git.h"
 #include "mednafen/general.h"
-#include "mednafen/md5.h"
 #ifdef NEED_DEINTERLACER
 #include	"mednafen/video/Deinterlacer.h"
 #endif
@@ -525,11 +524,7 @@ std::string MDFN_MakeFName(MakeFName_Type type, int id1, const char *cd1)
    {
       case MDFNMKF_SAV:
          ret = retro_save_directory +slash + retro_base_name +
-            std::string(".") +
-#ifndef _XBOX
-	    md5_context::asciistr(MDFNGameInfo->MD5, 0) + std::string(".") +
-#endif
-            std::string(cd1);
+            std::string(".") + std::string(cd1);
          break;
       case MDFNMKF_FIRMWARE:
          ret = retro_base_directory + slash + std::string(cd1);

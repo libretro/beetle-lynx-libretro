@@ -58,7 +58,6 @@
 
 #include "../general.h"
 #include "../mempatcher.h"
-#include "../md5.h"
 
 CSystem::CSystem(const uint8 *filememory, int32 filesize)
 	:mCart(NULL),
@@ -214,12 +213,8 @@ static int Load(const char *name, MDFNFILE *fp)
 
  gAudioEnabled = 1;
 
- memcpy(MDFNGameInfo->MD5, lynxie->mCart->MD5, 16);
- MDFNGameInfo->GameSetMD5Valid = FALSE;
-
  MDFN_printf(_("ROM:       %dKiB\n"), (lynxie->mCart->InfoROMSize + 1023) / 1024);
  MDFN_printf(_("ROM CRC32: 0x%08x\n"), lynxie->mCart->CRC32());
- MDFN_printf(_("ROM MD5:   0x%s\n"), md5_context::asciistr(MDFNGameInfo->MD5, 0).c_str());
 
  MDFNGameInfo->fps = (uint32)(59.8 * 65536 * 256);
 
