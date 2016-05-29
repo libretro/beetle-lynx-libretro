@@ -177,6 +177,16 @@ else ifeq ($(platform), wii)
    EXTRA_INCLUDES := -I$(DEVKITPRO)/libogc/include
    FLAGS += -DHAVE_MKDIR
    STATIC_LINKING = 1
+else ifeq ($(platform), rpi3)
+   TARGET := $(TARGET_NAME).so
+   fpic := -fPIC
+   SHARED := -shared -Wl,--no-undefined -Wl,--version-script=link.T
+   LDFLAGS += $(PTHREAD_FLAGS)
+   FLAGS += $(PTHREAD_FLAGS) -DHAVE_MKDIR
+   FLAGS += -marm -mcpu=cortex-a53 -mfpu=neon-fp-armv8 -mfloat-abi=hard -ffast-math
+   ASFLAGS += -mfpu=neon-fp-armv8
+   FLAGS += -DARM
+   HAVE_NEON = 1
 else ifneq (,$(findstring armv,$(platform)))
    TARGET := $(TARGET_NAME).so
    fpic := -fPIC
