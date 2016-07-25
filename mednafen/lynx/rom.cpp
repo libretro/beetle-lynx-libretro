@@ -64,23 +64,23 @@ CRom::CRom(const char *romfile)
 
    // Load up the file
 
-   MDFNFILE BIOSFile;
+   MDFNFILE *BIOSFile = file_open(romfile);
 
-   if(!BIOSFile.Open(romfile, NULL, _("Lynx Boot ROM")))
+   if(!BIOSFile)
    {
       /* Could not open Lynx boot ROM. */
       return;
    }
 
-   if(BIOSFile.f_size < 512)
+   if(BIOSFile->size < 512)
    {
       /* Lynx Boot ROM image is of an incorrect size. */
       return;
    }
 
-   memcpy(mRomData, BIOSFile.f_data, 512);
+   memcpy(mRomData, BIOSFile->data, 512);
 
-   BIOSFile.Close();
+   file_close(BIOSFile);
 }
 
 void CRom::Reset(void)

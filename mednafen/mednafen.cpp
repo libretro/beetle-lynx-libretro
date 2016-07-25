@@ -61,9 +61,9 @@ void MDFN_ResetMessages(void)
 
 MDFNGI *MDFNI_LoadGame(const char *force_module, const char *name)
 {
-   MDFNFILE GameFile;
 	std::vector<FileExtensionSpecStruct> valid_iae;
    MDFNGameInfo = &EmulatedLynx;
+   MDFNFILE *GameFile = NULL;
 
 	MDFN_printf(_("Loading %s...\n"),name);
 
@@ -78,11 +78,10 @@ MDFNGI *MDFNI_LoadGame(const char *force_module, const char *name)
       curexts++;
    }
 
-	if(!GameFile.Open(name, &valid_iae[0], _("game")))
-   {
-      MDFNGameInfo = NULL;
-      return 0;
-   }
+   GameFile = file_open(name);
+
+	if(!GameFile)
+      goto error;
 
 	MDFN_printf(_("Using module: %s(%s)\n\n"), MDFNGameInfo->shortname, MDFNGameInfo->fullname);
 	MDFN_indent(1);
@@ -94,13 +93,8 @@ MDFNGI *MDFNI_LoadGame(const char *force_module, const char *name)
 	// End load per-game settings
 	//
 
-   if(MDFNGameInfo->Load(name, &GameFile) <= 0)
-   {
-      GameFile.Close();
-      MDFN_indent(-2);
-      MDFNGameInfo = NULL;
-      return(0);
-   }
+   if(MDFNGameInfo->Load(name, GameFile) <= 0)
+      goto error;
 
 	MDFN_LoadGameCheats(NULL);
 	MDFNMP_InstallReadPatches();
@@ -126,6 +120,13 @@ MDFNGI *MDFNI_LoadGame(const char *force_module, const char *name)
    }
 
    return(MDFNGameInfo);
+
+error:
+   if (GameFile)
+      file_close(GameFile);
+   MDFN_indent(-2);
+   MDFNGameInfo = NULL;
+   return NULL;
 }
 
 void MDFNI_CloseGame(void)

@@ -200,7 +200,7 @@ extern MDFNGI EmulatedLynx;
 
 static bool TestMagic(const char *name, MDFNFILE *fp)
 {
- return(CCart::TestMagic(fp->f_data, fp->f_size));
+ return(CCart::TestMagic(fp->data, fp->size));
 }
 
 static int Load(const char *name, MDFNFILE *fp)
