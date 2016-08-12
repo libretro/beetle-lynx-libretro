@@ -427,8 +427,8 @@ static void DoSimpleCommand(int cmd)
 
 static MDFNSetting LynxSettings[] =
 {
- { "lynx.rotateinput", MDFNSF_NOFLAGS,	gettext_noop("Virtually rotate D-pad along with screen."), NULL, MDFNST_BOOL, "1" },
- { "lynx.lowpass", MDFNSF_CAT_SOUND,	gettext_noop("Enable sound output lowpass filter."), NULL, MDFNST_BOOL, "1" },
+ { "lynx.rotateinput", MDFNSF_NOFLAGS,	"Virtually rotate D-pad along with screen.", NULL, MDFNST_BOOL, "1" },
+ { "lynx.lowpass", MDFNSF_CAT_SOUND,	"Enable sound output lowpass filter.", NULL, MDFNST_BOOL, "1" },
  { NULL }
 };
 
@@ -479,7 +479,7 @@ static InputInfoStruct InputInfo =
 
 static const FileExtensionSpecStruct KnownExtensions[] =
 {
- { ".lnx", gettext_noop("Atari Lynx ROM Image") },
+ { ".lnx", "Atari Lynx ROM Image" },
  { NULL, NULL }
 };
 
