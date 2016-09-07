@@ -627,7 +627,7 @@ static void check_variables(void)
 
 #define MAX_PLAYERS 1
 #define MAX_BUTTONS 9
-static uint8_t input_buf[MAX_PLAYERS][2] = {0};
+static uint8_t input_buf[MAX_PLAYERS][2] = {{0}};
 
 
 static void hookup_ports(bool force)
