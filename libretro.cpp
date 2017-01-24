@@ -642,7 +642,7 @@ static void hookup_ports(bool force)
 
 bool retro_load_game(const struct retro_game_info *info)
 {
-   if (failed_init)
+   if (!info || failed_init)
       return false;
 
 #ifdef WANT_32BPP
