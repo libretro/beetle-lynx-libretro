@@ -44,7 +44,6 @@ void MDFN_MidLineUpdate(EmulateSpecStruct *espec, int y);
 
 #include "mednafen-driver.h"
 
-#include "mednafen-endian.h"
 #include "mednafen-memory.h"
 
 #endif

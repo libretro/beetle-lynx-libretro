@@ -52,6 +52,11 @@
 #include "../state.h"
 #include "../../scrc32.h"
 
+static inline uint16_t MDFN_de16lsb(const uint8_t *morp)
+{
+   return(morp[0] | (morp[1] << 8));
+}
+
 LYNX_HEADER CCart::DecodeHeader(const uint8 *data)
 {
  LYNX_HEADER header;

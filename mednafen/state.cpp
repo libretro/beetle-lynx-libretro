@@ -27,6 +27,19 @@
 
 #define RLSB 		MDFNSTATE_RLSB	//0x80000000
 
+static inline void MDFN_en32lsb(uint8 *buf, uint32 morp)
+{
+   buf[0]=morp;
+   buf[1]=morp>>8;
+   buf[2]=morp>>16;
+   buf[3]=morp>>24;
+}
+
+static inline uint32 MDFN_de32lsb(const uint8 *morp)
+{
+   return(morp[0]|(morp[1]<<8)|(morp[2]<<16)|(morp[3]<<24));
+}
+
 int32_t smem_read(StateMem *st, void *buffer, uint32_t len)
 {
    if ((len + st->loc) > st->len)
