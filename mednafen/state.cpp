@@ -40,6 +40,82 @@ static inline uint32 MDFN_de32lsb(const uint8 *morp)
    return(morp[0]|(morp[1]<<8)|(morp[2]<<16)|(morp[3]<<24));
 }
 
+#ifdef MSB_FIRST
+static inline void Endian_A64_Swap(void *src, uint32_t nelements)
+{
+   uint32_t i;
+   uint8_t *nsrc = (uint8_t *)src;
+
+   for(i = 0; i < nelements; i++)
+   {
+      unsigned z;
+      uint8_t *base = &nsrc[i * 8];
+
+      for(z = 0; z < 4; z++)
+      {
+         uint8_t tmp = base[z];
+
+         base[z] = base[7 - z];
+         base[7 - z] = tmp;
+      }
+   }
+}
+
+static inline void Endian_A32_Swap(void *src, uint32_t nelements)
+{
+   uint32_t i;
+   uint8_t *nsrc = (uint8_t *)src;
+
+   for(i = 0; i < nelements; i++)
+   {
+      uint8_t tmp1 = nsrc[i * 4];
+      uint8_t tmp2 = nsrc[i * 4 + 1];
+
+      nsrc[i * 4] = nsrc[i * 4 + 3];
+      nsrc[i * 4 + 1] = nsrc[i * 4 + 2];
+
+      nsrc[i * 4 + 2] = tmp2;
+      nsrc[i * 4 + 3] = tmp1;
+   }
+}
+
+void Endian_A16_Swap(void *src, uint32_t nelements)
+{
+   uint32_t i;
+   uint8_t *nsrc = (uint8_t *)src;
+
+   for(i = 0; i < nelements; i++)
+   {
+      uint8_t tmp = nsrc[i * 2];
+
+      nsrc[i * 2] = nsrc[i * 2 + 1];
+      nsrc[i * 2 + 1] = tmp;
+   }
+}
+
+static inline void FlipByteOrder(uint8_t *src, uint32_t count)
+{
+   uint8_t *start=src;
+   uint8_t *end=src+count-1;
+
+   if((count&1) || !count)
+      return;         /* This shouldn't happen. */
+
+   count >>= 1;
+
+   while(count--)
+   {
+      uint8_t tmp;
+
+      tmp=*end;
+      *end=*start;
+      *start=tmp;
+      end--;
+      start++;
+   }
+}
+#endif
+
 int32_t smem_read(StateMem *st, void *buffer, uint32_t len)
 {
    if ((len + st->loc) > st->len)
