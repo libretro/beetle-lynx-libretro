@@ -925,13 +925,17 @@ bool retro_unserialize(const void *data, size_t size)
    return MDFNSS_LoadSM(&st, 0, 0);
 }
 
-void *retro_get_memory_data(unsigned)
+void *retro_get_memory_data(unsigned type)
 {
+   if (lynxie && type == RETRO_MEMORY_SYSTEM_RAM)
+      return lynxie->GetRamPointer();
    return NULL;
 }
 
-size_t retro_get_memory_size(unsigned)
+size_t retro_get_memory_size(unsigned type)
 {
+   if (type == RETRO_MEMORY_SYSTEM_RAM)
+      return 1024 * 64;
    return 0;
 }
 
