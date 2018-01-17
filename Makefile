@@ -292,7 +292,9 @@ CXXFLAGS += $(FLAGS)
 CFLAGS += $(FLAGS)
 
 $(TARGET): $(OBJECTS)
-ifeq ($(STATIC_LINKING), 1)
+ifeq ($(platform), emscripten)
+	$(CXX) $(CXXFLAGS) -o $@ $^
+else ifeq ($(STATIC_LINKING), 1)
 	$(AR) rcs $@ $(OBJECTS)
 else
 	$(CXX) -o $@ $^ $(LDFLAGS)
