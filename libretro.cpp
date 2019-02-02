@@ -24,6 +24,9 @@ static bool overscan;
 static double last_sound_rate;
 static MDFN_PixelFormat last_pixel_format;
 
+static unsigned rot_screen;
+static unsigned select_pressed_last_frame;
+
 static MDFN_Surface *surf;
 
 static bool failed_init;
@@ -120,7 +123,7 @@ CSystem::CSystem(const uint8 *filememory, int32 filesize)
 	mMikie(NULL),
 	mSusie(NULL)
 {
-	mFileType=HANDY_FILETYPE_LNX;
+	mFileType=HANDY_FILETYPE_ILLEGAL;
 
 	if(filesize < 11)
    {
@@ -135,6 +138,11 @@ CSystem::CSystem(const uint8 *filememory, int32 filesize)
 
 	if(!strcmp(&clip[6],"BS93")) mFileType=HANDY_FILETYPE_HOMEBREW;
 	else if(!strcmp(&clip[0],"LYNX")) mFileType=HANDY_FILETYPE_LNX;
+	else if(filesize==128*1024 || filesize==256*1024 || filesize==512*1024)
+	{
+		/* Invalid Cart (type). but 128/256/512k size -> set to RAW and try to load raw rom image */
+		mFileType=HANDY_FILETYPE_RAW;
+	}
 	else
 	{
       /* File format is unknown to module. */
@@ -153,6 +161,7 @@ CSystem::CSystem(const uint8 *filememory, int32 filesize)
 
 	switch(mFileType)
 	{
+		case HANDY_FILETYPE_RAW:
 		case HANDY_FILETYPE_LNX:
 			mCart = new CCart(filememory,filesize);
 			mRam = new CRam(0,0);
@@ -255,9 +264,9 @@ static bool TestMagic(const char *name, MDFNFILE *fp)
  return(CCart::TestMagic(fp->data, fp->size));
 }
 
-static int Load(const char *name, MDFNFILE *fp)
+static int Load(const uint8_t *data, size_t size)
 {
-   lynxie = new CSystem(GET_FDATA_PTR(fp), GET_FSIZE_PTR(fp));
+   lynxie = new CSystem(data, size);
 
  int rot = lynxie->CartGetRotate();
  if(rot == CART_ROTATE_LEFT) MDFNGameInfo->rotated = MDFN_ROTATE270;
@@ -515,7 +524,7 @@ static Deinterlacer deint;
 #define MEDNAFEN_CORE_NAME "Mednafen Lynx"
 #define MEDNAFEN_CORE_VERSION "v0.9.32"
 #define MEDNAFEN_CORE_EXTENSIONS "lnx"
-#define MEDNAFEN_CORE_TIMING_FPS 75
+#define MEDNAFEN_CORE_TIMING_FPS 75.0
 #define MEDNAFEN_CORE_GEOMETRY_BASE_W 160
 #define MEDNAFEN_CORE_GEOMETRY_BASE_H 102
 #define MEDNAFEN_CORE_GEOMETRY_MAX_W 160
@@ -640,6 +649,7 @@ static void hookup_ports(bool force)
    initial_ports_hookup = true;
 }
 
+static MDFNGI *MDFNI_LoadGame(const uint8_t *, size_t);
 bool retro_load_game(const struct retro_game_info *info)
 {
    if (!info || failed_init)
@@ -658,9 +668,8 @@ bool retro_load_game(const struct retro_game_info *info)
    overscan = false;
    environ_cb(RETRO_ENVIRONMENT_GET_OVERSCAN, &overscan);
 
-   set_basename(info->path);
+   game = MDFNI_LoadGame((const uint8_t *)info->data, info->size);
 
-   game = MDFNI_LoadGame(MEDNAFEN_CORE_NAME_MODULE, info->path);
    if (!game)
       return false;
 
@@ -676,6 +685,9 @@ bool retro_load_game(const struct retro_game_info *info)
 
    hookup_ports(true);
 
+   rot_screen = 0;
+   select_pressed_last_frame = 0;
+
    check_variables();
 
    return game;
@@ -689,34 +701,84 @@ void retro_unload_game()
    MDFNI_CloseGame();
 }
 
-
-
 // Hardcoded for PSX. No reason to parse lots of structures ...
 // See mednafen/psx/input/gamepad.cpp
 static void update_input(void)
 {
-   static unsigned map[] = {
-      RETRO_DEVICE_ID_JOYPAD_A,
-      RETRO_DEVICE_ID_JOYPAD_B,
-      RETRO_DEVICE_ID_JOYPAD_L,
-      RETRO_DEVICE_ID_JOYPAD_R,
-      RETRO_DEVICE_ID_JOYPAD_LEFT,
-      RETRO_DEVICE_ID_JOYPAD_RIGHT,
-      RETRO_DEVICE_ID_JOYPAD_UP,
-      RETRO_DEVICE_ID_JOYPAD_DOWN,
-      RETRO_DEVICE_ID_JOYPAD_START,
+   static unsigned map[4][9] = {
+      {
+         RETRO_DEVICE_ID_JOYPAD_A,
+         RETRO_DEVICE_ID_JOYPAD_B,
+         RETRO_DEVICE_ID_JOYPAD_L,
+         RETRO_DEVICE_ID_JOYPAD_R,
+         RETRO_DEVICE_ID_JOYPAD_LEFT,
+         RETRO_DEVICE_ID_JOYPAD_RIGHT,
+         RETRO_DEVICE_ID_JOYPAD_UP,
+         RETRO_DEVICE_ID_JOYPAD_DOWN,
+         RETRO_DEVICE_ID_JOYPAD_START
+      },
+      {
+         RETRO_DEVICE_ID_JOYPAD_A,
+         RETRO_DEVICE_ID_JOYPAD_B,
+         RETRO_DEVICE_ID_JOYPAD_L,
+         RETRO_DEVICE_ID_JOYPAD_R,
+         RETRO_DEVICE_ID_JOYPAD_DOWN,
+         RETRO_DEVICE_ID_JOYPAD_UP,
+         RETRO_DEVICE_ID_JOYPAD_LEFT,
+         RETRO_DEVICE_ID_JOYPAD_RIGHT,
+         RETRO_DEVICE_ID_JOYPAD_START
+      },
+      {
+         RETRO_DEVICE_ID_JOYPAD_A,
+         RETRO_DEVICE_ID_JOYPAD_B,
+         RETRO_DEVICE_ID_JOYPAD_L,
+         RETRO_DEVICE_ID_JOYPAD_R,
+         RETRO_DEVICE_ID_JOYPAD_RIGHT,
+         RETRO_DEVICE_ID_JOYPAD_LEFT,
+         RETRO_DEVICE_ID_JOYPAD_DOWN,
+         RETRO_DEVICE_ID_JOYPAD_UP,
+         RETRO_DEVICE_ID_JOYPAD_START
+      },
+      {
+         RETRO_DEVICE_ID_JOYPAD_A,
+         RETRO_DEVICE_ID_JOYPAD_B,
+         RETRO_DEVICE_ID_JOYPAD_L,
+         RETRO_DEVICE_ID_JOYPAD_R,
+         RETRO_DEVICE_ID_JOYPAD_UP,
+         RETRO_DEVICE_ID_JOYPAD_DOWN,
+         RETRO_DEVICE_ID_JOYPAD_RIGHT,
+         RETRO_DEVICE_ID_JOYPAD_LEFT,
+         RETRO_DEVICE_ID_JOYPAD_START
+      },
    };
 
    for (unsigned j = 0; j < MAX_PLAYERS; j++)
    {
       uint16_t input_state = 0;
       for (unsigned i = 0; i < MAX_BUTTONS; i++)
-         input_state |= input_state_cb(j, RETRO_DEVICE_JOYPAD, 0, map[i]) ? (1 << i) : 0;
+         input_state |= input_state_cb(j, RETRO_DEVICE_JOYPAD, 0, map[rot_screen][i]) ? (1 << i) : 0;
 
       // Input data must be little endian.
       input_buf[j][0] = (input_state >> 0) & 0xff;
       input_buf[j][1] = (input_state >> 8) & 0xff;
    }
+
+   unsigned select_button = input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_SELECT);
+
+   if (select_button && !select_pressed_last_frame)
+   {
+      rot_screen++;
+      if (rot_screen > 3)
+         rot_screen = 0;
+
+      const float aspect[2] = { (80.0 / 51.0), (51.0 / 80.0) };
+      const unsigned rot_angle[4] = { 0, 1, 2, 3 };
+      struct retro_game_geometry new_geom = { FB_WIDTH, FB_HEIGHT, FB_WIDTH, FB_HEIGHT, aspect[rot_screen & 1] };
+      environ_cb(RETRO_ENVIRONMENT_SET_GEOMETRY, (void*)&new_geom);
+      environ_cb(RETRO_ENVIRONMENT_SET_ROTATION, (void*)&rot_angle[rot_screen]);
+   }
+
+   select_pressed_last_frame = select_button;
 }
 
 static uint64_t video_frames, audio_frames;
@@ -811,7 +873,7 @@ void retro_get_system_info(struct retro_system_info *info)
 #define GIT_VERSION ""
 #endif
    info->library_version  = MEDNAFEN_CORE_VERSION GIT_VERSION;
-   info->need_fullpath    = true;
+   info->need_fullpath    = false;
    info->valid_extensions = MEDNAFEN_CORE_EXTENSIONS;
    info->block_extract    = false;
 }
@@ -820,7 +882,7 @@ void retro_get_system_av_info(struct retro_system_av_info *info)
 {
    memset(info, 0, sizeof(*info));
    info->timing.fps            = MEDNAFEN_CORE_TIMING_FPS;
-   info->timing.sample_rate    = 44100;
+   info->timing.sample_rate    = 44100.0;
    info->geometry.base_width   = MEDNAFEN_CORE_GEOMETRY_BASE_W;
    info->geometry.base_height  = MEDNAFEN_CORE_GEOMETRY_BASE_H;
    info->geometry.max_width    = MEDNAFEN_CORE_GEOMETRY_MAX_W;
@@ -1051,30 +1113,16 @@ void MDFN_ResetMessages(void)
  MDFND_DispMessage(NULL);
 }
 
-
-MDFNGI *MDFNI_LoadGame(const char *force_module, const char *name)
+static MDFNGI *MDFNI_LoadGame(const uint8_t *data, size_t size)
 {
-	std::vector<FileExtensionSpecStruct> valid_iae;
-   MDFNGameInfo = &EmulatedLynx;
-   MDFNFILE *GameFile = NULL;
+	if (!data || !size) {
+		MDFN_indent(2);
+		goto error;
+	}
 
-	MDFN_printf(_("Loading %s...\n"),name);
+	MDFNGameInfo = &EmulatedLynx;
 
 	MDFN_indent(1);
-
-	// Construct a NULL-delimited list of known file extensions for MDFN_fopen()
-   const FileExtensionSpecStruct *curexts = KnownExtensions;
-
-   while(curexts->extension && curexts->description)
-   {
-      valid_iae.push_back(*curexts);
-      curexts++;
-   }
-
-   GameFile = file_open(name);
-
-	if(!GameFile)
-      goto error;
 
 	MDFN_printf(_("Using module: lynx\n\n"));
 	MDFN_indent(1);
@@ -1086,8 +1134,8 @@ MDFNGI *MDFNI_LoadGame(const char *force_module, const char *name)
 	// End load per-game settings
 	//
 
-   if(Load(name, GameFile) <= 0)
-      goto error;
+	if(Load(data, size) <= 0)
+		goto error;
 
 	MDFN_LoadGameCheats(NULL);
 	MDFNMP_InstallReadPatches();
@@ -1099,8 +1147,6 @@ MDFNGI *MDFNI_LoadGame(const char *force_module, const char *name)
    return(MDFNGameInfo);
 
 error:
-   if (GameFile)
-      file_close(GameFile);
    MDFN_indent(-2);
    MDFNGameInfo = NULL;
    return NULL;

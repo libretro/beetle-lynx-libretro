@@ -107,28 +107,35 @@ CCart::CCart(const uint8 *gamedata, uint32 gamesize)
 	mWriteEnableBank0=FALSE;
 	mWriteEnableBank1=FALSE;
 	mCartRAM=FALSE;
-
 	mCRC32 = 0;
 	mCRC32 = crc32(mCRC32,gamedata,gamesize);
-	
+
 	// Checkout the header bytes
 	if(gamesize <= HEADER_RAW_SIZE)
-   {
+ {
       /* Lynx ROM image is too small. */
       return;
    }
 
 	header = DecodeHeader(gamedata);
-	gamedata += HEADER_RAW_SIZE;
-	gamesize -= HEADER_RAW_SIZE;
-
 	InfoROMSize = gamesize;
 
 	// Sanity checks on the header
 	if(header.magic[0]!='L' || header.magic[1]!='Y' || header.magic[2]!='N' || header.magic[3]!='X' || header.version!=1)
-   {
-      /* Missing or corrupted LYNX header magic. */
-   }
+	{
+		MDFND_Message(" Invalid cart, no header?\n");
+		MDFND_Message(" Trying to guess ROM layout\n");
+
+		memset(&header, 0, sizeof(LYNX_HEADER));
+		strncpy((char*)&header.cartname, "NO HEADER", 32);
+		strncpy((char*)&header.manufname, "HANDY", 16);
+		header.page_size_bank0 = gamesize >> 8; // Hard workaround...
+	}
+	else
+	{
+		gamedata += HEADER_RAW_SIZE;
+		gamesize -= HEADER_RAW_SIZE;
+	}
 
 	// Setup name & manufacturer
 	strncpy(mName,(char*)&header.cartname, 32);
@@ -225,29 +232,23 @@ CCart::CCart(const uint8 *gamedata, uint32 gamesize)
 
 	// Initialiase
 
-	for(loop=0;loop<mMaskBank0+1;loop++)
-		mCartBank0[loop]=DEFAULT_CART_CONTENTS;
+	int bank0size = std::min((int)gamesize, (int)(mMaskBank0 + 1));
+	int bank1size = std::min((int)gamesize, (int)(mMaskBank1 + 1));
 
-	for(loop=0;loop<mMaskBank1+1;loop++)
-		mCartBank1[loop]=DEFAULT_CART_CONTENTS;
+	for (loop = 0; loop < bank0size; loop++)
+		mCartBank0[loop] = DEFAULT_CART_CONTENTS;
+
+	for (loop = 0; loop < bank1size; loop++)
+		mCartBank1[loop] = DEFAULT_CART_CONTENTS;
 
 	// Read in the BANK0 bytes
 
-        if(mMaskBank0)
-        {
-         int size = std::min(gamesize, mMaskBank0+1);
-         memcpy(mCartBank0, gamedata, size);
-         gamedata += size;
-         gamesize -= size;
-        }
+	if (mMaskBank0)
+		memcpy(mCartBank0, gamedata, bank0size);
 
-        // Read in the BANK0 bytes
-        if(mMaskBank1)
-        {
-         int size = std::min(gamesize, mMaskBank1+1);
-         memcpy(mCartBank1, gamedata, size);
-         gamedata += size;
-        }
+	// Read in the BANK0 bytes
+	if (mMaskBank1)
+		memcpy(mCartBank1, gamedata + bank0size, bank1size);
 
 	// As this is a cartridge boot unset the boot address
 
@@ -344,7 +345,7 @@ void CCart::Poke0(uint8 data)
 	if(mWriteEnableBank0)
 	{
 		uint32 address=(mShifter<<mShiftCount0)+(mCounter&mCountMask0);
-		mCartBank0[address&mMaskBank0]=data;		
+		mCartBank0[address&mMaskBank0]=data;
 	}
 	if(!mStrobe)
 	{
@@ -358,7 +359,7 @@ void CCart::Poke1(uint8 data)
 	if(mWriteEnableBank1)
 	{
 		uint32 address=(mShifter<<mShiftCount1)+(mCounter&mCountMask1);
-		mCartBank1[address&mMaskBank1]=data;		
+		mCartBank1[address&mMaskBank1]=data;
 	}
 	if(!mStrobe)
 	{
@@ -371,7 +372,7 @@ void CCart::Poke1(uint8 data)
 uint8 CCart::Peek0(void)
 {
 	uint32 address=(mShifter<<mShiftCount0)+(mCounter&mCountMask0);
-	uint8 data=mCartBank0[address&mMaskBank0];		
+	uint8 data=mCartBank0[address&mMaskBank0];
 
 	if(!mStrobe)
 	{
@@ -385,7 +386,7 @@ uint8 CCart::Peek0(void)
 uint8 CCart::Peek1(void)
 {
 	uint32 address=(mShifter<<mShiftCount1)+(mCounter&mCountMask1);
-	uint8 data=mCartBank1[address&mMaskBank1];		
+	uint8 data=mCartBank1[address&mMaskBank1];
 
 	if(!mStrobe)
 	{
