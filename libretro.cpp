@@ -24,6 +24,9 @@ static bool overscan;
 static double last_sound_rate;
 static MDFN_PixelFormat last_pixel_format;
 
+static unsigned rot_screen;
+static unsigned select_pressed_last_frame;
+
 static MDFN_Surface *surf;
 
 static bool failed_init;
@@ -682,6 +685,9 @@ bool retro_load_game(const struct retro_game_info *info)
 
    hookup_ports(true);
 
+   rot_screen = 0;
+   select_pressed_last_frame = 0;
+
    check_variables();
 
    return game;
@@ -695,34 +701,84 @@ void retro_unload_game()
    MDFNI_CloseGame();
 }
 
-
-
 // Hardcoded for PSX. No reason to parse lots of structures ...
 // See mednafen/psx/input/gamepad.cpp
 static void update_input(void)
 {
-   static unsigned map[] = {
-      RETRO_DEVICE_ID_JOYPAD_A,
-      RETRO_DEVICE_ID_JOYPAD_B,
-      RETRO_DEVICE_ID_JOYPAD_L,
-      RETRO_DEVICE_ID_JOYPAD_R,
-      RETRO_DEVICE_ID_JOYPAD_LEFT,
-      RETRO_DEVICE_ID_JOYPAD_RIGHT,
-      RETRO_DEVICE_ID_JOYPAD_UP,
-      RETRO_DEVICE_ID_JOYPAD_DOWN,
-      RETRO_DEVICE_ID_JOYPAD_START,
+   static unsigned map[4][9] = {
+      {
+         RETRO_DEVICE_ID_JOYPAD_A,
+         RETRO_DEVICE_ID_JOYPAD_B,
+         RETRO_DEVICE_ID_JOYPAD_L,
+         RETRO_DEVICE_ID_JOYPAD_R,
+         RETRO_DEVICE_ID_JOYPAD_LEFT,
+         RETRO_DEVICE_ID_JOYPAD_RIGHT,
+         RETRO_DEVICE_ID_JOYPAD_UP,
+         RETRO_DEVICE_ID_JOYPAD_DOWN,
+         RETRO_DEVICE_ID_JOYPAD_START
+      },
+      {
+         RETRO_DEVICE_ID_JOYPAD_A,
+         RETRO_DEVICE_ID_JOYPAD_B,
+         RETRO_DEVICE_ID_JOYPAD_L,
+         RETRO_DEVICE_ID_JOYPAD_R,
+         RETRO_DEVICE_ID_JOYPAD_DOWN,
+         RETRO_DEVICE_ID_JOYPAD_UP,
+         RETRO_DEVICE_ID_JOYPAD_LEFT,
+         RETRO_DEVICE_ID_JOYPAD_RIGHT,
+         RETRO_DEVICE_ID_JOYPAD_START
+      },
+      {
+         RETRO_DEVICE_ID_JOYPAD_A,
+         RETRO_DEVICE_ID_JOYPAD_B,
+         RETRO_DEVICE_ID_JOYPAD_L,
+         RETRO_DEVICE_ID_JOYPAD_R,
+         RETRO_DEVICE_ID_JOYPAD_RIGHT,
+         RETRO_DEVICE_ID_JOYPAD_LEFT,
+         RETRO_DEVICE_ID_JOYPAD_DOWN,
+         RETRO_DEVICE_ID_JOYPAD_UP,
+         RETRO_DEVICE_ID_JOYPAD_START
+      },
+      {
+         RETRO_DEVICE_ID_JOYPAD_A,
+         RETRO_DEVICE_ID_JOYPAD_B,
+         RETRO_DEVICE_ID_JOYPAD_L,
+         RETRO_DEVICE_ID_JOYPAD_R,
+         RETRO_DEVICE_ID_JOYPAD_UP,
+         RETRO_DEVICE_ID_JOYPAD_DOWN,
+         RETRO_DEVICE_ID_JOYPAD_RIGHT,
+         RETRO_DEVICE_ID_JOYPAD_LEFT,
+         RETRO_DEVICE_ID_JOYPAD_START
+      },
    };
 
    for (unsigned j = 0; j < MAX_PLAYERS; j++)
    {
       uint16_t input_state = 0;
       for (unsigned i = 0; i < MAX_BUTTONS; i++)
-         input_state |= input_state_cb(j, RETRO_DEVICE_JOYPAD, 0, map[i]) ? (1 << i) : 0;
+         input_state |= input_state_cb(j, RETRO_DEVICE_JOYPAD, 0, map[rot_screen][i]) ? (1 << i) : 0;
 
       // Input data must be little endian.
       input_buf[j][0] = (input_state >> 0) & 0xff;
       input_buf[j][1] = (input_state >> 8) & 0xff;
    }
+
+   unsigned select_button = input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_SELECT);
+
+   if (select_button && !select_pressed_last_frame)
+   {
+      rot_screen++;
+      if (rot_screen > 3)
+         rot_screen = 0;
+
+      const float aspect[2] = { (80.0 / 51.0), (51.0 / 80.0) };
+      const unsigned rot_angle[4] = { 0, 1, 2, 3 };
+      struct retro_game_geometry new_geom = { FB_WIDTH, FB_HEIGHT, FB_WIDTH, FB_HEIGHT, aspect[rot_screen & 1] };
+      environ_cb(RETRO_ENVIRONMENT_SET_GEOMETRY, (void*)&new_geom);
+      environ_cb(RETRO_ENVIRONMENT_SET_ROTATION, (void*)&rot_angle[rot_screen]);
+   }
+
+   select_pressed_last_frame = select_button;
 }
 
 static uint64_t video_frames, audio_frames;
