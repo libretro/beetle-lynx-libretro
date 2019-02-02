@@ -120,7 +120,7 @@ CSystem::CSystem(const uint8 *filememory, int32 filesize)
 	mMikie(NULL),
 	mSusie(NULL)
 {
-	mFileType=HANDY_FILETYPE_LNX;
+	mFileType=HANDY_FILETYPE_ILLEGAL;
 
 	if(filesize < 11)
    {
@@ -135,6 +135,11 @@ CSystem::CSystem(const uint8 *filememory, int32 filesize)
 
 	if(!strcmp(&clip[6],"BS93")) mFileType=HANDY_FILETYPE_HOMEBREW;
 	else if(!strcmp(&clip[0],"LYNX")) mFileType=HANDY_FILETYPE_LNX;
+	else if(filesize==128*1024 || filesize==256*1024 || filesize==512*1024)
+	{
+		/* Invalid Cart (type). but 128/256/512k size -> set to RAW and try to load raw rom image */
+		mFileType=HANDY_FILETYPE_RAW;
+	}
 	else
 	{
       /* File format is unknown to module. */
@@ -153,6 +158,7 @@ CSystem::CSystem(const uint8 *filememory, int32 filesize)
 
 	switch(mFileType)
 	{
+		case HANDY_FILETYPE_RAW:
 		case HANDY_FILETYPE_LNX:
 			mCart = new CCart(filememory,filesize);
 			mRam = new CRam(0,0);
@@ -515,7 +521,7 @@ static Deinterlacer deint;
 #define MEDNAFEN_CORE_NAME "Mednafen Lynx"
 #define MEDNAFEN_CORE_VERSION "v0.9.32"
 #define MEDNAFEN_CORE_EXTENSIONS "lnx"
-#define MEDNAFEN_CORE_TIMING_FPS 75
+#define MEDNAFEN_CORE_TIMING_FPS 75.0
 #define MEDNAFEN_CORE_GEOMETRY_BASE_W 160
 #define MEDNAFEN_CORE_GEOMETRY_BASE_H 102
 #define MEDNAFEN_CORE_GEOMETRY_MAX_W 160
@@ -820,7 +826,7 @@ void retro_get_system_av_info(struct retro_system_av_info *info)
 {
    memset(info, 0, sizeof(*info));
    info->timing.fps            = MEDNAFEN_CORE_TIMING_FPS;
-   info->timing.sample_rate    = 44100;
+   info->timing.sample_rate    = 44100.0;
    info->geometry.base_width   = MEDNAFEN_CORE_GEOMETRY_BASE_W;
    info->geometry.base_height  = MEDNAFEN_CORE_GEOMETRY_BASE_H;
    info->geometry.max_width    = MEDNAFEN_CORE_GEOMETRY_MAX_W;
