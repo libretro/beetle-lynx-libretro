@@ -264,9 +264,9 @@ static bool TestMagic(const char *name, MDFNFILE *fp)
  return(CCart::TestMagic(fp->data, fp->size));
 }
 
-static int Load(const char *name, MDFNFILE *fp)
+static int Load(const uint8_t *data, size_t size)
 {
-   lynxie = new CSystem(GET_FDATA_PTR(fp), GET_FSIZE_PTR(fp));
+   lynxie = new CSystem(data, size);
 
  int rot = lynxie->CartGetRotate();
  if(rot == CART_ROTATE_LEFT) MDFNGameInfo->rotated = MDFN_ROTATE270;
@@ -649,6 +649,7 @@ static void hookup_ports(bool force)
    initial_ports_hookup = true;
 }
 
+static MDFNGI *MDFNI_LoadGame(const uint8_t *, size_t);
 bool retro_load_game(const struct retro_game_info *info)
 {
    if (!info || failed_init)
@@ -667,9 +668,8 @@ bool retro_load_game(const struct retro_game_info *info)
    overscan = false;
    environ_cb(RETRO_ENVIRONMENT_GET_OVERSCAN, &overscan);
 
-   set_basename(info->path);
+   game = MDFNI_LoadGame((const uint8_t *)info->data, info->size);
 
-   game = MDFNI_LoadGame(MEDNAFEN_CORE_NAME_MODULE, info->path);
    if (!game)
       return false;
 
@@ -873,7 +873,7 @@ void retro_get_system_info(struct retro_system_info *info)
 #define GIT_VERSION ""
 #endif
    info->library_version  = MEDNAFEN_CORE_VERSION GIT_VERSION;
-   info->need_fullpath    = true;
+   info->need_fullpath    = false;
    info->valid_extensions = MEDNAFEN_CORE_EXTENSIONS;
    info->block_extract    = false;
 }
@@ -1113,30 +1113,16 @@ void MDFN_ResetMessages(void)
  MDFND_DispMessage(NULL);
 }
 
-
-MDFNGI *MDFNI_LoadGame(const char *force_module, const char *name)
+static MDFNGI *MDFNI_LoadGame(const uint8_t *data, size_t size)
 {
-	std::vector<FileExtensionSpecStruct> valid_iae;
-   MDFNGameInfo = &EmulatedLynx;
-   MDFNFILE *GameFile = NULL;
+	if (!data || !size) {
+		MDFN_indent(2);
+		goto error;
+	}
 
-	MDFN_printf(_("Loading %s...\n"),name);
+	MDFNGameInfo = &EmulatedLynx;
 
 	MDFN_indent(1);
-
-	// Construct a NULL-delimited list of known file extensions for MDFN_fopen()
-   const FileExtensionSpecStruct *curexts = KnownExtensions;
-
-   while(curexts->extension && curexts->description)
-   {
-      valid_iae.push_back(*curexts);
-      curexts++;
-   }
-
-   GameFile = file_open(name);
-
-	if(!GameFile)
-      goto error;
 
 	MDFN_printf(_("Using module: lynx\n\n"));
 	MDFN_indent(1);
@@ -1148,8 +1134,8 @@ MDFNGI *MDFNI_LoadGame(const char *force_module, const char *name)
 	// End load per-game settings
 	//
 
-   if(Load(name, GameFile) <= 0)
-      goto error;
+	if(Load(data, size) <= 0)
+		goto error;
 
 	MDFN_LoadGameCheats(NULL);
 	MDFNMP_InstallReadPatches();
@@ -1161,8 +1147,6 @@ MDFNGI *MDFNI_LoadGame(const char *force_module, const char *name)
    return(MDFNGameInfo);
 
 error:
-   if (GameFile)
-      file_close(GameFile);
    MDFN_indent(-2);
    MDFNGameInfo = NULL;
    return NULL;
