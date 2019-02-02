@@ -326,7 +326,7 @@ CXXFLAGS += $(FLAGS)
 CFLAGS += $(FLAGS)
 
 $(TARGET): $(OBJECTS)
-	@echo "** BUILDING $(TARGET) FOR PLATFORM $(platform) **"
+
 ifeq ($(platform), emscripten)
 	$(CXX) $(CXXFLAGS) -o $@ $^
 else ifeq ($(STATIC_LINKING), 1)
@@ -334,7 +334,6 @@ else ifeq ($(STATIC_LINKING), 1)
 else
 	$(CXX) -o $@ $^ $(LDFLAGS)
 endif
-	@echo "** BUILD SUCCESSFUL! GG NO RE **"
 
 %.o: %.cpp
 	$(CXX) -c -o $@ $< $(CPPFLAGS) $(CXXFLAGS)
