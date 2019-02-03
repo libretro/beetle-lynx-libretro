@@ -128,7 +128,6 @@ CSystem::CSystem(const uint8 *filememory, int32 filesize)
 	if(filesize < 11)
    {
       /* Lynx ROM image is too short. */
-      return;
    }
 
 	char clip[11];
@@ -145,8 +144,8 @@ CSystem::CSystem(const uint8 *filememory, int32 filesize)
 	}
 	else
 	{
-      /* File format is unknown to module. */
-      return;
+      /* File format is unknown to module. This will then
+       * just load the core into an "Insert Game" screen */
 	}
 
 	MDFNMP_Init(65536, 1);

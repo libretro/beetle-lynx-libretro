@@ -249,13 +249,13 @@ CCart::CCart(const uint8 *gamedata, uint32 gamesize)
 	for (loop = 0; loop < bank1size; loop++)
 		mCartBank1[loop] = DEFAULT_CART_CONTENTS;
 
+	mCRC32 = 0;
 	// Read in the BANK0 bytes
 	if (mMaskBank0) {
 		memcpy(mCartBank0, gamedata, bank0size);
 		mCRC32 = crc32(0, mCartBank0, bank0size);
 	}
 
-	mCRC32 = 0;
 	// Read in the BANK1 bytes
 	if (mMaskBank1) {
 		memcpy(mCartBank1, gamedata + bank0size, bank1size);
