@@ -266,13 +266,18 @@ static bool TestMagic(const char *name, MDFNFILE *fp)
 
 static int Load(const uint8_t *data, size_t size)
 {
-   lynxie = new CSystem(data, size);
+ lynxie = new CSystem(data, size);
 
- int rot = lynxie->CartGetRotate();
- if(rot == CART_ROTATE_LEFT) MDFNGameInfo->rotated = MDFN_ROTATE270;
- else if(rot == CART_ROTATE_RIGHT) MDFNGameInfo->rotated = MDFN_ROTATE90;
+ switch(lynxie->CartGetRotate())
+ {
+  case CART_ROTATE_LEFT:
+   MDFNGameInfo->rotated = MDFN_ROTATE270;
+   break;
 
- gAudioEnabled = 1;
+  case CART_ROTATE_RIGHT:
+   MDFNGameInfo->rotated = MDFN_ROTATE90;
+   break;
+ }
 
  MDFN_printf(_("ROM:       %dKiB\n"), (lynxie->mCart->InfoROMSize + 1023) / 1024);
  MDFN_printf(_("ROM CRC32: 0x%08x\n"), lynxie->mCart->CRC32());

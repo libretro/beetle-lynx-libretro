@@ -2715,9 +2715,9 @@ void CMikie::Update(void)
 			}
 
 			//
-			// If sound is enabled then update the sound subsystem
+			// Update the sound subsystem
 			//
-			if(gAudioEnabled)
+
 			{
 			  int y;
 			  for(y = 0; y < 4; y++)
