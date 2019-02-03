@@ -2165,6 +2165,10 @@ int CSusie::StateAction(StateMem *sm, int load, int data_only)
         SFVAR(mMATHJKLM),
         SFVAR(mMATHNP),
 
+        SFVAR(mMATHAB_sign),
+        SFVAR(mMATHCD_sign),
+        SFVAR(mMATHEFGH_sign),
+
         SFVAR(mSPRCTL0_Type),
         SFVAR(mSPRCTL0_Vflip),
         SFVAR(mSPRCTL0_Hflip),
