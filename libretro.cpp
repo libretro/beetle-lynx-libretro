@@ -397,10 +397,8 @@ int StateAction(StateMem *sm, int load, int data_only)
 	SFARRAYN(lynxie->GetRamPointer(), RAM_SIZE, "RAM"),
 	SFEND
  };
- std::vector <SSDescriptor> love;
 
- love.push_back(SSDescriptor(SystemRegs, "SYST"));
- MDFNSS_StateAction(sm, load, data_only, love);
+ MDFNSS_StateAction(sm, load, data_only, SystemRegs, "SYST", false);
 
  if(!lynxie->mSusie->StateAction(sm, load, data_only))
   return(0);

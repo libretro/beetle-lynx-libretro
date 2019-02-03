@@ -196,9 +196,8 @@ int CMemMap::StateAction(StateMem *sm, int load, int data_only)
         SFVAR(mVectorsEnabled),
 	SFEND
  };
- std::vector <SSDescriptor> love;
- love.push_back(SSDescriptor(MemMapRegs, "MMAP"));
- int ret = MDFNSS_StateAction(sm, load, data_only, love);
+
+ int ret = MDFNSS_StateAction(sm, load, data_only, MemMapRegs, "MMAP", false);
 
  if(load)
  {

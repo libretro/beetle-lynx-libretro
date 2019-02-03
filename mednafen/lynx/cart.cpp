@@ -417,7 +417,7 @@ int CCart::StateAction(StateMem *sm, int load, int data_only)
 	SFARRAYN(mCartBank1, mCartRAM ? mMaskBank1 + 1 : 0, "mCartBank1"),
 	SFEND
  };
- int ret = MDFNSS_StateAction(sm, load, data_only, CartRegs, "CART");
+ int ret = MDFNSS_StateAction(sm, load, data_only, CartRegs, "CART", false);
 
 
  return(ret);

@@ -1804,7 +1804,7 @@ int CMikie::StateAction(StateMem *sm, int load, int data_only)
 	SFEND
 	};
 
-	int ret = MDFNSS_StateAction(sm, load, data_only, MikieRegs, "MIKY");
+	int ret = MDFNSS_StateAction(sm, load, data_only, MikieRegs, "MIKY", false);
 
 	if(load)
 	{

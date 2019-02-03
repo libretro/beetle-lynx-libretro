@@ -2218,9 +2218,8 @@ int CSusie::StateAction(StateMem *sm, int load, int data_only)
 	SFVAR(vquadoff),
 	SFEND
  };
- std::vector <SSDescriptor> love;
- love.push_back(SSDescriptor(SuzieRegs, "SUZY"));
- int ret = MDFNSS_StateAction(sm, load, data_only, love);
+
+ int ret = MDFNSS_StateAction(sm, load, data_only, SuzieRegs, "SUZY", false);
 
  return(ret);
 }

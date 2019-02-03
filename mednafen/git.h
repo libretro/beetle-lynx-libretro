@@ -327,7 +327,7 @@ typedef struct
 
  const char *cspecial;  /* Special cart expansion: DIP switches, barcode reader, etc. */
 
- std::vector<const char *>DesiredInput; // Desired input device for the input ports, NULL for don't care
+ const char *DesiredInput; // Desired input device for the input ports, NULL for don't care
 
  double mouse_sensitivity;
 } MDFNGI;
