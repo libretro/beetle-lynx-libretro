@@ -50,6 +50,7 @@
 #include <string.h>
 #include "cart.h"
 #include "../state.h"
+#include <../md5.h>
 #include "../../scrc32.h"
 
 static inline uint16_t MDFN_de16lsb(const uint8_t *morp)
@@ -90,7 +91,7 @@ LYNX_HEADER CCart::DecodeHeader(const uint8 *data)
 
 bool CCart::TestMagic(const uint8 *data, uint32 size)
 {
- if(size <= HEADER_RAW_SIZE)
+ if(size < HEADER_RAW_SIZE)
   return(FALSE);
 
  if(memcmp(data, "LYNX", 4) || data[8] != 0x01)
@@ -104,6 +105,9 @@ CCart::CCart(const uint8 *gamedata, uint32 gamesize)
 	LYNX_HEADER	header;
 	uint8 raw_header[HEADER_RAW_SIZE];
 	uint32 loop;
+
+	md5_context md5;
+	md5.starts();
 
 	mWriteEnableBank0=FALSE;
 	mWriteEnableBank1=FALSE;
@@ -254,13 +258,17 @@ CCart::CCart(const uint8 *gamedata, uint32 gamesize)
 	if (mMaskBank0) {
 		memcpy(mCartBank0, gamedata, bank0size);
 		mCRC32 = crc32(0, mCartBank0, bank0size);
+		md5.update(mCartBank0, bank0size);
 	}
 
 	// Read in the BANK1 bytes
 	if (mMaskBank1) {
 		memcpy(mCartBank1, gamedata + bank0size, bank1size);
 		mCRC32 = crc32(mCRC32, mCartBank1, bank1size);
+		md5.update(mCartBank1, bank1size);
 	}
+
+	md5.finish(MD5);
 
 	// As this is a cartridge boot unset the boot address
 

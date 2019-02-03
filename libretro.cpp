@@ -3,6 +3,7 @@
 #include "mednafen/mempatcher.h"
 #include "mednafen/git.h"
 #include "mednafen/general.h"
+#include "mednafen/md5.h"
 #ifdef NEED_DEINTERLACER
 #include	"mednafen/video/Deinterlacer.h"
 #endif
@@ -260,7 +261,18 @@ extern MDFNGI EmulatedLynx;
 
 static bool TestMagic(const char *name, MDFNFILE *fp)
 {
- return(CCart::TestMagic(fp->data, fp->size));
+ uint8 data[std::max<unsigned>(CCart::HEADER_RAW_SIZE, CRam::HEADER_RAW_SIZE)];
+ uint64 rc;
+
+ rc = fp->size;
+
+ if(rc >= CCart::HEADER_RAW_SIZE && CCart::TestMagic(data, sizeof(data)))
+  return true;
+
+ if(rc >= CRam::HEADER_RAW_SIZE && CRam::TestMagic(data, sizeof(data)))
+  return true;
+
+ return false;
 }
 
 static int Load(const uint8_t *data, size_t size)
@@ -278,8 +290,20 @@ static int Load(const uint8_t *data, size_t size)
    break;
  }
 
- MDFN_printf(_("ROM:       %dKiB\n"), (lynxie->mCart->InfoROMSize + 1023) / 1024);
- MDFN_printf(_("ROM CRC32: 0x%08x\n"), lynxie->mCart->CRC32());
+ if(lynxie->mRam->InfoRAMSize)
+ {
+  memcpy(MDFNGameInfo->MD5, lynxie->mRam->MD5, 16);
+  MDFN_printf(_("RAM:       %u bytes\n"), lynxie->mRam->InfoRAMSize);
+  MDFN_printf(_("CRC32:     0x%08x\n"), lynxie->mRam->CRC32());
+  MDFN_printf(_("RAM MD5:   0x%s\n"), md5_context::asciistr(MDFNGameInfo->MD5, 0).c_str());
+ }
+ else
+ {
+  memcpy(MDFNGameInfo->MD5, lynxie->mCart->MD5, 16);
+  MDFN_printf(_("ROM:       %dKiB\n"), (lynxie->mCart->InfoROMSize + 1023) / 1024);
+  MDFN_printf(_("CRC32:     0x%08x\n"), lynxie->mCart->CRC32());
+  MDFN_printf(_("ROM MD5:   0x%s\n"), md5_context::asciistr(MDFNGameInfo->MD5, 0).c_str());
+ }
 
  MDFNGameInfo->fps = (uint32)(59.8 * 65536 * 256);
 
@@ -1235,7 +1259,7 @@ void MDFN_printf(const char *format, ...)
    free(format_temp);
 
    MDFND_Message(temp);
-   free(temp);
+   delete[] temp;
 
    va_end(ap);
 }
@@ -1251,7 +1275,7 @@ void MDFN_PrintError(const char *format, ...)
  temp = new char[4096];
  vsnprintf(temp, 4096, format, ap);
  MDFND_PrintError(temp);
- free(temp);
+ delete[] temp;
 
  va_end(ap);
 }
@@ -1267,7 +1291,7 @@ void MDFN_DebugPrintReal(const char *file, const int line, const char *format, .
  temp = new char[4096];
  vsnprintf(temp, 4096, format, ap);
  fprintf(stderr, "%s:%d  %s\n", file, line, temp);
- free(temp);
+ delete[] temp;
 
  va_end(ap);
 }

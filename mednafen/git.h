@@ -314,7 +314,7 @@ typedef struct
 
  int soundchan; 	// Number of output sound channels.
 
-
+ uint8 MD5[16];
  int rotated;
 
  int soundrate;  /* For Ogg Vorbis expansion sound wacky support.  0 for default. */
