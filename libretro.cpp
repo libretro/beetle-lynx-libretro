@@ -547,8 +547,8 @@ static Deinterlacer deint;
 #endif
 
 #define MEDNAFEN_CORE_NAME_MODULE "lynx"
-#define MEDNAFEN_CORE_NAME "Mednafen Lynx"
-#define MEDNAFEN_CORE_VERSION "v0.9.32"
+#define MEDNAFEN_CORE_NAME "Beetle Lynx"
+#define MEDNAFEN_CORE_VERSION "v0.9.37"
 #define MEDNAFEN_CORE_EXTENSIONS "lnx"
 #define MEDNAFEN_CORE_TIMING_FPS 75.0
 #define MEDNAFEN_CORE_GEOMETRY_BASE_W 160
