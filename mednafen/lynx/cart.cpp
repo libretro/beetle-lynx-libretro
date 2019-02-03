@@ -102,40 +102,48 @@ bool CCart::TestMagic(const uint8 *data, uint32 size)
 CCart::CCart(const uint8 *gamedata, uint32 gamesize)
 {
 	LYNX_HEADER	header;
+	uint8 raw_header[HEADER_RAW_SIZE];
 	uint32 loop;
 
 	mWriteEnableBank0=FALSE;
 	mWriteEnableBank1=FALSE;
 	mCartRAM=FALSE;
-	mCRC32 = 0;
-	mCRC32 = crc32(mCRC32,gamedata,gamesize);
 
-	// Checkout the header bytes
-	if(gamesize <= HEADER_RAW_SIZE)
- {
-      /* Lynx ROM image is too small. */
-      return;
-   }
+	if (gamesize) {
+		// Checkout the header bytes
+		memcpy(&raw_header, gamedata, sizeof(LYNX_HEADER));
+		header = DecodeHeader(raw_header);
 
-	header = DecodeHeader(gamedata);
-	InfoROMSize = gamesize;
+		// Sanity checks on the header
+		if(header.magic[0]!= 'L' || header.magic[1]!='Y' || header.magic[2]!='N' || header.magic[3]!='X' || header.version!=1)
+		{
+			MDFND_Message(" Invalid cart, no header?\n");
+			MDFND_Message(" Trying to guess ROM layout\n");
 
-	// Sanity checks on the header
-	if(header.magic[0]!='L' || header.magic[1]!='Y' || header.magic[2]!='N' || header.magic[3]!='X' || header.version!=1)
-	{
-		MDFND_Message(" Invalid cart, no header?\n");
-		MDFND_Message(" Trying to guess ROM layout\n");
-
-		memset(&header, 0, sizeof(LYNX_HEADER));
-		strncpy((char*)&header.cartname, "NO HEADER", 32);
-		strncpy((char*)&header.manufname, "HANDY", 16);
-		header.page_size_bank0 = gamesize >> 8; // Hard workaround...
+			memset(&header, 0, sizeof(LYNX_HEADER));
+			strncpy((char*)&header.cartname, "NO HEADER", 32);
+			strncpy((char*)&header.manufname, "HANDY", 16);
+			header.page_size_bank0 = gamesize >> 8; // Hard workaround...
+		}
+		else
+		{
+			gamedata += HEADER_RAW_SIZE;
+			gamesize -= HEADER_RAW_SIZE;
+		}
 	}
 	else
 	{
-		gamedata += HEADER_RAW_SIZE;
-		gamesize -= HEADER_RAW_SIZE;
+		header.page_size_bank0=0x000;
+		header.page_size_bank1=0x000;
+
+		strncpy((char*)&header.cartname, "NO HEADER", 32);
+		strncpy((char*)&header.manufname, "HANDY", 16);
+
+		// Setup rotation
+		header.rotation = 0;
 	}
+
+	InfoROMSize = gamesize;
 
 	// Setup name & manufacturer
 	strncpy(mName,(char*)&header.cartname, 32);
@@ -242,13 +250,17 @@ CCart::CCart(const uint8 *gamedata, uint32 gamesize)
 		mCartBank1[loop] = DEFAULT_CART_CONTENTS;
 
 	// Read in the BANK0 bytes
-
-	if (mMaskBank0)
+	if (mMaskBank0) {
 		memcpy(mCartBank0, gamedata, bank0size);
+		mCRC32 = crc32(0, mCartBank0, bank0size);
+	}
 
-	// Read in the BANK0 bytes
-	if (mMaskBank1)
+	mCRC32 = 0;
+	// Read in the BANK1 bytes
+	if (mMaskBank1) {
 		memcpy(mCartBank1, gamedata + bank0size, bank1size);
+		mCRC32 = crc32(mCRC32, mCartBank1, bank1size);
+	}
 
 	// As this is a cartridge boot unset the boot address
 
