@@ -1,5 +1,6 @@
 #include	<stdarg.h>
 #include "mednafen/mednafen.h"
+#include "mednafen/mednafen-endian.h"
 #include "mednafen/mempatcher.h"
 #include "mednafen/git.h"
 #include "mednafen/general.h"
@@ -410,6 +411,24 @@ static void SetInput(int port, const char *type, void *ptr)
  chee = (uint8 *)ptr;
 }
 
+static void TransformInput(void)
+{
+ if(MDFN_GetSettingB("lynx.rotateinput"))
+ {
+  static const unsigned bp[4] = { 4, 6, 5, 7 };
+  const unsigned offs = MDFNGameInfo->rotated;
+  uint16 butt_data = MDFN_de16lsb(chee);
+
+  butt_data = (butt_data & 0xFF0F) |
+	      (((butt_data >> bp[0]) & 1) << bp[(0 + offs) & 3]) |
+	      (((butt_data >> bp[1]) & 1) << bp[(1 + offs) & 3]) |
+	      (((butt_data >> bp[2]) & 1) << bp[(2 + offs) & 3]) |
+	      (((butt_data >> bp[3]) & 1) << bp[(3 + offs) & 3]);
+  //printf("%d, %04x\n", MDFNGameInfo->rotated, butt_data);
+  MDFN_en16lsb(chee, butt_data);
+ }
+}
+
 int StateAction(StateMem *sm, int load, int data_only)
 {
  SFORMAT SystemRegs[] =
@@ -470,20 +489,13 @@ static MDFNSetting LynxSettings[] =
 static const InputDeviceInputInfoStruct IDII[] =
 {
  { "a", "A (outer)", 8, IDIT_BUTTON_CAN_RAPID, NULL },
-
  { "b", "B (inner)", 7, IDIT_BUTTON_CAN_RAPID, NULL },
-
  { "option_2", "Option 2 (lower)", 5, IDIT_BUTTON_CAN_RAPID, NULL },
-
  { "option_1", "Option 1 (upper)", 4, IDIT_BUTTON_CAN_RAPID, NULL },
 
-
  { "left", "LEFT ←", 	/*VIRTB_DPAD0_L,*/ 2, IDIT_BUTTON, "right",		{ "up", "right", "down" } },
-
  { "right", "RIGHT →", 	/*VIRTB_DPAD0_R,*/ 3, IDIT_BUTTON, "left", 		{ "down", "left", "up" } },
-
  { "up", "UP ↑", 	/*VIRTB_DPAD0_U,*/ 0, IDIT_BUTTON, "down",		{ "right", "down", "left" } },
-
  { "down", "DOWN ↓", 	/*VIRTB_DPAD0_D,*/ 1, IDIT_BUTTON, "up", 		{ "left", "up", "right" } },
 
  { "pause", "PAUSE", 6, IDIT_BUTTON, NULL },
@@ -548,7 +560,7 @@ static Deinterlacer deint;
 
 #define MEDNAFEN_CORE_NAME_MODULE "lynx"
 #define MEDNAFEN_CORE_NAME "Beetle Lynx"
-#define MEDNAFEN_CORE_VERSION "v0.9.37"
+#define MEDNAFEN_CORE_VERSION "v0.9.47"
 #define MEDNAFEN_CORE_EXTENSIONS "lnx"
 #define MEDNAFEN_CORE_TIMING_FPS 75.0
 #define MEDNAFEN_CORE_GEOMETRY_BASE_W 160

@@ -51,6 +51,7 @@
 #include "system.h"
 #include "ram.h"
 #include "../mempatcher.h"
+#include "../mednafen-endian.h"
 #include <../md5.h>
 #include "../../scrc32.h"
 

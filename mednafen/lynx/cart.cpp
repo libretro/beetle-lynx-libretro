@@ -278,7 +278,6 @@ CCart::CCart(const uint8 *gamedata, uint32 gamesize)
 	if(banktype1==UNUSED)
 	{
 		// Delete the single byte allocated  earlier
-		delete[] mCartBank1;
 		// Allocate some new memory for us
 		banktype1=C64K;
 		mMaskBank1=0x00ffff;

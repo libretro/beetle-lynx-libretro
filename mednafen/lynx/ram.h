@@ -86,10 +86,5 @@ class CRam : public CLynxBase
 
 };
 
-static inline uint16 MDFN_de16msb(const uint8 *morp)
-{
- return(morp[1] | (morp[0] << 8));
-}
-
 #endif
 
