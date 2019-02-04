@@ -121,8 +121,8 @@ CCart::CCart(const uint8 *gamedata, uint32 gamesize)
 		// Sanity checks on the header
 		if(header.magic[0]!= 'L' || header.magic[1]!='Y' || header.magic[2]!='N' || header.magic[3]!='X' || header.version!=1)
 		{
-			MDFND_Message(" Invalid cart, no header?\n");
-			MDFND_Message(" Trying to guess ROM layout\n");
+			MDFN_printf("Invalid cart, no header?\n");
+			MDFN_printf("Trying to guess ROM layout\n");
 
 			memset(&header, 0, sizeof(LYNX_HEADER));
 			strncpy((char*)&header.cartname, "NO HEADER", 32);
