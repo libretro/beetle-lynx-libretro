@@ -77,6 +77,7 @@ SOURCES_CXX += \
 	$(MEDNAFEN_DIR)/video/Deinterlacer.cpp \
 	$(MEDNAFEN_DIR)/sound/Stereo_Buffer.cpp \
 	$(MEDNAFEN_DIR)/video/surface.cpp \
+	$(MEDNAFEN_DIR)/endian.cpp \
 	$(CORE_DIR)/libretro.cpp
 
 SOURCES_C += \
