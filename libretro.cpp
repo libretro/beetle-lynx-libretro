@@ -1,8 +1,10 @@
 #include	<stdarg.h>
 #include "mednafen/mednafen.h"
+#include "mednafen/mednafen-endian.h"
 #include "mednafen/mempatcher.h"
 #include "mednafen/git.h"
 #include "mednafen/general.h"
+#include "mednafen/md5.h"
 #ifdef NEED_DEINTERLACER
 #include	"mednafen/video/Deinterlacer.h"
 #endif
@@ -128,7 +130,6 @@ CSystem::CSystem(const uint8 *filememory, int32 filesize)
 	if(filesize < 11)
    {
       /* Lynx ROM image is too short. */
-      return;
    }
 
 	char clip[11];
@@ -145,8 +146,8 @@ CSystem::CSystem(const uint8 *filememory, int32 filesize)
 	}
 	else
 	{
-      /* File format is unknown to module. */
-      return;
+      /* File format is unknown to module. This will then
+       * just load the core into an "Insert Game" screen */
 	}
 
 	MDFNMP_Init(65536, 1);
@@ -261,21 +262,49 @@ extern MDFNGI EmulatedLynx;
 
 static bool TestMagic(const char *name, MDFNFILE *fp)
 {
- return(CCart::TestMagic(fp->data, fp->size));
+ uint8 data[std::max<unsigned>(CCart::HEADER_RAW_SIZE, CRam::HEADER_RAW_SIZE)];
+ uint64 rc;
+
+ rc = fp->size;
+
+ if(rc >= CCart::HEADER_RAW_SIZE && CCart::TestMagic(data, sizeof(data)))
+  return true;
+
+ if(rc >= CRam::HEADER_RAW_SIZE && CRam::TestMagic(data, sizeof(data)))
+  return true;
+
+ return false;
 }
 
 static int Load(const uint8_t *data, size_t size)
 {
-   lynxie = new CSystem(data, size);
+ lynxie = new CSystem(data, size);
 
- int rot = lynxie->CartGetRotate();
- if(rot == CART_ROTATE_LEFT) MDFNGameInfo->rotated = MDFN_ROTATE270;
- else if(rot == CART_ROTATE_RIGHT) MDFNGameInfo->rotated = MDFN_ROTATE90;
+ switch(lynxie->CartGetRotate())
+ {
+  case CART_ROTATE_LEFT:
+   MDFNGameInfo->rotated = MDFN_ROTATE270;
+   break;
 
- gAudioEnabled = 1;
+  case CART_ROTATE_RIGHT:
+   MDFNGameInfo->rotated = MDFN_ROTATE90;
+   break;
+ }
 
- MDFN_printf(_("ROM:       %dKiB\n"), (lynxie->mCart->InfoROMSize + 1023) / 1024);
- MDFN_printf(_("ROM CRC32: 0x%08x\n"), lynxie->mCart->CRC32());
+ if(lynxie->mRam->InfoRAMSize)
+ {
+  memcpy(MDFNGameInfo->MD5, lynxie->mRam->MD5, 16);
+  MDFN_printf(_("RAM:       %u bytes\n"), lynxie->mRam->InfoRAMSize);
+  MDFN_printf(_("CRC32:     0x%08x\n"), lynxie->mRam->CRC32());
+  MDFN_printf(_("RAM MD5:   0x%s\n"), md5_context::asciistr(MDFNGameInfo->MD5, 0).c_str());
+ }
+ else
+ {
+  memcpy(MDFNGameInfo->MD5, lynxie->mCart->MD5, 16);
+  MDFN_printf(_("ROM:       %dKiB\n"), (lynxie->mCart->InfoROMSize + 1023) / 1024);
+  MDFN_printf(_("CRC32:     0x%08x\n"), lynxie->mCart->CRC32());
+  MDFN_printf(_("ROM MD5:   0x%s\n"), md5_context::asciistr(MDFNGameInfo->MD5, 0).c_str());
+ }
 
  MDFNGameInfo->fps = (uint32)(59.8 * 65536 * 256);
 
@@ -382,6 +411,24 @@ static void SetInput(int port, const char *type, void *ptr)
  chee = (uint8 *)ptr;
 }
 
+static void TransformInput(void)
+{
+ if(MDFN_GetSettingB("lynx.rotateinput"))
+ {
+  static const unsigned bp[4] = { 4, 6, 5, 7 };
+  const unsigned offs = MDFNGameInfo->rotated;
+  uint16 butt_data = MDFN_de16lsb(chee);
+
+  butt_data = (butt_data & 0xFF0F) |
+	      (((butt_data >> bp[0]) & 1) << bp[(0 + offs) & 3]) |
+	      (((butt_data >> bp[1]) & 1) << bp[(1 + offs) & 3]) |
+	      (((butt_data >> bp[2]) & 1) << bp[(2 + offs) & 3]) |
+	      (((butt_data >> bp[3]) & 1) << bp[(3 + offs) & 3]);
+  //printf("%d, %04x\n", MDFNGameInfo->rotated, butt_data);
+  MDFN_en16lsb(chee, butt_data);
+ }
+}
+
 int StateAction(StateMem *sm, int load, int data_only)
 {
  SFORMAT SystemRegs[] =
@@ -397,10 +444,8 @@ int StateAction(StateMem *sm, int load, int data_only)
 	SFARRAYN(lynxie->GetRamPointer(), RAM_SIZE, "RAM"),
 	SFEND
  };
- std::vector <SSDescriptor> love;
 
- love.push_back(SSDescriptor(SystemRegs, "SYST"));
- MDFNSS_StateAction(sm, load, data_only, love);
+ MDFNSS_StateAction(sm, load, data_only, SystemRegs, "SYST", false);
 
  if(!lynxie->mSusie->StateAction(sm, load, data_only))
   return(0);
@@ -444,20 +489,13 @@ static MDFNSetting LynxSettings[] =
 static const InputDeviceInputInfoStruct IDII[] =
 {
  { "a", "A (outer)", 8, IDIT_BUTTON_CAN_RAPID, NULL },
-
  { "b", "B (inner)", 7, IDIT_BUTTON_CAN_RAPID, NULL },
-
  { "option_2", "Option 2 (lower)", 5, IDIT_BUTTON_CAN_RAPID, NULL },
-
  { "option_1", "Option 1 (upper)", 4, IDIT_BUTTON_CAN_RAPID, NULL },
 
-
  { "left", "LEFT ←", 	/*VIRTB_DPAD0_L,*/ 2, IDIT_BUTTON, "right",		{ "up", "right", "down" } },
-
  { "right", "RIGHT →", 	/*VIRTB_DPAD0_R,*/ 3, IDIT_BUTTON, "left", 		{ "down", "left", "up" } },
-
  { "up", "UP ↑", 	/*VIRTB_DPAD0_U,*/ 0, IDIT_BUTTON, "down",		{ "right", "down", "left" } },
-
  { "down", "DOWN ↓", 	/*VIRTB_DPAD0_D,*/ 1, IDIT_BUTTON, "up", 		{ "left", "up", "right" } },
 
  { "pause", "PAUSE", 6, IDIT_BUTTON, NULL },
@@ -521,8 +559,8 @@ static Deinterlacer deint;
 #endif
 
 #define MEDNAFEN_CORE_NAME_MODULE "lynx"
-#define MEDNAFEN_CORE_NAME "Mednafen Lynx"
-#define MEDNAFEN_CORE_VERSION "v0.9.32"
+#define MEDNAFEN_CORE_NAME "Beetle Lynx"
+#define MEDNAFEN_CORE_VERSION "v0.9.47"
 #define MEDNAFEN_CORE_EXTENSIONS "lnx"
 #define MEDNAFEN_CORE_TIMING_FPS 75.0
 #define MEDNAFEN_CORE_GEOMETRY_BASE_W 160
@@ -1067,13 +1105,13 @@ std::string MDFN_MakeFName(MakeFName_Type type, int id1, const char *cd1)
 void MDFND_DispMessage(unsigned char *str)
 {
    if (log_cb)
-      log_cb(RETRO_LOG_INFO, "%s\n", str);
+      log_cb(RETRO_LOG_INFO, "%s", str);
 }
 
 void MDFND_Message(const char *str)
 {
    if (log_cb)
-      log_cb(RETRO_LOG_INFO, "%s\n", str);
+      log_cb(RETRO_LOG_INFO, "%s", str);
 }
 
 void MDFND_MidSync(const EmulateSpecStruct *)
@@ -1233,7 +1271,7 @@ void MDFN_printf(const char *format, ...)
    free(format_temp);
 
    MDFND_Message(temp);
-   free(temp);
+   delete[] temp;
 
    va_end(ap);
 }
@@ -1249,7 +1287,7 @@ void MDFN_PrintError(const char *format, ...)
  temp = new char[4096];
  vsnprintf(temp, 4096, format, ap);
  MDFND_PrintError(temp);
- free(temp);
+ delete[] temp;
 
  va_end(ap);
 }
@@ -1265,7 +1303,7 @@ void MDFN_DebugPrintReal(const char *file, const int line, const char *format, .
  temp = new char[4096];
  vsnprintf(temp, 4096, format, ap);
  fprintf(stderr, "%s:%d  %s\n", file, line, temp);
- free(temp);
+ delete[] temp;
 
  va_end(ap);
 }

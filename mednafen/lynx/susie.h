@@ -98,6 +98,26 @@ enum {sprite_background_shadow=0,
 	  sprite_xor_shadow,
 	  sprite_shadow};
 
+/* Define register typedefs */
+
+typedef struct
+{
+	union
+	{
+		struct
+		{
+#ifdef MSB_FIRST
+			uint8	High;
+			uint8	Low;
+#else
+			uint8	Low;
+			uint8	High;
+#endif
+		} Union8;
+		uint16 Val16;
+	};
+} Uuint16;
+
 typedef struct
 {
 	union
