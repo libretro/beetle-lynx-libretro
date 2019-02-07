@@ -8,7 +8,8 @@
 #ifdef NEED_DEINTERLACER
 #include	"mednafen/video/Deinterlacer.h"
 #endif
-#include "libretro.h"
+#include <libretro.h>
+#include <streams/file_stream.h>
 
 static MDFNGI *game;
 
@@ -960,6 +961,13 @@ void retro_set_environment(retro_environment_t cb)
 {
    environ_cb = cb;
 
+   struct retro_vfs_interface_info vfs_iface_info = {
+      1,
+      NULL
+   };
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VFS_INTERFACE, &vfs_iface_info))
+      filestream_vfs_init(&vfs_iface_info);
 }
 
 void retro_set_audio_sample(retro_audio_sample_t cb)
