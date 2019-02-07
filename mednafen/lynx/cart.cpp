@@ -235,8 +235,8 @@ CCart::CCart(const uint8 *gamedata, uint32 gamesize)
 
 	// Make some space for the new carts
 
-	mCartBank0 = (uint8*) new uint8[mMaskBank0+1];
-	mCartBank1 = (uint8*) new uint8[mMaskBank1+1];
+	mCartBank0 = new uint8[mMaskBank0+1];
+	mCartBank1 = new uint8[mMaskBank1+1];
 
 	// Set default bank
 
@@ -278,12 +278,13 @@ CCart::CCart(const uint8 *gamedata, uint32 gamesize)
 	if(banktype1==UNUSED)
 	{
 		// Delete the single byte allocated  earlier
+		delete[] mCartBank1;
 		// Allocate some new memory for us
 		banktype1=C64K;
 		mMaskBank1=0x00ffff;
 		mShiftCount1=8;
 		mCountMask1=0x0ff;
-		mCartBank1 = (uint8*) new uint8[mMaskBank1+1];
+		mCartBank1 = new uint8[mMaskBank1+1];
 		for(loop=0;loop<mMaskBank1+1;loop++) mCartBank1[loop]=DEFAULT_RAM_CONTENTS;
 		mWriteEnableBank1=TRUE;
 		mCartRAM=TRUE;

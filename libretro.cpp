@@ -1,4 +1,4 @@
-#include	<stdarg.h>
+#include <stdarg.h>
 #include "mednafen/mednafen.h"
 #include "mednafen/mednafen-endian.h"
 #include "mednafen/mempatcher.h"
@@ -6,7 +6,7 @@
 #include "mednafen/general.h"
 #include "mednafen/md5.h"
 #ifdef NEED_DEINTERLACER
-#include	"mednafen/video/Deinterlacer.h"
+#include "mednafen/video/Deinterlacer.h"
 #endif
 #include <libretro.h>
 #include <streams/file_stream.h>
@@ -169,19 +169,8 @@ CSystem::CSystem(const uint8 *filememory, int32 filesize)
 			mRam = new CRam(0,0);
 			break;
 		case HANDY_FILETYPE_HOMEBREW:
-			{
-			 #if 0
-			 static uint8 dummy_cart[CCart::HEADER_RAW_SIZE + 65536] = 
-			 {
-				'L', 'Y', 'N', 'X', 0x00, 0x01, 0x00, 0x00,
-				0x01, 0x00,
-			 };
-			 mCart = new CCart(dummy_cart, sizeof(dummy_cart));
-			 #else
-			 mCart = new CCart(NULL, 0);
-			 #endif
-			 mRam = new CRam(filememory,filesize);
-			}
+			mCart = new CCart(NULL, 0);
+			mRam = new CRam(filememory,filesize);
 			break;
 		case HANDY_FILETYPE_SNAPSHOT:
 		case HANDY_FILETYPE_ILLEGAL:
