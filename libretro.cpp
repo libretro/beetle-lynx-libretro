@@ -664,18 +664,7 @@ static void check_variables(void)
 
 #define MAX_PLAYERS 1
 #define MAX_BUTTONS 9
-static uint8_t input_buf[MAX_PLAYERS][2] = {{0}};
-
-
-static void hookup_ports(bool force)
-{
-   if (initial_ports_hookup && !force)
-      return;
-
-   SetInput(0, "gamepad", &input_buf);
-
-   initial_ports_hookup = true;
-}
+static uint8_t input_buf[2];
 
 static MDFNGI *MDFNI_LoadGame(const uint8_t *, size_t);
 bool retro_load_game(const struct retro_game_info *info)
@@ -727,7 +716,7 @@ bool retro_load_game(const struct retro_game_info *info)
 	deint.ClearState();
 #endif
 
-   hookup_ports(true);
+   SetInput(0, "gamepad", &input_buf);
 
    rot_screen = 0;
    select_pressed_last_frame = 0;
@@ -796,16 +785,14 @@ static void update_input(void)
       },
    };
 
-   for (unsigned j = 0; j < MAX_PLAYERS; j++)
-   {
-      uint16_t input_state = 0;
-      for (unsigned i = 0; i < MAX_BUTTONS; i++)
-         input_state |= input_state_cb(j, RETRO_DEVICE_JOYPAD, 0, map[rot_screen][i]) ? (1 << i) : 0;
 
-      // Input data must be little endian.
-      input_buf[j][0] = (input_state >> 0) & 0xff;
-      input_buf[j][1] = (input_state >> 8) & 0xff;
-   }
+   uint16_t input_state = 0;
+   for (unsigned i = 0; i < MAX_BUTTONS; i++)
+      input_state |= input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, map[rot_screen][i]) ? (1 << i) : 0;
+
+   // Input data must be little endian.
+   input_buf[0] = (input_state >> 0) & 0xff;
+   input_buf[1] = (input_state >> 8) & 0xff;
 
    unsigned select_button = input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_SELECT);
 
