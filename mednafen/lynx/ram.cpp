@@ -69,13 +69,11 @@ bool CRam::TestMagic(const uint8* data, uint64 test_size)
 CRam::CRam(const uint8 *filememory,uint32 filesize)
 {
 	mFileSize=filesize;
+	InfoRAMSize = 0;
 
 	if(filesize)
 	{
 		uint8 raw_header[HEADER_RAW_SIZE];
-		md5_context md5;
-		md5.starts();
-		mCRC32 = 0;
 
 		memcpy(&raw_header, filememory, sizeof(raw_header));
 
@@ -94,6 +92,10 @@ CRam::CRam(const uint8 *filememory,uint32 filesize)
 
 		//printf("load_addr=%04x, size=%04x, rc0=%04x, rc1=%04x\n", load_address, size, rc0, rc1);
 
+		md5_context md5;
+		md5.starts();
+		mCRC32 = 0;
+
 		memcpy(&mRamXORData[load_address], filememory, rc0);
 		md5.update(&mRamXORData[load_address], rc0);
 		mCRC32 = crc32(mCRC32, &mRamXORData[load_address], rc0);
@@ -109,8 +111,6 @@ CRam::CRam(const uint8 *filememory,uint32 filesize)
 
 		boot_addr = load_address;
 	}
-	else
-	 InfoRAMSize = 0;
 
 	// Reset will cause the loadup
 	Reset();

@@ -1,14 +1,12 @@
-#include	<stdarg.h>
+#include <stdarg.h>
 #include "mednafen/mednafen.h"
 #include "mednafen/mednafen-endian.h"
 #include "mednafen/mempatcher.h"
 #include "mednafen/git.h"
 #include "mednafen/general.h"
 #include "mednafen/md5.h"
-#ifdef NEED_DEINTERLACER
-#include	"mednafen/video/Deinterlacer.h"
-#endif
-#include "libretro.h"
+#include <libretro.h>
+#include <streams/file_stream.h>
 
 static MDFNGI *game;
 
@@ -168,19 +166,8 @@ CSystem::CSystem(const uint8 *filememory, int32 filesize)
 			mRam = new CRam(0,0);
 			break;
 		case HANDY_FILETYPE_HOMEBREW:
-			{
-			 #if 0
-			 static uint8 dummy_cart[CCart::HEADER_RAW_SIZE + 65536] = 
-			 {
-				'L', 'Y', 'N', 'X', 0x00, 0x01, 0x00, 0x00,
-				0x01, 0x00,
-			 };
-			 mCart = new CCart(dummy_cart, sizeof(dummy_cart));
-			 #else
-			 mCart = new CCart(NULL, 0);
-			 #endif
-			 mRam = new CRam(filememory,filesize);
-			}
+			mCart = new CCart(NULL, 0);
+			mRam = new CRam(filememory,filesize);
 			break;
 		case HANDY_FILETYPE_SNAPSHOT:
 		case HANDY_FILETYPE_ILLEGAL:
@@ -552,12 +539,6 @@ MDFNGI EmulatedLynx =
  2,     // Number of output sound channels
 };
 
-
-#ifdef NEED_DEINTERLACER
-static bool PrevInterlaced;
-static Deinterlacer deint;
-#endif
-
 #define MEDNAFEN_CORE_NAME_MODULE "lynx"
 #define MEDNAFEN_CORE_NAME "Beetle Lynx"
 #define MEDNAFEN_CORE_VERSION "v0.9.47"
@@ -674,24 +655,29 @@ static void check_variables(void)
 
 #define MAX_PLAYERS 1
 #define MAX_BUTTONS 9
-static uint8_t input_buf[MAX_PLAYERS][2] = {{0}};
-
-
-static void hookup_ports(bool force)
-{
-   if (initial_ports_hookup && !force)
-      return;
-
-   SetInput(0, "gamepad", &input_buf);
-
-   initial_ports_hookup = true;
-}
+static uint8_t input_buf[2];
 
 static MDFNGI *MDFNI_LoadGame(const uint8_t *, size_t);
 bool retro_load_game(const struct retro_game_info *info)
 {
    if (!info || failed_init)
       return false;
+
+   struct retro_input_descriptor desc[] = {
+      { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_LEFT,  "D-Pad Left" },
+      { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_UP,    "D-Pad Up" },
+      { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_DOWN,  "D-Pad Down" },
+      { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_RIGHT, "D-Pad Right" },
+      { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_B,     "A" },
+      { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_A,     "B" },
+      { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_L,     "Opt 1" },
+      { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_R,     "Opt 2" },
+      { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_START, "Option" },
+      { 0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_SELECT, "Rotate Screen and D-Pad" },
+      { 0 },
+   };
+
+   environ_cb(RETRO_ENVIRONMENT_SET_INPUT_DESCRIPTORS, desc);
 
 #ifdef WANT_32BPP
    enum retro_pixel_format fmt = RETRO_PIXEL_FORMAT_XRGB8888;
@@ -716,12 +702,7 @@ bool retro_load_game(const struct retro_game_info *info)
    
    surf = new MDFN_Surface(NULL, FB_WIDTH, FB_HEIGHT, FB_WIDTH, pix_fmt);
 
-#ifdef NEED_DEINTERLACER
-	PrevInterlaced = false;
-	deint.ClearState();
-#endif
-
-   hookup_ports(true);
+   SetInput(0, "gamepad", &input_buf);
 
    rot_screen = 0;
    select_pressed_last_frame = 0;
@@ -790,16 +771,14 @@ static void update_input(void)
       },
    };
 
-   for (unsigned j = 0; j < MAX_PLAYERS; j++)
-   {
-      uint16_t input_state = 0;
-      for (unsigned i = 0; i < MAX_BUTTONS; i++)
-         input_state |= input_state_cb(j, RETRO_DEVICE_JOYPAD, 0, map[rot_screen][i]) ? (1 << i) : 0;
 
-      // Input data must be little endian.
-      input_buf[j][0] = (input_state >> 0) & 0xff;
-      input_buf[j][1] = (input_state >> 8) & 0xff;
-   }
+   uint16_t input_state = 0;
+   for (unsigned i = 0; i < MAX_BUTTONS; i++)
+      input_state |= input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, map[rot_screen][i]) ? (1 << i) : 0;
+
+   // Input data must be little endian.
+   input_buf[0] = (input_state >> 0) & 0xff;
+   input_buf[1] = (input_state >> 8) & 0xff;
 
    unsigned select_button = input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_SELECT);
 
@@ -858,23 +837,6 @@ void retro_run()
    }
 
    Emulate(&spec);
-
-#ifdef NEED_DEINTERLACER
-   if (spec.InterlaceOn)
-   {
-      if (!PrevInterlaced)
-         deint.ClearState();
-
-      deint.Process(spec.surface, spec.DisplayRect, spec.LineWidths, spec.InterlaceField);
-
-      PrevInterlaced = true;
-
-      spec.InterlaceOn = false;
-      spec.InterlaceField = 0;
-   }
-   else
-      PrevInterlaced = false;
-#endif
 
    int16 *const SoundBuf = spec.SoundBuf + spec.SoundBufSizeALMS * 2;
    int32 SoundBufSize = spec.SoundBufSize - spec.SoundBufSizeALMS;
@@ -960,6 +922,13 @@ void retro_set_environment(retro_environment_t cb)
 {
    environ_cb = cb;
 
+   struct retro_vfs_interface_info vfs_iface_info = {
+      1,
+      NULL
+   };
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VFS_INTERFACE, &vfs_iface_info))
+      filestream_vfs_init(&vfs_iface_info);
 }
 
 void retro_set_audio_sample(retro_audio_sample_t cb)
