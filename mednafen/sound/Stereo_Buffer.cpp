@@ -57,7 +57,7 @@ void Stereo_Buffer::end_frame( blip_time_t clock_count, bool stereo )
 	{
 		bufs [i].end_frame( clock_count );
 	}
-	stereo_added |= stereo;
+	stereo_added = stereo;
 }
 
 
