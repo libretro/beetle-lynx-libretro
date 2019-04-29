@@ -55,7 +55,7 @@
 CRom::CRom(const char *romfile)
 {
    unsigned loop;
-   mWriteEnable=FALSE;
+   mWriteEnable=false;
    Reset();
 
    // Initialise ROM

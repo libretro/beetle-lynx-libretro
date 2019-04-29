@@ -92,12 +92,12 @@ LYNX_HEADER CCart::DecodeHeader(const uint8 *data)
 bool CCart::TestMagic(const uint8 *data, uint32 size)
 {
  if(size < HEADER_RAW_SIZE)
-  return(FALSE);
+  return(false);
 
  if(memcmp(data, "LYNX", 4) || data[8] != 0x01)
-  return(FALSE);
+  return(false);
 
- return(TRUE);
+ return(true);
 }
 
 CCart::CCart(const uint8 *gamedata, uint32 gamesize)
@@ -109,9 +109,9 @@ CCart::CCart(const uint8 *gamedata, uint32 gamesize)
 	md5_context md5;
 	md5.starts();
 
-	mWriteEnableBank0=FALSE;
-	mWriteEnableBank1=FALSE;
-	mCartRAM=FALSE;
+	mWriteEnableBank0=false;
+	mWriteEnableBank1=false;
+	mCartRAM=false;
 
 	if (gamesize) {
 		// Checkout the header bytes
@@ -286,8 +286,8 @@ CCart::CCart(const uint8 *gamedata, uint32 gamesize)
 		mCountMask1=0x0ff;
 		mCartBank1 = new uint8[mMaskBank1+1];
 		for(loop=0;loop<mMaskBank1+1;loop++) mCartBank1[loop]=DEFAULT_RAM_CONTENTS;
-		mWriteEnableBank1=TRUE;
-		mCartRAM=TRUE;
+		mWriteEnableBank1=true;
+		mCartRAM=true;
 	}
 }
 
