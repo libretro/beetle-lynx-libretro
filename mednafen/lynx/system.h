@@ -70,10 +70,10 @@
 	uint32	gSystemCycleCount=0;
 	uint32	gNextTimerEvent=0;
 	uint32	gCPUBootAddress=0;
-	uint32	gSystemIRQ=FALSE;
-	uint32	gSystemNMI=FALSE;
-	uint32	gSystemCPUSleep=FALSE;
-	uint32	gSystemHalt=FALSE;
+	uint32	gSystemIRQ=false;
+	uint32	gSystemNMI=false;
+	uint32	gSystemCPUSleep=false;
+	uint32	gSystemHalt=false;
 #else
 	extern uint32	gSystemCycleCount;
 	extern uint32	gSuzieDoneTime;
@@ -160,14 +160,6 @@ class CSystem : public CSystemBase
 		inline uint8 Peek_CPU(uint32 addr) { return mMemoryHandlers[addr]->Peek(addr);};
 		inline void  PokeW_CPU(uint32 addr,uint16 data) { mMemoryHandlers[addr]->Poke(addr,data&0xff);addr++;mMemoryHandlers[addr]->Poke(addr,data>>8);};
 		inline uint16 PeekW_CPU(uint32 addr) {return ((mMemoryHandlers[addr]->Peek(addr))+(mMemoryHandlers[addr]->Peek(addr+1)<<8));};
-
-		//
-		// RAM
-		//
-		inline void  Poke_RAM(uint32 addr, uint8 data) { mRam->Poke(addr,data);};
-		inline uint8 Peek_RAM(uint32 addr) { return mRam->Peek(addr);};
-		inline void  PokeW_RAM(uint32 addr,uint16 data) { mRam->Poke(addr,data&0xff);addr++;mRam->Poke(addr,data>>8);};
-		inline uint16 PeekW_RAM(uint32 addr) {return ((mRam->Peek(addr))+(mRam->Peek(addr+1)<<8));};
 
 // High level cart access for debug etc
 
