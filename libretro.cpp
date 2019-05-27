@@ -7,6 +7,7 @@
 #include "mednafen/md5.h"
 #include <libretro.h>
 #include <streams/file_stream.h>
+#include <algorithm>
 
 static MDFNGI *game;
 

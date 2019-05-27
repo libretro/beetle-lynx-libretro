@@ -7,6 +7,10 @@ LIBRETRO_COMM_DIR := $(CORE_DIR)/libretro-common
 
 INCFLAGS := -I$(CORE_DIR) -I$(MEDNAFEN_DIR) -I$(MEDNAFEN_DIR)/include -I$(MEDNAFEN_DIR)/intl -I$(MEDNAFEN_DIR)/hw_sound -I$(MEDNAFEN_DIR)/hw_cpu -I$(MEDNAFEN_DIR)/hw_misc -I$(LIBRETRO_COMM_DIR)/include
 
+ifneq (,$(findstring msvc2003,$(platform)))
+   INCFLAGS += -I$(LIBRETRO_COMM_DIR)/include/compat/msvc
+endif
+
 ifneq ($(HAVE_GRIFFIN),1)
 SOURCES_CXX += \
 	$(CORE_EMU_DIR)/cart.cpp \
@@ -84,6 +88,8 @@ ifneq ($(STATIC_LINKING), 1)
 SOURCES_C += \
 	$(LIBRETRO_COMM_DIR)/streams/file_stream.c \
 	$(LIBRETRO_COMM_DIR)/compat/fopen_utf8.c \
+        $(LIBRETRO_COMM_DIR)/compat/compat_posix_string.c \
+        $(LIBRETRO_COMM_DIR)/compat/compat_snprintf.c \
 	$(LIBRETRO_COMM_DIR)/compat/compat_strl.c \
 	$(LIBRETRO_COMM_DIR)/compat/compat_strcasestr.c \
 	$(LIBRETRO_COMM_DIR)/encodings/encoding_utf.c \

@@ -54,6 +54,7 @@
 #include "../mednafen-endian.h"
 #include <../md5.h>
 #include "../../scrc32.h"
+#include <algorithm>
 
 bool CRam::TestMagic(const uint8* data, uint64 test_size)
 {
