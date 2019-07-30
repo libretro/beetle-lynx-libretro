@@ -9,6 +9,10 @@
 #include <streams/file_stream.h>
 #include <algorithm>
 
+#ifdef _MSC_VER
+#include <compat/msvc.h>
+#endif
+
 static MDFNGI *game;
 
 struct retro_perf_callback perf_cb;
@@ -250,7 +254,7 @@ extern MDFNGI EmulatedLynx;
 
 static bool TestMagic(const char *name, MDFNFILE *fp)
 {
- uint8 data[std::max<unsigned>(CCart::HEADER_RAW_SIZE, CRam::HEADER_RAW_SIZE)];
+ uint8 data[64];
  uint64 rc;
 
  rc = fp->size;

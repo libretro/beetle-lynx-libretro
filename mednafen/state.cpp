@@ -19,6 +19,10 @@
 
 #include <boolean.h>
 
+#ifdef _MSC_VER
+#include <compat/msvc.h>
+#endif
+
 #include "mednafen.h"
 #include "mednafen-endian.h"
 #include "driver.h"
