@@ -190,6 +190,18 @@ else ifeq ($(platform), wii)
    FLAGS += -DHAVE_MKDIR
    STATIC_LINKING = 1
 
+# Nintendo Switch (libnx)
+else ifeq ($(platform), libnx)
+        include $(DEVKITPRO)/libnx/switch_rules
+        TARGET := $(TARGET_NAME)_libretro_$(platform).a
+        FLAGS += -O3 -fomit-frame-pointer -ffast-math -I$(DEVKITPRO)/libnx/include/ -fPIE -Wl,--allow-multiple-definition
+        FLAGS += -specs=$(DEVKITPRO)/libnx/switch.specs
+        FLAGS += -D__SWITCH__ -DHAVE_LIBNX -DHAVE_GETPWUID=0 -DHAVE_GETCWD=1
+        FLAGS += -march=armv8-a -mtune=cortex-a57 -mtp=soft -ffast-math -mcpu=cortex-a57+crc+fp+simd -ffunction-sections
+        FLAGS += -Ifrontend/switch -ftree-vectorize
+        FLAGS += -DHAVE_MKDIR
+        STATIC_LINKING = 1
+
 else ifeq ($(platform), wiiu)
    TARGET := $(TARGET_NAME)_libretro_$(platform).a
    CC = $(DEVKITPPC)/bin/powerpc-eabi-gcc$(EXE_EXT)
