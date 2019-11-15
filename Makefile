@@ -4,36 +4,36 @@ FRONTEND_SUPPORTS_RGB565 = 1
 CORE_DIR := .
 
 ifeq ($(platform),)
-platform = unix
-ifeq ($(shell uname -a),)
-   platform = win
-else ifneq ($(findstring MINGW,$(shell uname -a)),)
-   platform = win
-else ifneq ($(findstring Darwin,$(shell uname -a)),)
-   platform = osx
-else ifneq ($(findstring win,$(shell uname -a)),)
-	platform = win
-endif
+   platform = unix
+   ifeq ($(shell uname -a),)
+      platform = win
+   else ifneq ($(findstring MINGW,$(shell uname -a)),)
+      platform = win
+   else ifneq ($(findstring Darwin,$(shell uname -a)),)
+      platform = osx
+   else ifneq ($(findstring win,$(shell uname -a)),)
+	   platform = win
+   endif
 endif
 
 # system platform
 system_platform = unix
 ifeq ($(shell uname -a),)
-	EXE_EXT = .exe
-	system_platform = win
+   EXE_EXT = .exe
+   system_platform = win
 else ifneq ($(findstring Darwin,$(shell uname -a)),)
-	system_platform = osx
-ifeq ($(shell uname -p),powerpc)
-	arch = ppc
-else
-	arch = intel
-endif
+   system_platform = osx
+   ifeq ($(shell uname -p),powerpc)
+      arch = ppc
+   else
+      arch = intel
+   endif
 else ifneq ($(findstring MINGW,$(shell uname -a)),)
-	system_platform = win
+   system_platform = win
 endif
 
 core = lynx
-NEED_BPP = 32
+NEED_BPP = 16
 NEED_BLIP = 1
 NEED_STEREO_SOUND = 1
 CORE_DEFINE := -DWANT_LYNX_EMU
@@ -47,7 +47,7 @@ LIBRETRO_DIR := libretro
 TARGET_NAME := mednafen_lynx
 GIT_VERSION := " $(shell git rev-parse --short HEAD || echo unknown)"
 ifneq ($(GIT_VERSION)," unknown")
-	CXXFLAGS += -DGIT_VERSION=\"$(GIT_VERSION)\"
+   CXXFLAGS += -DGIT_VERSION=\"$(GIT_VERSION)\"
 endif
 
 SPACE :=
@@ -67,15 +67,16 @@ ifeq ($(platform), unix)
       IS_X86 = 1
    endif
    FLAGS += -DHAVE_MKDIR
+
 else ifeq ($(platform), osx)
    TARGET := $(TARGET_NAME)_libretro.dylib
    fpic := -fPIC
    SHARED := -dynamiclib
    FLAGS += -DHAVE_MKDIR
-ifeq ($(arch),ppc)
-   ENDIANNESS_DEFINES := -DMSB_FIRST
-   OLD_GCC := 1
-endif
+   ifeq ($(arch),ppc)
+      ENDIANNESS_DEFINES := -DMSB_FIRST
+      OLD_GCC := 1
+   endif
    OSXVER = `sw_vers -productVersion | cut -d. -f 2`
    OSX_LT_MAVERICKS = `(( $(OSXVER) <= 9)) && echo "YES"`
    fpic += -mmacosx-version-min=10.1
@@ -87,22 +88,22 @@ else ifneq (,$(findstring ios,$(platform)))
    fpic := -fPIC
    SHARED := -dynamiclib
 
-ifeq ($(IOSSDK),)
-   IOSSDK := $(shell xcodebuild -version -sdk iphoneos Path)
-endif
-ifeq ($(platform),ios-arm64)
-   CC = cc -arch arm64 -isysroot $(IOSSDK)
-   CXX = c++ -arch arm64 -isysroot $(IOSSDK)
-else
-   CC = cc -arch armv7 -isysroot $(IOSSDK)
-   CXX = c++ -arch armv7 -isysroot $(IOSSDK)
-endif
-IPHONEMINVER :=
-ifeq ($(platform),$(filter $(platform),ios9 ios-arm64))
-	IPHONEMINVER = -miphoneos-version-min=8.0
-else
-	IPHONEMINVER = -miphoneos-version-min=5.0
-endif
+   ifeq ($(IOSSDK),)
+      IOSSDK := $(shell xcodebuild -version -sdk iphoneos Path)
+   endif
+   ifeq ($(platform),ios-arm64)
+      CC = cc -arch arm64 -isysroot $(IOSSDK)
+      CXX = c++ -arch arm64 -isysroot $(IOSSDK)
+   else
+      CC = cc -arch armv7 -isysroot $(IOSSDK)
+      CXX = c++ -arch armv7 -isysroot $(IOSSDK)
+   endif
+   IPHONEMINVER :=
+   ifeq ($(platform),$(filter $(platform),ios9 ios-arm64))
+      IPHONEMINVER = -miphoneos-version-min=8.0
+   else
+      IPHONEMINVER = -miphoneos-version-min=5.0
+   endif
    LDFLAGS += $(IPHONEMINVER)
    FLAGS += $(IPHONEMINVER)
    CC += $(IPHONEMINVER)
@@ -114,9 +115,9 @@ else ifeq ($(platform), tvos-arm64)
    fpic := -fPIC
    SHARED := -dynamiclib
 
-ifeq ($(IOSSDK),)
-   IOSSDK := $(shell xcodebuild -version -sdk appletvos Path)
-endif
+   ifeq ($(IOSSDK),)
+      IOSSDK := $(shell xcodebuild -version -sdk appletvos Path)
+   endif
 
 else ifeq ($(platform), qnx)
    TARGET := $(TARGET_NAME)_libretro_$(platform).so
@@ -127,6 +128,7 @@ else ifeq ($(platform), qnx)
    CXX = QCC -Vgcc_ntoarmv7le_cpp
    AR = QCC -Vgcc_ntoarmv7le
    FLAGS += -D__BLACKBERRY_QNX__ -marm -mcpu=cortex-a9 -mfpu=neon -mfloat-abi=softfp
+
 else ifeq ($(platform), ps3)
    TARGET := $(TARGET_NAME)_libretro_$(platform).a
    CC = $(CELL_SDK)/host-win32/ppu/bin/ppu-lv2-gcc.exe
@@ -136,6 +138,7 @@ else ifeq ($(platform), ps3)
    OLD_GCC := 1
    FLAGS += -DHAVE_MKDIR -DARCH_POWERPC_ALTIVEC
    STATIC_LINKING = 1
+
 else ifeq ($(platform), sncps3)
    TARGET := $(TARGET_NAME)_libretro_ps3.a
    CC = $(CELL_SDK)/host-win32/sn/bin/ps3ppusnc.exe
@@ -147,6 +150,7 @@ else ifeq ($(platform), sncps3)
    NO_GCC := 1
    FLAGS += -DHAVE_MKDIR -DARCH_POWERPC_ALTIVEC
    STATIC_LINKING = 1
+
 else ifeq ($(platform), psl1ght)
    TARGET := $(TARGET_NAME)_libretro_$(platform).a
    CC = $(PS3DEV)/ppu/bin/ppu-gcc$(EXE_EXT)
@@ -169,9 +173,9 @@ else ifeq ($(platform), psp1)
 # Vita
 else ifeq ($(platform), vita)
    TARGET := $(TARGET_NAME)_libretro_$(platform).a
-	CC = arm-vita-eabi-gcc$(EXE_EXT)
-	CXX = arm-vita-eabi-g++$(EXE_EXT)
-	AR = arm-vita-eabi-ar$(EXE_EXT)
+   CC = arm-vita-eabi-gcc$(EXE_EXT)
+   CXX = arm-vita-eabi-g++$(EXE_EXT)
+   AR = arm-vita-eabi-ar$(EXE_EXT)
    FLAGS += -DVITA -DHAVE_MKDIR
    STATIC_LINKING = 1
 
@@ -183,6 +187,7 @@ else ifeq ($(platform), xenon)
    ENDIANNESS_DEFINES += -D__LIBXENON__ -m32 -D__ppc__ -DMSB_FIRST
    FLAGS += -DHAVE_MKDIR
    STATIC_LINKING = 1
+
 else ifeq ($(platform), ngc)
    TARGET := $(TARGET_NAME)_libretro_$(platform).a
    CC = $(DEVKITPPC)/bin/powerpc-eabi-gcc$(EXE_EXT)
@@ -207,15 +212,15 @@ else ifeq ($(platform), wii)
 
 # Nintendo Switch (libnx)
 else ifeq ($(platform), libnx)
-        include $(DEVKITPRO)/libnx/switch_rules
-        TARGET := $(TARGET_NAME)_libretro_$(platform).a
-        FLAGS += -O3 -fomit-frame-pointer -ffast-math -I$(DEVKITPRO)/libnx/include/ -fPIE -Wl,--allow-multiple-definition
-        FLAGS += -specs=$(DEVKITPRO)/libnx/switch.specs
-        FLAGS += -D__SWITCH__ -DHAVE_LIBNX -DHAVE_GETPWUID=0 -DHAVE_GETCWD=1
-        FLAGS += -march=armv8-a -mtune=cortex-a57 -mtp=soft -ffast-math -mcpu=cortex-a57+crc+fp+simd -ffunction-sections
-        FLAGS += -Ifrontend/switch -ftree-vectorize
-        FLAGS += -DHAVE_MKDIR
-        STATIC_LINKING = 1
+   include $(DEVKITPRO)/libnx/switch_rules
+   TARGET := $(TARGET_NAME)_libretro_$(platform).a
+   FLAGS += -O3 -fomit-frame-pointer -ffast-math -I$(DEVKITPRO)/libnx/include/ -fPIE -Wl,--allow-multiple-definition
+   FLAGS += -specs=$(DEVKITPRO)/libnx/switch.specs
+   FLAGS += -D__SWITCH__ -DHAVE_LIBNX -DHAVE_GETPWUID=0 -DHAVE_GETCWD=1
+   FLAGS += -march=armv8-a -mtune=cortex-a57 -mtp=soft -ffast-math -mcpu=cortex-a57+crc+fp+simd -ffunction-sections
+   FLAGS += -Ifrontend/switch -ftree-vectorize
+   FLAGS += -DHAVE_MKDIR
+   STATIC_LINKING = 1
 
 else ifeq ($(platform), wiiu)
    TARGET := $(TARGET_NAME)_libretro_$(platform).a
@@ -235,31 +240,32 @@ else ifeq ($(platform), wiiu)
 # (armv7 a7, hard point, neon based) ### 
 # NESC, SNESC, C64 mini 
 else ifeq ($(platform), classic_armv7_a7)
-	TARGET := $(TARGET_NAME)_libretro.so
-	fpic := -fPIC
-	SHARED := -shared -Wl,--no-undefined -Wl,--version-script=link.T
-	CFLAGS += -Ofast \
-	-flto=4 -fwhole-program -fuse-linker-plugin \
-	-fdata-sections -ffunction-sections -Wl,--gc-sections \
-	-fno-stack-protector -fno-ident -fomit-frame-pointer \
-	-falign-functions=1 -falign-jumps=1 -falign-loops=1 \
-	-fno-unwind-tables -fno-asynchronous-unwind-tables -fno-unroll-loops \
-	-fmerge-all-constants -fno-math-errno \
-	-marm -mtune=cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard
-	CXXFLAGS += $(CFLAGS)
-	CPPFLAGS += $(CFLAGS)
-	HAVE_NEON = 1
-	ARCH = arm
-	FLAGS += -DHAVE_MKDIR
-	ifeq ($(shell echo `$(CC) -dumpversion` "< 4.9" | bc -l), 1)
-	  CFLAGS += -march=armv7-a
-	else
-	  CFLAGS += -march=armv7ve
-	  # If gcc is 5.0 or later
-	  ifeq ($(shell echo `$(CC) -dumpversion` ">= 5" | bc -l), 1)
-	    LDFLAGS += -static-libgcc -static-libstdc++
-	  endif
-	endif
+   TARGET := $(TARGET_NAME)_libretro.so
+   fpic := -fPIC
+   SHARED := -shared -Wl,--no-undefined -Wl,--version-script=link.T
+   CFLAGS += -Ofast \
+      -flto=4 -fwhole-program -fuse-linker-plugin \
+      -fdata-sections -ffunction-sections -Wl,--gc-sections \
+      -fno-stack-protector -fno-ident -fomit-frame-pointer \
+      -falign-functions=1 -falign-jumps=1 -falign-loops=1 \
+      -fno-unwind-tables -fno-asynchronous-unwind-tables -fno-unroll-loops \
+      -fmerge-all-constants -fno-math-errno \
+      -marm -mtune=cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard
+   CXXFLAGS += $(CFLAGS)
+   CPPFLAGS += $(CFLAGS)
+   HAVE_NEON = 1
+   ARCH = arm
+   FLAGS += -DHAVE_MKDIR
+   ifeq ($(shell echo `$(CC) -dumpversion` "< 4.9" | bc -l), 1)
+      CFLAGS += -march=armv7-a
+   else
+      CFLAGS += -march=armv7ve
+      # If gcc is 5.0 or later
+      ifeq ($(shell echo `$(CC) -dumpversion` ">= 5" | bc -l), 1)
+         LDFLAGS += -static-libgcc -static-libstdc++
+      endif
+   endif
+
 #######################################
 
 else ifeq ($(platform), rpi3)
@@ -271,6 +277,7 @@ else ifeq ($(platform), rpi3)
    ASFLAGS += -mfpu=neon-fp-armv8
    FLAGS += -DARM
    HAVE_NEON = 1
+
 else ifneq (,$(findstring armv,$(platform)))
    TARGET := $(TARGET_NAME)_libretro.so
    fpic := -fPIC
@@ -278,24 +285,24 @@ else ifneq (,$(findstring armv,$(platform)))
    CC = gcc
    FLAGS += -DHAVE_MKDIR
    IS_X86 = 0
-ifneq (,$(findstring cortexa8,$(platform)))
-   FLAGS += -marm -mcpu=cortex-a8
-   ASFLAGS += -mcpu=cortex-a8
-else ifneq (,$(findstring cortexa9,$(platform)))
-   FLAGS += -marm -mcpu=cortex-a9
-   ASFLAGS += -mcpu=cortex-a9
-endif
+   ifneq (,$(findstring cortexa8,$(platform)))
+      FLAGS += -marm -mcpu=cortex-a8
+      ASFLAGS += -mcpu=cortex-a8
+   else ifneq (,$(findstring cortexa9,$(platform)))
+      FLAGS += -marm -mcpu=cortex-a9
+      ASFLAGS += -mcpu=cortex-a9
+   endif
    FLAGS += -marm
-ifneq (,$(findstring neon,$(platform)))
-   FLAGS += -mfpu=neon
-   ASFLAGS += -mfpu=neon
-   HAVE_NEON = 1
-endif
-ifneq (,$(findstring softfloat,$(platform)))
-   FLAGS += -mfloat-abi=softfp
-else ifneq (,$(findstring hardfloat,$(platform)))
-   FLAGS += -mfloat-abi=hard
-endif
+   ifneq (,$(findstring neon,$(platform)))
+      FLAGS += -mfpu=neon
+      ASFLAGS += -mfpu=neon
+      HAVE_NEON = 1
+   endif
+   ifneq (,$(findstring softfloat,$(platform)))
+      FLAGS += -mfloat-abi=softfp
+   else ifneq (,$(findstring hardfloat,$(platform)))
+      FLAGS += -mfloat-abi=hard
+   endif
    FLAGS += -DARM
 
 # Emscripten
