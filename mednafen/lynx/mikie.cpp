@@ -506,7 +506,7 @@ uint32 CMikie::DisplayRenderLine(void)
 		mLynxLineDMACounter--;
 
 		// Cycle hit for a 80 RAM access in rendering a line
-		work_done+=80*DMA_RDWR_CYC;
+		work_done+=(80+80)*DMA_RDWR_CYC;
 
 		// Mikie screen DMA can only see the system RAM....
 		// (Step through bitmap, line at a time)
