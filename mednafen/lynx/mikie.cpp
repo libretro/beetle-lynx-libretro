@@ -1581,7 +1581,6 @@ uint8 CMikie::Peek(uint32 addr)
 		case (0xfd97&0xff):
 			TRACE_MIKIE2("Peek(%04x) - **** HANDY DETECT ATTEMPTED **** at PC=$%04x",addr,mSystem.mCpu->GetPC());
 //          gError->Warning("EMULATOR DETECT REGISTER HAS BEEN READ");
-			return 0x42;
 			break;
 
 // Errors on illegal location accesses
