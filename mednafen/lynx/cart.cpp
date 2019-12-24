@@ -50,13 +50,9 @@
 #include <string.h>
 #include "cart.h"
 #include "../state.h"
-#include <../md5.h>
+#include "../md5.h"
 #include "../../scrc32.h"
-
-static inline uint16_t MDFN_de16lsb(const uint8_t *morp)
-{
-   return(morp[0] | (morp[1] << 8));
-}
+#include "../mednafen-endian.h"
 
 LYNX_HEADER CCart::DecodeHeader(const uint8 *data)
 {
@@ -100,39 +96,38 @@ bool CCart::TestMagic(const uint8 *data, uint32 size)
  return(true);
 }
 
-CCart::CCart(const uint8 *gamedata, uint32 gamesize)
+CCart::CCart(MDFNFILE *fp)
 {
-	LYNX_HEADER	header;
+	uint64 gamesize;
 	uint8 raw_header[HEADER_RAW_SIZE];
+	LYNX_HEADER	header;
 	uint32 loop;
-
-	md5_context md5;
-	md5.starts();
 
 	mWriteEnableBank0=false;
 	mWriteEnableBank1=false;
 	mCartRAM=false;
 
-	if (gamesize) {
+	if(fp)
+	{
+		gamesize = GET_FSIZE_PTR(fp);
+
 		// Checkout the header bytes
-		memcpy(&raw_header, gamedata, sizeof(LYNX_HEADER));
+		file_read(fp, raw_header, sizeof(LYNX_HEADER), 1);
 		header = DecodeHeader(raw_header);
 
 		// Sanity checks on the header
 		if(header.magic[0]!= 'L' || header.magic[1]!='Y' || header.magic[2]!='N' || header.magic[3]!='X' || header.version!=1)
 		{
-			MDFN_printf("Invalid cart, no header?\n");
-			MDFN_printf("Trying to guess ROM layout\n");
-
-			memset(&header, 0, sizeof(LYNX_HEADER));
+			file_seek(fp, 0, SEEK_SET);
+			memset(&header, 0, HEADER_RAW_SIZE);
 			strncpy((char*)&header.cartname, "NO HEADER", 32);
 			strncpy((char*)&header.manufname, "HANDY", 16);
 			header.page_size_bank0 = gamesize >> 8; // Hard workaround...
 		}
-		else
+	  	else
 		{
-			gamedata += HEADER_RAW_SIZE;
 			gamesize -= HEADER_RAW_SIZE;
+			MDFN_printf("Found LYNX header!\n");
 		}
 	}
 	else
@@ -145,6 +140,8 @@ CCart::CCart(const uint8 *gamedata, uint32 gamesize)
 
 		// Setup rotation
 		header.rotation = 0;
+
+		gamesize = HEADER_RAW_SIZE;
 	}
 
 	InfoROMSize = gamesize;
@@ -152,6 +149,9 @@ CCart::CCart(const uint8 *gamedata, uint32 gamesize)
 	// Setup name & manufacturer
 	strncpy(mName,(char*)&header.cartname, 32);
 	strncpy(mManufacturer,(char*)&header.manufname, 16);
+
+	MDFN_printf("Name:         %s\n", mName);
+	MDFN_printf("Manufacturer: %s\n", mManufacturer);
 
 	// Setup rotation
 	mRotation=header.rotation;
@@ -161,7 +161,7 @@ CCart::CCart(const uint8 *gamedata, uint32 gamesize)
 
 	CTYPE banktype0,banktype1;
 
-	switch(header.page_size_bank0)
+    switch(header.page_size_bank0)
    {
       case 0x000:
          banktype0=UNUSED;
@@ -233,7 +233,7 @@ CCart::CCart(const uint8 *gamedata, uint32 gamesize)
 			break;
 	}
 
-	// Make some space for the new carts
+    // Make some space for the new carts
 
 	mCartBank0 = new uint8[mMaskBank0+1];
 	mCartBank1 = new uint8[mMaskBank1+1];
@@ -244,28 +244,34 @@ CCart::CCart(const uint8 *gamedata, uint32 gamesize)
 
 	// Initialiase
 
-	int bank0size = std::min((int)gamesize, (int)(mMaskBank0 + 1));
-	int bank1size = std::min((int)gamesize, (int)(mMaskBank1 + 1));
-
-	for (loop = 0; loop < bank0size; loop++)
+	for(loop=0;loop<mMaskBank0+1;loop++)
 		mCartBank0[loop] = DEFAULT_CART_CONTENTS;
 
-	for (loop = 0; loop < bank1size; loop++)
+	for(loop=0;loop<mMaskBank1+1;loop++)
 		mCartBank1[loop] = DEFAULT_CART_CONTENTS;
 
-	mCRC32 = 0;
 	// Read in the BANK0 bytes
-	if (mMaskBank0) {
-		memcpy(mCartBank0, gamedata, bank0size);
-		mCRC32 = crc32(0, mCartBank0, bank0size);
-		md5.update(mCartBank0, bank0size);
+
+	mCRC32 = 0;
+	md5_context md5;
+	md5.starts();
+
+	if (mMaskBank0)
+   {
+		uint64 size = std::min<uint64>(gamesize, mMaskBank0 + 1);
+		file_read(fp, mCartBank0, size, 1);
+		mCRC32 = crc32(0, mCartBank0, size);
+		md5.update(mCartBank0, size);
+		gamesize -= size;
 	}
 
 	// Read in the BANK1 bytes
-	if (mMaskBank1) {
-		memcpy(mCartBank1, gamedata + bank0size, bank1size);
-		mCRC32 = crc32(mCRC32, mCartBank1, bank1size);
-		md5.update(mCartBank1, bank1size);
+	if (mMaskBank1)
+   {
+		uint64 size = std::min<uint64>(gamesize, mMaskBank0 + 1);
+		file_read(fp, mCartBank1, size, 1);
+		mCRC32 = crc32(mCRC32, mCartBank1, size);
+		md5.update(mCartBank1, size);
 	}
 
 	md5.finish(MD5);
@@ -422,17 +428,17 @@ int CCart::StateAction(StateMem *sm, int load, int data_only)
 {
  SFORMAT CartRegs[] =
  {
-        SFVAR(mCounter),
-        SFVAR(mShifter),
-        SFVAR(mAddrData),
-        SFVAR(mStrobe),
-        SFVAR(mShiftCount0),
-        SFVAR(mCountMask0),
-        SFVAR(mShiftCount1),
-        SFVAR(mCountMask1),
-        SFVAR(mBank),
-        SFVAR(mWriteEnableBank0),
-        SFVAR(mWriteEnableBank1),
+		SFVAR(mCounter),
+		SFVAR(mShifter),
+		SFVAR(mAddrData),
+		SFVAR(mStrobe),
+		SFVAR(mShiftCount0),
+		SFVAR(mCountMask0),
+		SFVAR(mShiftCount1),
+		SFVAR(mCountMask1),
+		SFVAR(mBank),
+		SFVAR(mWriteEnableBank0),
+		SFVAR(mWriteEnableBank1),
 	SFVAR(last_strobe),
 	SFARRAYN(mCartBank1, mCartRAM ? mMaskBank1 + 1 : 0, "mCartBank1"),
 	SFEND

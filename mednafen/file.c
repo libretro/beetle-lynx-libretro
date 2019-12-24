@@ -25,6 +25,24 @@
 
 #include "file.h"
 
+struct MDFNFILE *file_open_mem(const uint8_t *data, int64_t size)
+{
+   struct MDFNFILE *file = (struct MDFNFILE*)calloc(1, sizeof(*file));
+
+   if (!file)
+      return NULL;
+   
+   if (!data || !size)
+      return NULL;
+
+   file->data     = (uint8_t*)data;
+   file->size     = size;
+   file->ext      = 0;
+   file->location = 0;
+
+   return file;
+}
+
 struct MDFNFILE *file_open(const char *path)
 {
    int64_t size          = 0;

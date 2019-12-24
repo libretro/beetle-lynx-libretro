@@ -395,8 +395,7 @@ class CMikie : public CLynxBase
 		uint32		mLynxLineDMACounter;
 		uint32		mLynxAddr;
 
-		void CopyLineSurface16(void);
-		void CopyLineSurface32(void);
+		template<typename T> void CopyLineSurface(void);
 };
 
 

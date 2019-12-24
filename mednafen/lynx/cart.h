@@ -71,7 +71,7 @@ class CCart : public CLynxBase
 	// Function members
 
 	public:
-		CCart(const uint8 *gamedata, uint32 gamesize) MDFN_COLD;
+		CCart(MDFNFILE *fp) MDFN_COLD;
 		~CCart() MDFN_COLD;
 
 	public:
@@ -113,8 +113,8 @@ class CCart : public CLynxBase
 		uint32	mWriteEnableBank1;
 		uint32	mCartRAM;
 
-		uint8	MD5[16];
 		uint32  InfoROMSize;
+		uint8	MD5[16];
 	private:
 		EMMODE	mBank;
 		uint32	mMaskBank0;

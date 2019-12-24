@@ -19,7 +19,8 @@ SOURCES_CXX += \
 	$(CORE_EMU_DIR)/mikie.cpp \
 	$(CORE_EMU_DIR)/ram.cpp \
 	$(CORE_EMU_DIR)/rom.cpp \
-	$(CORE_EMU_DIR)/susie.cpp
+	$(CORE_EMU_DIR)/susie.cpp \
+	$(CORE_EMU_DIR)/system.cpp
 endif
 
 ifeq ($(NEED_BLIP), 1)

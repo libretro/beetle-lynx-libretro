@@ -390,46 +390,18 @@ void CMikie::DisplaySetAttributes(const MDFN_PixelFormat &format)
 
 	for(Spot.Index=0;Spot.Index<4096;Spot.Index++)
 	{
-		mColourMap[Spot.Index]= format.MakeColor(((Spot.Colours.Red * 15) + 30), ((Spot.Colours.Green * 15) + 30),
-							 ((Spot.Colours.Blue * 15) + 30));
+      uint8 r = ((Spot.Colours.Red * 15) + 30);
+      uint8 g = ((Spot.Colours.Green * 15) + 30);
+      uint8 b = ((Spot.Colours.Blue * 15) + 30);
+
+      mColourMap[Spot.Index]= format.MakeColor(r, g, b);
 	}
 }
 
-void CMikie::CopyLineSurface32(void)
+template<typename T>
+void CMikie::CopyLineSurface(void)
 {
-	uint32_t* bitmap_tmp = mpDisplayCurrent->pixels + mpDisplayCurrentLine * mpDisplayCurrent->pitchinpix;
-
-	if(mpDisplayCurrentLine > 102)
-	{
-	 printf("Lynx Line Overflow: %d\n", mpDisplayCurrentLine);
-	 return;
-	}
-
-	for(uint32 loop = 0; loop < SCREEN_WIDTH / 2; loop++)
-	{
-		uint32 source = mpRamPointer[(uint16)mLynxAddr];
-		if(mDISPCTL_Flip)
-		{
-			mLynxAddr--;
-			*bitmap_tmp=mColourMap[mPalette[source&0x0f].Index];
-			bitmap_tmp++;
-			*bitmap_tmp=mColourMap[mPalette[source>>4].Index];
-			bitmap_tmp++;
-		}
-		else
-		{
-			mLynxAddr++;
-			*bitmap_tmp = mColourMap[mPalette[source>>4].Index];
-			bitmap_tmp++;
-			*bitmap_tmp = mColourMap[mPalette[source&0x0f].Index];
-			bitmap_tmp++;
-		}
-	}
-}
-
-void CMikie::CopyLineSurface16(void)
-{
-	uint16_t* bitmap_tmp = mpDisplayCurrent->pixels16 + mpDisplayCurrentLine * mpDisplayCurrent->pitchinpix;
+	T* bitmap_tmp = mpDisplayCurrent->pix<T>() + mpDisplayCurrentLine * mpDisplayCurrent->pitchinpix;
 
 	if(mpDisplayCurrentLine > 102)
 	{
@@ -475,7 +447,7 @@ uint32 CMikie::DisplayRenderLine(void)
 	}
 
 // Logic says it should be 101 but testing on an actual lynx shows the rest
-// persiod is between lines 102,101,100 with the new line being latched at
+// period is between lines 102,101,100 with the new line being latched at
 // the beginning of count==99 hence the code below !!
 
 	// Emulate REST signal
@@ -517,11 +489,11 @@ uint32 CMikie::DisplayRenderLine(void)
 			switch(mpDisplayCurrent->format.bpp)
 			{
 				case 16:
-					CopyLineSurface16();
+					CopyLineSurface<uint16>();
 					break;
 
 				case 32:
-					CopyLineSurface32();
+					CopyLineSurface<uint32>();
 					break;
 			}
 
@@ -928,7 +900,7 @@ void CMikie::Poke(uint32 addr,uint8 data)
 			{
 				C6502_REGS regs;
 				mSystem.GetRegs(regs);
-				MDFN_printf("Runtime Alert - System Halted\nCMikie::Poke(SYSCTL1) - Lynx power down occured at PC=$%04x.\nResetting system.\n",regs.PC);
+				MDFN_printf("Runtime Alert - System Halted\nCMikie::Poke(SYSCTL1) - Lynx power down occurred at PC=$%04x.\nResetting system.\n",regs.PC);
 				mSystem.Reset();
 				gSystemHalt=true;
 			}
