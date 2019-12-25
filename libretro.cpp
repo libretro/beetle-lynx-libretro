@@ -47,6 +47,8 @@ std::string retro_base_directory;
 std::string retro_base_name;
 std::string retro_save_directory;
 
+static bool libretro_supports_input_bitmasks;
+
 static void set_basename(const char *path)
 {
    const char *base = strrchr(path, '/');
@@ -150,6 +152,9 @@ void retro_init(void)
    check_system_specs();
 
    libretro_set_core_options(environ_cb);
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_INPUT_BITMASKS, NULL))
+      libretro_supports_input_bitmasks = true;
 }
 
 void retro_reset(void)
@@ -308,8 +313,20 @@ static void update_input(void)
 
    unsigned select_button = 0;
    uint16_t input_state = 0;
-   for (unsigned i = 0; i < MAX_BUTTONS; i++)
-      input_state |= input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, map[rot_screen][i]) ? (1 << i) : 0;
+
+   if (libretro_supports_input_bitmasks)
+   {
+      int16_t ret = input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_MASK);
+      for (unsigned i = 0; i < MAX_BUTTONS; i++)
+         input_state |= ret & (1 << map[rot_screen][i]) ? (1 << i) : 0;
+      select_button = ret & (1 << RETRO_DEVICE_ID_JOYPAD_SELECT);
+   }
+   else
+   {
+      for (unsigned i = 0; i < MAX_BUTTONS; i++)
+         input_state |= input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, map[rot_screen][i]) ? (1 << i) : 0;
+      select_button = input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_SELECT);
+   }
 
    // Input data must be little endian.
    input_buf[0] = (input_state >> 0) & 0xff;
@@ -324,8 +341,6 @@ static void update_input(void)
       default: rot_screen = 0; break;
       }
    }
-   else
-      select_button = input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_SELECT);
 
    if (!auto_rotate && (select_button && !select_pressed_last_frame))
       rot_screen++;
@@ -337,7 +352,7 @@ static void update_input(void)
       rot_screen_last_frame = rot_screen;
 
       const float aspect[2] = { (80.0 / 51.0), (51.0 / 80.0) };
-            const unsigned rot_angle[4] = { 0, 1, 2, 3 };
+      const unsigned rot_angle[4] = { 0, 1, 2, 3 };
       struct retro_game_geometry new_geom = { FB_WIDTH, FB_HEIGHT, FB_WIDTH, FB_HEIGHT, aspect[rot_screen & 1] };
       environ_cb(RETRO_ENVIRONMENT_SET_GEOMETRY, (void*)&new_geom);
       environ_cb(RETRO_ENVIRONMENT_SET_ROTATION, (void*)&rot_angle[rot_screen]);
@@ -450,6 +465,8 @@ void retro_deinit()
       log_cb(RETRO_LOG_INFO, "[%s]: Estimated FPS: %.5f\n",
             mednafen_core_str, (double)video_frames * 44100 / audio_frames);
    }
+
+   libretro_supports_input_bitmasks = false;
 }
 
 unsigned retro_get_region(void)
