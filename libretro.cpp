@@ -63,7 +63,7 @@ static void set_basename(const char *path)
 
 #define MEDNAFEN_CORE_NAME_MODULE "lynx"
 #define MEDNAFEN_CORE_NAME "Beetle Lynx"
-#define MEDNAFEN_CORE_VERSION "v0.9.47"
+#define MEDNAFEN_CORE_VERSION "v1.24.0"
 #define MEDNAFEN_CORE_EXTENSIONS "lnx"
 #define MEDNAFEN_CORE_TIMING_FPS 75.0
 #define MEDNAFEN_CORE_GEOMETRY_BASE_W 160
