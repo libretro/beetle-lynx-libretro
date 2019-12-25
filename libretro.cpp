@@ -8,6 +8,7 @@
 #include <streams/file_stream.h>
 #include <algorithm>
 #include "mednafen/lynx/system.h"
+#include "libretro_core_options.h"
 
 #ifdef _MSC_VER
 #include <compat/msvc.h>
@@ -29,7 +30,9 @@ static bool overscan;
 static double last_sound_rate;
 static MDFN_PixelFormat last_pixel_format;
 
+static bool auto_rotate;
 static unsigned rot_screen;
+static unsigned rot_screen_last_frame;
 static unsigned select_pressed_last_frame;
 
 static MDFN_Surface *surf;
@@ -86,7 +89,7 @@ void retro_init(void)
    struct retro_log_callback log;
    if (environ_cb(RETRO_ENVIRONMENT_GET_LOG_INTERFACE, &log))
       log_cb = log.log;
-   else 
+   else
       log_cb = NULL;
 
    MDFNI_InitializeModule();
@@ -112,7 +115,7 @@ void retro_init(void)
          log_cb(RETRO_LOG_WARN, "System directory is not defined. Fallback on using same dir as ROM for system directory later ...\n");
       failed_init = true;
    }
-   
+
    if (environ_cb(RETRO_ENVIRONMENT_GET_SAVE_DIRECTORY, &dir) && dir)
    {
 	  // If save directory is defined use it, otherwise use system directory
@@ -123,7 +126,7 @@ void retro_init(void)
       if (last != std::string::npos)
          last++;
 
-      retro_save_directory = retro_save_directory.substr(0, last);      
+      retro_save_directory = retro_save_directory.substr(0, last);
    }
    else
    {
@@ -131,7 +134,7 @@ void retro_init(void)
       if (log_cb)
          log_cb(RETRO_LOG_WARN, "Save directory is not defined. Fallback on using SYSTEM directory ...\n");
 	  retro_save_directory = retro_base_directory;
-   }      
+   }
 
 #if defined(WANT_16BPP) && defined(FRONTEND_SUPPORTS_RGB565)
    enum retro_pixel_format rgb565 = RETRO_PIXEL_FORMAT_RGB565;
@@ -145,6 +148,8 @@ void retro_init(void)
       perf_get_cpu_features_cb = NULL;
 
    check_system_specs();
+
+   libretro_set_core_options(environ_cb);
 }
 
 void retro_reset(void)
@@ -170,6 +175,17 @@ static void set_volume (uint32_t *ptr, unsigned number)
 static void check_variables(void)
 {
    struct retro_variable var = {0};
+
+   var.key = "lynx_rotate";
+   var.value = NULL;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value) {
+      if (strcmp(var.value, "disabled") == 0)
+         auto_rotate = false;
+      else
+         auto_rotate = true;
+      rot_screen = 0;
+   }
 }
 
 #define MAX_PLAYERS 1
@@ -218,13 +234,15 @@ bool retro_load_game(const struct retro_game_info *info)
 
    MDFN_PixelFormat pix_fmt(MDFN_COLORSPACE_RGB, 16, 8, 0, 24);
    memset(&last_pixel_format, 0, sizeof(MDFN_PixelFormat));
-   
+
    surf = new MDFN_Surface(NULL, FB_WIDTH, FB_HEIGHT, FB_WIDTH, pix_fmt);
 
    SetInput(0, "gamepad", (uint8_t*)&input_buf);
 
+   auto_rotate = false;
    rot_screen = 0;
    select_pressed_last_frame = 0;
+   rot_screen_last_frame = 0;
 
    check_variables();
 
@@ -239,8 +257,6 @@ void retro_unload_game()
    MDFNI_CloseGame();
 }
 
-// Hardcoded for PSX. No reason to parse lots of structures ...
-// See mednafen/psx/input/gamepad.cpp
 static void update_input(void)
 {
    static unsigned map[4][9] = {
@@ -290,6 +306,7 @@ static void update_input(void)
       },
    };
 
+   unsigned select_button = 0;
    uint16_t input_state = 0;
    for (unsigned i = 0; i < MAX_BUTTONS; i++)
       input_state |= input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, map[rot_screen][i]) ? (1 << i) : 0;
@@ -298,26 +315,39 @@ static void update_input(void)
    input_buf[0] = (input_state >> 0) & 0xff;
    input_buf[1] = (input_state >> 8) & 0xff;
 
-   unsigned select_button = input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_SELECT);
-
-   if (select_button && !select_pressed_last_frame)
+   if (auto_rotate)
    {
+      switch (lynxie->CartGetRotate())
+      {
+      case CART_ROTATE_RIGHT: rot_screen = 3; break;
+      case CART_ROTATE_LEFT:  rot_screen = 1;  break;
+      default: rot_screen = 0; break;
+      }
+   }
+   else
+      select_button = input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_SELECT);
+
+   if (!auto_rotate && (select_button && !select_pressed_last_frame))
       rot_screen++;
+
+   if (rot_screen != rot_screen_last_frame)
+   {
       if (rot_screen > 3)
          rot_screen = 0;
+      rot_screen_last_frame = rot_screen;
 
       const float aspect[2] = { (80.0 / 51.0), (51.0 / 80.0) };
-      const unsigned rot_angle[4] = { 0, 1, 2, 3 };
+            const unsigned rot_angle[4] = { 0, 1, 2, 3 };
       struct retro_game_geometry new_geom = { FB_WIDTH, FB_HEIGHT, FB_WIDTH, FB_HEIGHT, aspect[rot_screen & 1] };
       environ_cb(RETRO_ENVIRONMENT_SET_GEOMETRY, (void*)&new_geom);
       environ_cb(RETRO_ENVIRONMENT_SET_ROTATION, (void*)&rot_angle[rot_screen]);
    }
 
    select_pressed_last_frame = select_button;
+   rot_screen_last_frame     = rot_screen;
 }
 
 static uint64_t video_frames, audio_frames;
-
 
 void retro_run()
 {
@@ -580,7 +610,7 @@ std::string MDFN_MakeFName(MakeFName_Type type, int id1, const char *cd1)
    sanitize_path(ret); // Because Windows path handling is mongoloid.
 #endif
          break;
-      default:	  
+      default:
          break;
    }
 

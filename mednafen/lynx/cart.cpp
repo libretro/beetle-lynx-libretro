@@ -95,7 +95,7 @@ static LYNX_DB lynxDB[] = {
    { 0x5cf8bbf0, "Ishido - The Way of Stones (USA, Europe)", 131072, 0, 0 },
    { 0x2455b6cf, "Jimmy Connors' Tennis (USA, Europe)", 524288, 0, 0 },
    { 0x5dba792a, "Joust (USA, Europe)", 131072, 0, 0 },
-   { 0xa53649f1, "Klax (USA, Europe)", 262144, CART_ROTATE_LEFT, 0 },
+   { 0xa53649f1, "Klax (USA, Europe)", 262144, CART_ROTATE_RIGHT, 0 },
    { 0xbed5ba2b, "Krazy Ace - Miniature Golf (USA, Europe)", 262144, 0, 0 },
    { 0xcd1bd405, "Kung Food (USA, Europe)", 262144, 0, 0 },
    { 0x39b9b8cc, "Lemmings (USA, Europe)", 262144, 0, 0 },
