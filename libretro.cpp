@@ -181,7 +181,7 @@ static void check_variables(void)
 {
    struct retro_variable var = {0};
 
-   var.key = "lynx_rotate";
+   var.key = "lynx_rot_screen";
    var.value = NULL;
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value) {
