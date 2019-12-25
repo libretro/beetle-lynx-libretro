@@ -4,10 +4,11 @@
 #include "mednafen/mempatcher.h"
 #include "mednafen/git.h"
 #include "mednafen/general.h"
-#include "mednafen/md5.h"
 #include <libretro.h>
 #include <streams/file_stream.h>
 #include <algorithm>
+#include "mednafen/lynx/system.h"
+#include "libretro_core_options.h"
 
 #ifdef _MSC_VER
 #include <compat/msvc.h>
@@ -29,7 +30,9 @@ static bool overscan;
 static double last_sound_rate;
 static MDFN_PixelFormat last_pixel_format;
 
+static bool auto_rotate;
 static unsigned rot_screen;
+static unsigned rot_screen_last_frame;
 static unsigned select_pressed_last_frame;
 
 static MDFN_Surface *surf;
@@ -43,6 +46,8 @@ static bool initial_ports_hookup = false;
 std::string retro_base_directory;
 std::string retro_base_name;
 std::string retro_save_directory;
+
+static bool libretro_supports_input_bitmasks;
 
 static void set_basename(const char *path)
 {
@@ -58,495 +63,9 @@ static void set_basename(const char *path)
    retro_base_name = retro_base_name.substr(0, retro_base_name.find_last_of('.'));
 }
 
-//
-// Copyright (c) 2004 K. Wilkins
-//
-// This software is provided 'as-is', without any express or implied warranty.
-// In no event will the authors be held liable for any damages arising from
-// the use of this software.
-//
-// Permission is granted to anyone to use this software for any purpose,
-// including commercial applications, and to alter it and redistribute it
-// freely, subject to the following restrictions:
-//
-// 1. The origin of this software must not be misrepresented; you must not
-//    claim that you wrote the original software. If you use this software
-//    in a product, an acknowledgment in the product documentation would be
-//    appreciated but is not required.
-//
-// 2. Altered source versions must be plainly marked as such, and must not
-//    be misrepresented as being the original software.
-//
-// 3. This notice may not be removed or altered from any source distribution.
-//
-
-//////////////////////////////////////////////////////////////////////////////
-//                       Handy - An Atari Lynx Emulator                     //
-//                          Copyright (c) 1996,1997                         //
-//                                 K. Wilkins                               //
-//////////////////////////////////////////////////////////////////////////////
-// System object class                                                      //
-//////////////////////////////////////////////////////////////////////////////
-//                                                                          //
-// This class provides the glue to bind of of the emulation objects         //
-// together via peek/poke handlers and pass thru interfaces to lower        //
-// objects, all control of the emulator is done via this class. Update()    //
-// does most of the work and each call emulates one CPU instruction and     //
-// updates all of the relevant hardware if required. It must be remembered  //
-// that if that instruction involves setting SPRGO then, it will cause a    //
-// sprite painting operation and then a corresponding update of all of the  //
-// hardware which will usually involve recursive calls to Update, see       //
-// Mikey SPRGO code for more details.                                       //
-//                                                                          //
-//    K. Wilkins                                                            //
-// August 1997                                                              //
-//                                                                          //
-//////////////////////////////////////////////////////////////////////////////
-// Revision History:                                                        //
-// -----------------                                                        //
-//                                                                          //
-// 01Aug1997 KW Document header added & class documented.                   //
-//                                                                          //
-//////////////////////////////////////////////////////////////////////////////
-
-#define SYSTEM_CPP
-
-//#include <crtdbg.h>
-//#define	TRACE_SYSTEM
-
-#include "mednafen/lynx/system.h"
-
-#include "mednafen/general.h"
-#include "mednafen/mempatcher.h"
-
-CSystem::CSystem(const uint8 *filememory, int32 filesize)
-	:mCart(NULL),
-	mRom(NULL),
-	mMemMap(NULL),
-	mRam(NULL),
-	mCpu(NULL),
-	mMikie(NULL),
-	mSusie(NULL)
-{
-	mFileType=HANDY_FILETYPE_ILLEGAL;
-
-	if(filesize < 11)
-   {
-      /* Lynx ROM image is too short. */
-   }
-
-	char clip[11];
-	memcpy(clip,filememory,11);
-	clip[4]=0;
-	clip[10]=0;
-
-	if(!strcmp(&clip[6],"BS93")) mFileType=HANDY_FILETYPE_HOMEBREW;
-	else if(!strcmp(&clip[0],"LYNX")) mFileType=HANDY_FILETYPE_LNX;
-	else if(filesize==128*1024 || filesize==256*1024 || filesize==512*1024)
-	{
-		/* Invalid Cart (type). but 128/256/512k size -> set to RAW and try to load raw rom image */
-		mFileType=HANDY_FILETYPE_RAW;
-	}
-	else
-	{
-      /* File format is unknown to module. This will then
-       * just load the core into an "Insert Game" screen */
-	}
-
-	MDFNMP_Init(65536, 1);
-
-	// Create the system objects that we'll use
-
-	// Attempt to load the cartridge errors caught above here...
-
-	mRom = new CRom(MDFN_MakeFName(MDFNMKF_FIRMWARE, 0, "lynxboot.img").c_str());
-
-	// An exception from this will be caught by the level above
-
-	switch(mFileType)
-	{
-		case HANDY_FILETYPE_RAW:
-		case HANDY_FILETYPE_LNX:
-			mCart = new CCart(filememory,filesize);
-			mRam = new CRam(0,0);
-			break;
-		case HANDY_FILETYPE_HOMEBREW:
-			mCart = new CCart(NULL, 0);
-			mRam = new CRam(filememory,filesize);
-			break;
-		case HANDY_FILETYPE_SNAPSHOT:
-		case HANDY_FILETYPE_ILLEGAL:
-		default:
-			mCart = new CCart(0,0);
-			mRam = new CRam(0,0);
-			break;
-	}
-
-	// These can generate exceptions
-
-	mMikie = new CMikie(*this);
-	mSusie = new CSusie(*this);
-
-// Instantiate the memory map handler
-
-	mMemMap = new CMemMap(*this);
-
-// Now the handlers are set we can instantiate the CPU as is will use handlers on reset
-
-	mCpu = new C65C02(*this);
-
-// Now init is complete do a reset, this will cause many things to be reset twice
-// but what the hell, who cares, I don't.....
-
-	Reset();
-}
-
-CSystem::~CSystem()
-{
-	// Cleanup all our objects
-
-	if(mCart!=NULL) delete mCart;
-	if(mRom!=NULL) delete mRom;
-	if(mRam!=NULL) delete mRam;
-	if(mCpu!=NULL) delete mCpu;
-	if(mMikie!=NULL) delete mMikie;
-	if(mSusie!=NULL) delete mSusie;
-	if(mMemMap!=NULL) delete mMemMap;
-}
-
-void CSystem::Reset(void)
-{
-	gSystemCycleCount=0;
-	gNextTimerEvent=0;
-	gCPUBootAddress=0;
-	gSystemIRQ=false;
-	gSystemNMI=false;
-	gSystemCPUSleep=false;
-	gSystemHalt=false;
-	gSuzieDoneTime = 0;
-
-	mMemMap->Reset();
-	mCart->Reset();
-	mRom->Reset();
-	mRam->Reset();
-	mMikie->Reset();
-	mSusie->Reset();
-	mCpu->Reset();
-
-	// Homebrew hashup
-
-	if(mFileType==HANDY_FILETYPE_HOMEBREW)
-	{
-		mMikie->PresetForHomebrew();
-
-		C6502_REGS regs;
-		mCpu->GetRegs(regs);
-		regs.PC=(uint16)gCPUBootAddress;
-		mCpu->SetRegs(regs);
-	}
-}
-
-// Somewhat of a hack to make sure undrawn lines are black.
-bool LynxLineDrawn[256];
-
-static CSystem *lynxie = NULL;
-extern MDFNGI EmulatedLynx;
-
-static bool TestMagic(const char *name, MDFNFILE *fp)
-{
- uint8 data[64];
- uint64 rc;
-
- rc = fp->size;
-
- if(rc >= CCart::HEADER_RAW_SIZE && CCart::TestMagic(data, sizeof(data)))
-  return true;
-
- if(rc >= CRam::HEADER_RAW_SIZE && CRam::TestMagic(data, sizeof(data)))
-  return true;
-
- return false;
-}
-
-static int Load(const uint8_t *data, size_t size)
-{
- lynxie = new CSystem(data, size);
-
- switch(lynxie->CartGetRotate())
- {
-  case CART_ROTATE_LEFT:
-   MDFNGameInfo->rotated = MDFN_ROTATE270;
-   break;
-
-  case CART_ROTATE_RIGHT:
-   MDFNGameInfo->rotated = MDFN_ROTATE90;
-   break;
- }
-
- if(lynxie->mRam->InfoRAMSize)
- {
-  memcpy(MDFNGameInfo->MD5, lynxie->mRam->MD5, 16);
-  MDFN_printf(_("RAM:       %u bytes\n"), lynxie->mRam->InfoRAMSize);
-  MDFN_printf(_("CRC32:     0x%08x\n"), lynxie->mRam->CRC32());
-  MDFN_printf(_("RAM MD5:   0x%s\n"), md5_context::asciistr(MDFNGameInfo->MD5, 0).c_str());
- }
- else
- {
-  memcpy(MDFNGameInfo->MD5, lynxie->mCart->MD5, 16);
-  MDFN_printf(_("ROM:       %dKiB\n"), (lynxie->mCart->InfoROMSize + 1023) / 1024);
-  MDFN_printf(_("CRC32:     0x%08x\n"), lynxie->mCart->CRC32());
-  MDFN_printf(_("ROM MD5:   0x%s\n"), md5_context::asciistr(MDFNGameInfo->MD5, 0).c_str());
- }
-
- MDFNGameInfo->fps = (uint32)(59.8 * 65536 * 256);
-
- if(MDFN_GetSettingB("lynx.lowpass"))
- {
-  lynxie->mMikie->miksynth.treble_eq(-35);
- }
- else
- {
-  lynxie->mMikie->miksynth.treble_eq(0);
- }
- return(1);
-}
-
-static void CloseGame(void)
-{
- if(lynxie)
- {
-  delete lynxie;
-  lynxie = NULL;
- }
-}
-
-static uint8 *chee;
-static void Emulate(EmulateSpecStruct *espec)
-{
- espec->DisplayRect.x = 0;
- espec->DisplayRect.y = 0;
- espec->DisplayRect.w = 160;
- espec->DisplayRect.h = 102;
-
- if(espec->VideoFormatChanged)
-  lynxie->DisplaySetAttributes(espec->surface->format); // FIXME, pitch
-
- if(espec->SoundFormatChanged)
- {
-  lynxie->mMikie->mikbuf.set_sample_rate(espec->SoundRate ? espec->SoundRate : 44100, 60);
-  lynxie->mMikie->mikbuf.clock_rate((long int)(16000000 / 4));
-  lynxie->mMikie->mikbuf.bass_freq(60);
-  lynxie->mMikie->miksynth.volume(0.50);
- }
-
- uint16 butt_data = chee[0] | (chee[1] << 8);
-
- lynxie->SetButtonData(butt_data);
-
- MDFNMP_ApplyPeriodicCheats();
-
- memset(LynxLineDrawn, 0, sizeof(LynxLineDrawn[0]) * 102);
-
- lynxie->mMikie->mpSkipFrame = espec->skip;
- lynxie->mMikie->mpDisplayCurrent = espec->surface;
- lynxie->mMikie->mpDisplayCurrentLine = 0;
- lynxie->mMikie->startTS = gSystemCycleCount;
-
- while(lynxie->mMikie->mpDisplayCurrent && (gSystemCycleCount - lynxie->mMikie->startTS) < 700000)
- {
-  lynxie->Update();
-//  printf("%d ", gSystemCycleCount - lynxie->mMikie->startTS);
- }
-
- {
-  // FIXME, we should integrate this into mikie.*
-  uint32 color_black = espec->surface->MakeColor(30, 30, 30);
-
-  for(int y = 0; y < 102; y++)
-  {
-   if(espec->surface->format.bpp == 16)
-   {
-    uint16 *row = espec->surface->pixels16 + y * espec->surface->pitchinpix;
-
-    if(!LynxLineDrawn[y])
-    {
-     for(int x = 0; x < 160; x++)
-      row[x] = color_black;
-    }
-   }
-   else
-   {
-    uint32 *row = espec->surface->pixels + y * espec->surface->pitchinpix;
-
-    if(!LynxLineDrawn[y])
-    {
-     for(int x = 0; x < 160; x++)
-      row[x] = color_black;
-    }
-   }
-  }
- }
-
- espec->MasterCycles = gSystemCycleCount - lynxie->mMikie->startTS;
-
- if(espec->SoundBuf)
- {
-  lynxie->mMikie->mikbuf.end_frame((gSystemCycleCount - lynxie->mMikie->startTS) >> 2);
-  espec->SoundBufSize = lynxie->mMikie->mikbuf.read_samples(espec->SoundBuf, espec->SoundBufMaxSize) / 2; // divide by nr audio chn
- }
- else
-  espec->SoundBufSize = 0;
-}
-
-static void SetInput(int port, const char *type, void *ptr)
-{
- chee = (uint8 *)ptr;
-}
-
-static void TransformInput(void)
-{
- if(MDFN_GetSettingB("lynx.rotateinput"))
- {
-  static const unsigned bp[4] = { 4, 6, 5, 7 };
-  const unsigned offs = MDFNGameInfo->rotated;
-  uint16 butt_data = MDFN_de16lsb(chee);
-
-  butt_data = (butt_data & 0xFF0F) |
-	      (((butt_data >> bp[0]) & 1) << bp[(0 + offs) & 3]) |
-	      (((butt_data >> bp[1]) & 1) << bp[(1 + offs) & 3]) |
-	      (((butt_data >> bp[2]) & 1) << bp[(2 + offs) & 3]) |
-	      (((butt_data >> bp[3]) & 1) << bp[(3 + offs) & 3]);
-  //printf("%d, %04x\n", MDFNGameInfo->rotated, butt_data);
-  MDFN_en16lsb(chee, butt_data);
- }
-}
-
-int StateAction(StateMem *sm, int load, int data_only)
-{
- SFORMAT SystemRegs[] =
- {
-	SFVAR(gSuzieDoneTime),
-        SFVAR(gSystemCycleCount),
-        SFVAR(gNextTimerEvent),
-        SFVAR(gCPUBootAddress),
-        SFVAR(gSystemIRQ),
-        SFVAR(gSystemNMI),
-        SFVAR(gSystemCPUSleep),
-        SFVAR(gSystemHalt),
-	SFARRAYN(lynxie->GetRamPointer(), RAM_SIZE, "RAM"),
-	SFEND
- };
-
- MDFNSS_StateAction(sm, load, data_only, SystemRegs, "SYST", false);
-
- if(!lynxie->mSusie->StateAction(sm, load, data_only))
-  return(0);
- if(!lynxie->mMemMap->StateAction(sm, load, data_only))
-  return(0);
-
- if(!lynxie->mCart->StateAction(sm, load, data_only))
-  return(0);
-
- if(!lynxie->mMikie->StateAction(sm, load, data_only))
-  return(0);
-
- if(!lynxie->mCpu->StateAction(sm, load, data_only))
-  return(0);
-
- return(1);
-}
-
-static void SetLayerEnableMask(uint64 mask)
-{
-
-
-}
-
-static void DoSimpleCommand(int cmd)
-{
- switch(cmd)
- {
-  case MDFN_MSC_POWER:
-  case MDFN_MSC_RESET: lynxie->Reset(); break;
- }
-}
-
-static MDFNSetting LynxSettings[] =
-{
- { "lynx.rotateinput", MDFNSF_NOFLAGS,	"Virtually rotate D-pad along with screen.", NULL, MDFNST_BOOL, "1" },
- { "lynx.lowpass", MDFNSF_CAT_SOUND,	"Enable sound output lowpass filter.", NULL, MDFNST_BOOL, "1" },
- { NULL }
-};
-
-static const InputDeviceInputInfoStruct IDII[] =
-{
- { "a", "A (outer)", 8, IDIT_BUTTON_CAN_RAPID, NULL },
- { "b", "B (inner)", 7, IDIT_BUTTON_CAN_RAPID, NULL },
- { "option_2", "Option 2 (lower)", 5, IDIT_BUTTON_CAN_RAPID, NULL },
- { "option_1", "Option 1 (upper)", 4, IDIT_BUTTON_CAN_RAPID, NULL },
-
- { "left", "LEFT ←", 	/*VIRTB_DPAD0_L,*/ 2, IDIT_BUTTON, "right",		{ "up", "right", "down" } },
- { "right", "RIGHT →", 	/*VIRTB_DPAD0_R,*/ 3, IDIT_BUTTON, "left", 		{ "down", "left", "up" } },
- { "up", "UP ↑", 	/*VIRTB_DPAD0_U,*/ 0, IDIT_BUTTON, "down",		{ "right", "down", "left" } },
- { "down", "DOWN ↓", 	/*VIRTB_DPAD0_D,*/ 1, IDIT_BUTTON, "up", 		{ "left", "up", "right" } },
-
- { "pause", "PAUSE", 6, IDIT_BUTTON, NULL },
-};
-
-static InputDeviceInfoStruct InputDeviceInfo[] =
-{
- {
-  "gamepad",
-  "Gamepad",
-  NULL,
-  NULL,
-  sizeof(IDII) / sizeof(InputDeviceInputInfoStruct),
-  IDII,
- }
-};
-
-static const InputPortInfoStruct PortInfo[] =
-{
- { "builtin", "Built-In", sizeof(InputDeviceInfo) / sizeof(InputDeviceInfoStruct), InputDeviceInfo, 0 }
-};
-
-static InputInfoStruct InputInfo =
-{
- sizeof(PortInfo) / sizeof(InputPortInfoStruct),
- PortInfo
-};
-
-static const FileExtensionSpecStruct KnownExtensions[] =
-{
- { ".lnx", "Atari Lynx ROM Image" },
- { NULL, NULL }
-};
-
-MDFNGI EmulatedLynx =
-{
- LynxSettings,
- MDFN_MASTERCLOCK_FIXED(16000000),
- 0,
-
- false, // Multires possible?
-
- 160,   // lcm_width
- 102,   // lcm_height
- NULL,  // Dummy
-
-
- 160,	// Nominal width
- 102,	// Nominal height
-
- 160,	// Framebuffer width
- 102,	// Framebuffer height
-
- 2,     // Number of output sound channels
-};
-
 #define MEDNAFEN_CORE_NAME_MODULE "lynx"
 #define MEDNAFEN_CORE_NAME "Beetle Lynx"
-#define MEDNAFEN_CORE_VERSION "v0.9.47"
+#define MEDNAFEN_CORE_VERSION "v1.24.0"
 #define MEDNAFEN_CORE_EXTENSIONS "lnx"
 #define MEDNAFEN_CORE_TIMING_FPS 75.0
 #define MEDNAFEN_CORE_GEOMETRY_BASE_W 160
@@ -572,7 +91,7 @@ void retro_init(void)
    struct retro_log_callback log;
    if (environ_cb(RETRO_ENVIRONMENT_GET_LOG_INTERFACE, &log))
       log_cb = log.log;
-   else 
+   else
       log_cb = NULL;
 
    MDFNI_InitializeModule();
@@ -598,7 +117,7 @@ void retro_init(void)
          log_cb(RETRO_LOG_WARN, "System directory is not defined. Fallback on using same dir as ROM for system directory later ...\n");
       failed_init = true;
    }
-   
+
    if (environ_cb(RETRO_ENVIRONMENT_GET_SAVE_DIRECTORY, &dir) && dir)
    {
 	  // If save directory is defined use it, otherwise use system directory
@@ -609,7 +128,7 @@ void retro_init(void)
       if (last != std::string::npos)
          last++;
 
-      retro_save_directory = retro_save_directory.substr(0, last);      
+      retro_save_directory = retro_save_directory.substr(0, last);
    }
    else
    {
@@ -617,7 +136,7 @@ void retro_init(void)
       if (log_cb)
          log_cb(RETRO_LOG_WARN, "Save directory is not defined. Fallback on using SYSTEM directory ...\n");
 	  retro_save_directory = retro_base_directory;
-   }      
+   }
 
 #if defined(WANT_16BPP) && defined(FRONTEND_SUPPORTS_RGB565)
    enum retro_pixel_format rgb565 = RETRO_PIXEL_FORMAT_RGB565;
@@ -631,6 +150,11 @@ void retro_init(void)
       perf_get_cpu_features_cb = NULL;
 
    check_system_specs();
+
+   libretro_set_core_options(environ_cb);
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_INPUT_BITMASKS, NULL))
+      libretro_supports_input_bitmasks = true;
 }
 
 void retro_reset(void)
@@ -656,13 +180,24 @@ static void set_volume (uint32_t *ptr, unsigned number)
 static void check_variables(void)
 {
    struct retro_variable var = {0};
+
+   var.key = "lynx_rotate";
+   var.value = NULL;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value) {
+      if (strcmp(var.value, "disabled") == 0)
+         auto_rotate = false;
+      else
+         auto_rotate = true;
+      rot_screen = 0;
+   }
 }
 
 #define MAX_PLAYERS 1
 #define MAX_BUTTONS 9
 static uint8_t input_buf[2];
 
-static MDFNGI *MDFNI_LoadGame(const uint8_t *, size_t);
+static MDFNGI *MDFNI_LoadGame(const uint8_t *data, size_t size);
 bool retro_load_game(const struct retro_game_info *info)
 {
    if (!info || failed_init)
@@ -704,13 +239,15 @@ bool retro_load_game(const struct retro_game_info *info)
 
    MDFN_PixelFormat pix_fmt(MDFN_COLORSPACE_RGB, 16, 8, 0, 24);
    memset(&last_pixel_format, 0, sizeof(MDFN_PixelFormat));
-   
+
    surf = new MDFN_Surface(NULL, FB_WIDTH, FB_HEIGHT, FB_WIDTH, pix_fmt);
 
-   SetInput(0, "gamepad", &input_buf);
+   SetInput(0, "gamepad", (uint8_t*)&input_buf);
 
+   auto_rotate = false;
    rot_screen = 0;
    select_pressed_last_frame = 0;
+   rot_screen_last_frame = 0;
 
    check_variables();
 
@@ -725,8 +262,6 @@ void retro_unload_game()
    MDFNI_CloseGame();
 }
 
-// Hardcoded for PSX. No reason to parse lots of structures ...
-// See mednafen/psx/input/gamepad.cpp
 static void update_input(void)
 {
    static unsigned map[4][9] = {
@@ -776,22 +311,45 @@ static void update_input(void)
       },
    };
 
-
+   unsigned select_button = 0;
    uint16_t input_state = 0;
-   for (unsigned i = 0; i < MAX_BUTTONS; i++)
-      input_state |= input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, map[rot_screen][i]) ? (1 << i) : 0;
+
+   if (libretro_supports_input_bitmasks)
+   {
+      int16_t ret = input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_MASK);
+      for (unsigned i = 0; i < MAX_BUTTONS; i++)
+         input_state |= ret & (1 << map[rot_screen][i]) ? (1 << i) : 0;
+      select_button = ret & (1 << RETRO_DEVICE_ID_JOYPAD_SELECT);
+   }
+   else
+   {
+      for (unsigned i = 0; i < MAX_BUTTONS; i++)
+         input_state |= input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, map[rot_screen][i]) ? (1 << i) : 0;
+      select_button = input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_SELECT);
+   }
 
    // Input data must be little endian.
    input_buf[0] = (input_state >> 0) & 0xff;
    input_buf[1] = (input_state >> 8) & 0xff;
 
-   unsigned select_button = input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_SELECT);
-
-   if (select_button && !select_pressed_last_frame)
+   if (auto_rotate)
    {
+      switch (lynxie->CartGetRotate())
+      {
+      case CART_ROTATE_RIGHT: rot_screen = 3; break;
+      case CART_ROTATE_LEFT:  rot_screen = 1;  break;
+      default: rot_screen = 0; break;
+      }
+   }
+
+   if (!auto_rotate && (select_button && !select_pressed_last_frame))
       rot_screen++;
+
+   if (rot_screen != rot_screen_last_frame)
+   {
       if (rot_screen > 3)
          rot_screen = 0;
+      rot_screen_last_frame = rot_screen;
 
       const float aspect[2] = { (80.0 / 51.0), (51.0 / 80.0) };
       const unsigned rot_angle[4] = { 0, 1, 2, 3 };
@@ -801,10 +359,8 @@ static void update_input(void)
    }
 
    select_pressed_last_frame = select_button;
+   rot_screen_last_frame     = rot_screen;
 }
-
-static uint64_t video_frames, audio_frames;
-
 
 void retro_run()
 {
@@ -860,9 +416,6 @@ void retro_run()
    video_cb(pix, width, height, FB_WIDTH << 1);
 #endif
 
-   video_frames++;
-   audio_frames += spec.SoundBufSize;
-
    audio_batch_cb(spec.SoundBuf, spec.SoundBufSize);
 
    bool updated = false;
@@ -900,13 +453,7 @@ void retro_deinit()
    delete surf;
    surf = NULL;
 
-   if (log_cb)
-   {
-      log_cb(RETRO_LOG_INFO, "[%s]: Samples / Frame: %.5f\n",
-            mednafen_core_str, (double)audio_frames / video_frames);
-      log_cb(RETRO_LOG_INFO, "[%s]: Estimated FPS: %.5f\n",
-            mednafen_core_str, (double)video_frames * 44100 / audio_frames);
-   }
+   libretro_supports_input_bitmasks = false;
 }
 
 unsigned retro_get_region(void)
@@ -1067,7 +614,7 @@ std::string MDFN_MakeFName(MakeFName_Type type, int id1, const char *cd1)
    sanitize_path(ret); // Because Windows path handling is mongoloid.
 #endif
          break;
-      default:	  
+      default:
          break;
    }
 
@@ -1128,11 +675,17 @@ void MDFN_ResetMessages(void)
 static MDFNGI *MDFNI_LoadGame(const uint8_t *data, size_t size)
 {
 	if (!data || !size) {
-		MDFN_indent(2);
-		goto error;
+		MDFN_indent(-2);
+      MDFNGameInfo = NULL;
+      return NULL;
 	}
 
-	MDFNGameInfo = &EmulatedLynx;
+	MDFNFILE *GameFile = file_open_mem(data, size);
+
+   if (!GameFile)
+      return NULL;
+
+   MDFNGameInfo = &EmulatedLynx;
 
 	MDFN_indent(1);
 
@@ -1146,8 +699,7 @@ static MDFNGI *MDFNI_LoadGame(const uint8_t *data, size_t size)
 	// End load per-game settings
 	//
 
-	if(Load(data, size) <= 0)
-		goto error;
+	Load(GameFile);
 
 	MDFN_LoadGameCheats(NULL);
 	MDFNMP_InstallReadPatches();
@@ -1158,9 +710,6 @@ static MDFNGI *MDFNI_LoadGame(const uint8_t *data, size_t size)
 
    return(MDFNGameInfo);
 
-error:
-   MDFN_indent(-2);
-   MDFNGameInfo = NULL;
    return NULL;
 }
 

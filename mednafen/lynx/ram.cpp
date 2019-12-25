@@ -67,16 +67,18 @@ bool CRam::TestMagic(const uint8* data, uint64 test_size)
  return true;
 }
 
-CRam::CRam(const uint8 *filememory,uint32 filesize)
+CRam::CRam(MDFNFILE *fp)
+	:mRamXORData(NULL)
 {
-	mFileSize=filesize;
-	InfoRAMSize = 0;
-
-	if(filesize)
+	if(fp)
 	{
 		uint8 raw_header[HEADER_RAW_SIZE];
+		md5_context md5;
+		md5.starts();
+		mCRC32 = 0;
 
-		memcpy(&raw_header, filememory, sizeof(raw_header));
+		file_read(fp, raw_header, sizeof(raw_header), 1);
+      file_seek(fp, 0, SEEK_SET);
 
 		if(memcmp(&raw_header[6], "BS93", 4))
 		{
@@ -93,14 +95,10 @@ CRam::CRam(const uint8 *filememory,uint32 filesize)
 
 		//printf("load_addr=%04x, size=%04x, rc0=%04x, rc1=%04x\n", load_address, size, rc0, rc1);
 
-		md5_context md5;
-		md5.starts();
-		mCRC32 = 0;
-
-		memcpy(&mRamXORData[load_address], filememory, rc0);
+		file_read(fp, &mRamXORData[load_address], rc0, 1);
 		md5.update(&mRamXORData[load_address], rc0);
 		mCRC32 = crc32(mCRC32, &mRamXORData[load_address], rc0);
-		memcpy(&mRamXORData[0x0000], filememory + rc0, rc1);
+		file_read(fp, &mRamXORData[0x0000], rc1, 1);
 		md5.update(&mRamXORData[0x0000], rc1);
 		mCRC32 = crc32(mCRC32, &mRamXORData[0x0000], rc1);
 
@@ -112,6 +110,8 @@ CRam::CRam(const uint8 *filememory,uint32 filesize)
 
 		boot_addr = load_address;
 	}
+	else
+	 InfoRAMSize = 0;
 
 	// Reset will cause the loadup
 	Reset();
@@ -119,20 +119,18 @@ CRam::CRam(const uint8 *filememory,uint32 filesize)
 
 CRam::~CRam()
 {
-	if(mFileSize)
-	{
-	 delete[] mRamXORData;
-	}
+	if (mRamXORData != NULL)
+		delete[] mRamXORData;
 }
 
 void CRam::Reset(void)
 {
 	MDFNMP_AddRAM(65536, 0x0000, mRamData);
 
-	for(int loop=0;loop<RAM_SIZE;loop++)
-	 mRamData[loop]=DEFAULT_RAM_CONTENTS;
+	for(unsigned i = 0; i < RAM_SIZE; i++)
+	 mRamData[i] = DEFAULT_RAM_CONTENTS;
 
-	if(mFileSize)
+	if(mRamXORData)
 	{
 	 for(unsigned i = 0; i < RAM_SIZE; i++)
 	  mRamData[i] ^= mRamXORData[i];

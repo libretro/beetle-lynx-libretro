@@ -19,7 +19,8 @@ SOURCES_CXX += \
 	$(CORE_EMU_DIR)/mikie.cpp \
 	$(CORE_EMU_DIR)/ram.cpp \
 	$(CORE_EMU_DIR)/rom.cpp \
-	$(CORE_EMU_DIR)/susie.cpp
+	$(CORE_EMU_DIR)/susie.cpp \
+	$(CORE_EMU_DIR)/system.cpp
 endif
 
 ifeq ($(NEED_BLIP), 1)
@@ -70,6 +71,10 @@ endif
 
 ifeq ($(FRONTEND_SUPPORTS_RGB565), 1)
 FLAGS += -DFRONTEND_SUPPORTS_RGB565
+endif
+
+ifneq ($(HAVE_NO_LANGEXTRA), 1)
+FLAGS += -DHAVE_NO_LANGEXTRA
 endif
 
 ifneq ($(HAVE_GRIFFIN), 1)

@@ -57,7 +57,7 @@ class CRam : public CLynxBase
 	public:
 		enum { HEADER_RAW_SIZE = 10 };
 
-		CRam(const uint8 *filememory,uint32 filesize) MDFN_COLD;
+		CRam(MDFNFILE *fp) MDFN_COLD;
 		~CRam() MDFN_COLD;
 		static bool TestMagic(const uint8* data, uint64 test_size) MDFN_COLD;
 
@@ -65,8 +65,8 @@ class CRam : public CLynxBase
 
 		void	Reset(void) MDFN_COLD;
 
-		void	Poke(uint32 addr, uint8 data){ mRamData[addr]=data;};
-		uint8	Peek(uint32 addr){ return(mRamData[addr]);};
+		void	Poke(uint32 addr, uint8 data){ mRamData[(uint16)addr]=data;};
+		uint8	Peek(uint32 addr){ return(mRamData[(uint16)addr]);};
 		uint32	ReadCycle(void) {return 5;};
 		uint32	WriteCycle(void) {return 5;};
 		uint32   ObjectSize(void) {return RAM_SIZE;};
@@ -81,7 +81,6 @@ class CRam : public CLynxBase
 		uint8	mRamData[RAM_SIZE];
 		uint8	*mRamXORData;
 		uint16	boot_addr;
-		uint32	mFileSize;
 		uint32	mCRC32;
 
 };

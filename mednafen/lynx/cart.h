@@ -65,13 +65,22 @@ struct LYNX_HEADER
    uint8   spare[5];
 };
 
+struct LYNX_DB
+{
+   uint32 crc32;
+   char name[100];
+   uint32 filesize;
+   uint32 rotation;
+   uint32 reserved;
+};
+
 class CCart : public CLynxBase
 {
 
 	// Function members
 
 	public:
-		CCart(const uint8 *gamedata, uint32 gamesize) MDFN_COLD;
+		CCart(MDFNFILE *fp) MDFN_COLD;
 		~CCart() MDFN_COLD;
 
 	public:
@@ -113,8 +122,8 @@ class CCart : public CLynxBase
 		uint32	mWriteEnableBank1;
 		uint32	mCartRAM;
 
-		uint8	MD5[16];
 		uint32  InfoROMSize;
+		uint8	MD5[16];
 	private:
 		EMMODE	mBank;
 		uint32	mMaskBank0;
@@ -136,7 +145,10 @@ class CCart : public CLynxBase
 		uint32	mCountMask1;
 
 		uint32	mCRC32;
-		int8 last_strobe;
+		int8    last_strobe;
+
+		bool    found;
+		LYNX_DB CheckHash(const uint32 crc32);
 };
 
 #endif

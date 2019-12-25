@@ -25,6 +25,24 @@
 
 #include "file.h"
 
+struct MDFNFILE *file_open_mem(const uint8_t *data, int64_t size)
+{
+   struct MDFNFILE *file = (struct MDFNFILE*)calloc(1, sizeof(*file));
+
+   if (!file)
+      return NULL;
+   
+   if (!data || !size)
+      return NULL;
+
+   file->data     = (uint8_t*)data;
+   file->size     = size;
+   file->ext      = 0;
+   file->location = 0;
+
+   return file;
+}
+
 struct MDFNFILE *file_open(const char *path)
 {
    int64_t size          = 0;
@@ -65,4 +83,51 @@ int file_close(struct MDFNFILE *file)
    free(file);
 
    return 1;
+}
+
+uint64_t file_read(struct MDFNFILE *file, void *ptr,
+      size_t element_size, size_t nmemb)
+{
+   uint32_t total = element_size * nmemb;
+
+   if (file->location >= file->size)
+      return 0;
+
+   if ((file->location + total) > file->size)
+   {
+      int64_t ak = file->size - file->location;
+
+      memcpy((uint8_t*)ptr, file->data + file->location, ak);
+
+      file->location = file->size;
+
+      return(ak / element_size);
+   }
+
+   memcpy((uint8_t*)ptr, file->data + file->location, total);
+
+   file->location += total;
+
+   return nmemb;
+}
+
+int file_seek(struct MDFNFILE *file, int64_t offset, int whence)
+{
+   switch(whence)
+   {
+      case SEEK_SET:
+         if (offset >= file->size)
+            return -1;
+
+         file->location = offset;
+         break;
+      case SEEK_CUR:
+         if ((offset + file->location) > file->size)
+            return -1;
+
+         file->location += offset;
+         break;
+   }    
+
+   return 0;
 }

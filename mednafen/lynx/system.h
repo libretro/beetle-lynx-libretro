@@ -114,7 +114,7 @@ class CSystem;
 class CSystem : public CSystemBase
 {
 	public:
-		CSystem(const uint8 *, int32) MDFN_COLD;
+		CSystem(MDFNFILE *fp) MDFN_COLD;
 		~CSystem() MDFN_COLD;
 
 	public:
@@ -219,5 +219,14 @@ class CSystem : public CSystemBase
 };
 
 extern bool LynxLineDrawn[256];
+
+void Load(MDFNFILE *fp);
+void CloseGame(void);
+void Emulate(EmulateSpecStruct *espec);
+void SetInput(unsigned port, const char *type, uint8 *ptr);
+int StateAction(StateMem *sm, const unsigned load, const bool data_only);
+void DoSimpleCommand(int cmd);
+
+extern CSystem *lynxie;
 
 #endif

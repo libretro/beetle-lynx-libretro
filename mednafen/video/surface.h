@@ -121,6 +121,27 @@ class MDFN_Surface //typedef struct
  uint16 *pixels16;
  uint32 *pixels;
 
+ private:
+ INLINE void pix_(uint16*& z) const { z = pixels16; }
+ INLINE void pix_(uint32*& z) const { z = pixels; }
+ public:
+
+ template<typename T>
+ INLINE const T* pix(void) const
+ {
+  T* ret;
+  pix_(ret);
+  return (const T*)ret;
+ }
+
+ template<typename T>
+ INLINE T* pix(void)
+ {
+  T* ret;
+  pix_(ret);
+  return ret;
+ }
+
  // w, h, and pitch32 should always be > 0
  int32 w;
  int32 h;

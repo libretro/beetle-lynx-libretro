@@ -154,7 +154,7 @@ int64_t filestream_truncate(RFILE *stream, int64_t length)
  * Opens a file for reading or writing, depending on the requested mode.
  * Returns a pointer to an RFILE if opened successfully, otherwise NULL.
  **/
-RFILE *filestream_open(const char *path, unsigned mode, unsigned hints)
+RFILE* filestream_open(const char *path, unsigned mode, unsigned hints)
 {
    struct retro_vfs_file_handle  *fp = NULL;
    RFILE* output                     = NULL;
@@ -176,7 +176,7 @@ RFILE *filestream_open(const char *path, unsigned mode, unsigned hints)
    return output;
 }
 
-char *filestream_gets(RFILE *stream, char *s, size_t len)
+char* filestream_gets(RFILE *stream, char *s, size_t len)
 {
    int c   = 0;
    char *p = s;
@@ -204,9 +204,9 @@ int filestream_getc(RFILE *stream)
 {
    char c = 0;
    if (!stream)
-      return 0;
-   if(filestream_read(stream, &c, 1) == 1)
-      return (int)c;
+      return EOF;
+   if (filestream_read(stream, &c, 1) == 1)
+      return (int)(unsigned char)c;
    return EOF;
 }
 
@@ -215,28 +215,40 @@ int filestream_scanf(RFILE *stream, const char* format, ...)
    char buf[4096];
    char subfmt[64];
    va_list args;
+
    const char * bufiter = buf;
    int64_t startpos     = filestream_tell(stream);
    int        ret       = 0;
    int64_t maxlen       = filestream_read(stream, buf, sizeof(buf)-1);
 
+   if (maxlen <= 0)
+      return EOF;
+
    buf[maxlen] = '\0';
+
    va_start(args, format);
+
    while (*format)
    {
       if (*format == '%')
       {
          int sublen;
+
          char* subfmtiter = subfmt;
          bool asterisk    = false;
+
          *subfmtiter++    = *format++; /* '%' */
+
          /* %[*][width][length]specifier */
+
          if (*format == '*')
          {
             asterisk = true;
             *subfmtiter++ = *format++;
          }
+
          while (isdigit(*format)) *subfmtiter++ = *format++; /* width */
+
          /* length */
          if (*format == 'h' || *format == 'l')
          {
@@ -247,6 +259,7 @@ int filestream_scanf(RFILE *stream, const char* format, ...)
          {
             *subfmtiter++ = *format++;
          }
+
          /* specifier - always a single character (except ]) */
          if (*format == '[')
          {
@@ -254,9 +267,11 @@ int filestream_scanf(RFILE *stream, const char* format, ...)
             *subfmtiter++ = *format++;
          }
          else *subfmtiter++ = *format++;
+
          *subfmtiter++ = '%';
          *subfmtiter++ = 'n';
          *subfmtiter++ = '\0';
+
          if (sizeof(void*) != sizeof(long*)) abort(); /* all pointers must have the same size */
          if (asterisk)
          {
@@ -266,6 +281,7 @@ int filestream_scanf(RFILE *stream, const char* format, ...)
          {
             if (sscanf(bufiter, subfmt, va_arg(args, void*), &sublen) != 1) break;
          }
+
          ret++;
          bufiter += sublen;
       }
@@ -282,8 +298,10 @@ int filestream_scanf(RFILE *stream, const char* format, ...)
          format++;
       }
    }
+
    va_end(args);
    filestream_seek(stream, startpos+(bufiter-buf), RETRO_VFS_SEEK_POSITION_START);
+
    return ret;
 }
 
@@ -381,7 +399,7 @@ int filestream_rename(const char *old_path, const char *new_path)
    return retro_vfs_file_rename_impl(old_path, new_path);
 }
 
-const char *filestream_get_path(RFILE *stream)
+const char* filestream_get_path(RFILE *stream)
 {
    if (filestream_get_path_cb != NULL)
       return filestream_get_path_cb(stream->hfile);
@@ -409,7 +427,7 @@ int filestream_putc(RFILE *stream, int c)
    char c_char = (char)c;
    if (!stream)
       return EOF;
-   return filestream_write(stream, &c_char, 1)==1 ? c : EOF;
+   return filestream_write(stream, &c_char, 1)==1 ? (int)(unsigned char)c : EOF;
 }
 
 int filestream_vprintf(RFILE *stream, const char* format, va_list args)
@@ -554,13 +572,14 @@ bool filestream_write_file(const char *path, const void *data, int64_t size)
    return true;
 }
 
-char *filestream_getline(RFILE *stream)
+/* Returned pointer must be freed by the caller. */
+char* filestream_getline(RFILE *stream)
 {
-   char* newline_tmp  = NULL;
+   char *newline_tmp  = NULL;
    size_t cur_size    = 8;
    size_t idx         = 0;
    int in             = 0;
-   char* newline      = (char*)malloc(9);
+   char *newline      = (char*)malloc(9);
 
    if (!stream || !newline)
    {
@@ -593,4 +612,9 @@ char *filestream_getline(RFILE *stream)
 
    newline[idx]      = '\0';
    return newline;
+}
+
+libretro_vfs_implementation_file* filestream_get_vfs_handle(RFILE *stream)
+{
+   return (libretro_vfs_implementation_file*)stream->hfile;
 }
