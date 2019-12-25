@@ -233,16 +233,16 @@ void Load(MDFNFILE *fp)
  if(lynxie->mRam->InfoRAMSize)
  {
   memcpy(MDFNGameInfo->MD5, lynxie->mRam->MD5, 16);
-  MDFN_printf(_("RAM:       %u bytes\n"), lynxie->mRam->InfoRAMSize);
-  MDFN_printf(_("CRC32:     0x%08x\n"), lynxie->mRam->CRC32());
-  MDFN_printf(_("RAM MD5:   0x%s\n"), md5_context::asciistr(MDFNGameInfo->MD5, 0).c_str());
+  MDFN_printf(_("RAM:          %u bytes\n"), lynxie->mRam->InfoRAMSize);
+  MDFN_printf(_("CRC32:        0x%08x\n"), lynxie->mRam->CRC32());
+  MDFN_printf(_("RAM MD5:      0x%s\n"), md5_context::asciistr(MDFNGameInfo->MD5, 0).c_str());
  }
  else
  {
   memcpy(MDFNGameInfo->MD5, lynxie->mCart->MD5, 16);
-  MDFN_printf(_("ROM:       %dKiB\n"), (lynxie->mCart->InfoROMSize + 1023) / 1024);
-  MDFN_printf(_("CRC32:     0x%08x\n"), lynxie->mCart->CRC32());
-  MDFN_printf(_("ROM MD5:   0x%s\n"), md5_context::asciistr(MDFNGameInfo->MD5, 0).c_str());
+  MDFN_printf(_("ROM:          %dKiB\n"), (lynxie->mCart->InfoROMSize + 1023) / 1024);
+  MDFN_printf(_("CRC32:        0x%08x\n"), lynxie->mCart->CRC32());
+  MDFN_printf(_("ROM MD5:      0x%s\n"), md5_context::asciistr(MDFNGameInfo->MD5, 0).c_str());
  }
 
  MDFNGameInfo->fps = (uint32)(59.8 * 65536 * 256);
