@@ -212,16 +212,21 @@ CCart::CCart(MDFNFILE *fp)
 	uint64 gamesize;
 	uint8 raw_header[HEADER_RAW_SIZE];
 	LYNX_HEADER	header;
-	uint32 header_size = HEADER_RAW_SIZE;;
+	uint32 header_size = HEADER_RAW_SIZE;
 	uint32 loop;
 
 	mWriteEnableBank0=false;
 	mWriteEnableBank1=false;
 	mCartRAM=false;
+	mCRC32=0;
 
 	if(fp)
 	{
 		gamesize = GET_FSIZE_PTR(fp);
+
+		// Calculate file's CRC32
+		mCRC32 = crc32(0, GET_FDATA_PTR(fp), gamesize);
+	   	MDFN_printf("File CRC32:   0x%08X.\n", mCRC32);
 
 		// Checkout the header bytes
 		file_read(fp, raw_header, sizeof(LYNX_HEADER), 1);
@@ -258,16 +263,20 @@ CCart::CCart(MDFNFILE *fp)
 	}
 
 	InfoROMSize = gamesize;
+	mCRC32 = 0;
 
-    // Calculate checksum and check database for rom entries
-    mCRC32     = crc32(0, GET_FDATA_PTR(fp) + header_size, gamesize);
-    LYNX_DB db = CheckHash(mCRC32);
-    if (found)
+    if (fp)
     {
-       MDFN_printf("Found lynx rom in database.\n");
-	   MDFN_printf("Title:        %s.\n", db.name);
-       header.page_size_bank0 = db.filesize >> 8;
-       header.rotation        = db.rotation;
+       // re-calculate file crc32 minus header if any
+       mCRC32     = crc32(0, GET_FDATA_PTR(fp) + header_size, gamesize);
+       LYNX_DB db = CheckHash(mCRC32);
+       if (found)
+       {
+          MDFN_printf("Found lynx rom in database.\n");
+          MDFN_printf("Title:        %s.\n", db.name);
+          header.page_size_bank0 = db.filesize >> 8;
+          header.rotation        = db.rotation;
+       }
     }
 
     // Setup name & manufacturer

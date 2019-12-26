@@ -55,8 +55,8 @@ struct retro_core_option_definition option_defs_us[] = {
     * Adding more variables and rearranging them is safe. */
 
    {
-      "lynx_rotate",
-      "Auto-rotate screen and button mappings",
+      "lynx_rot_screen",
+      "Auto-rotate Screen",
       "Virtually rotate screen orientation and keymaps automatically for known games. When disabled, screen rotation is manually adjusted by pressing the SELECT button.",
       {
          { "enabled", NULL },
