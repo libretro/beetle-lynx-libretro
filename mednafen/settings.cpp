@@ -41,10 +41,6 @@ int64 MDFN_GetSettingI(const char *name)
 
 double MDFN_GetSettingF(const char *name)
 {
-#if defined(WANT_SNES_EMU)
-   if (!strcmp("snes.mouse_sensitivity", name))
-      return 0.50;
-#endif
    fprintf(stderr, "unhandled setting F: %s\n", name);
    return 0;
 }
@@ -53,20 +49,6 @@ bool MDFN_GetSettingB(const char *name)
 {
    if (!strcmp("cheats", name))
       return 0;
-   /* LIBRETRO */
-   if (!strcmp("libretro.cd_load_into_ram", name))
-      return 0;
-#if defined(WANT_SNES_EMU)
-   if (!strcmp("snes.correct_aspect", name))
-      return 0;
-   if (!strcmp("snes.input.port1.multitap", name))
-      return 0;
-   if (!strcmp("snes.input.port2.multitap", name))
-      return 0;
-#endif
-   /* CDROM */
-   if (!strcmp("cdrom.lec_eval", name))
-      return 1;
    /* FILESYS */
    if (!strcmp("filesys.untrusted_fip_check", name))
       return 0;
