@@ -144,12 +144,6 @@ static bool SubWrite(StateMem *st, SFORMAT *sf, const char *name_prefix = NULL)
       slen = snprintf(nameo + 1, 256, "%s%s", name_prefix ? name_prefix : "", sf->name);
       nameo[0] = slen;
 
-      if(slen >= 255)
-      {
-         printf("Warning:  state variable name possibly too long: %s %s %s %d\n", sf->name, name_prefix, nameo, slen);
-         slen = 255;
-      }
-
       smem_write(st, nameo, 1 + nameo[0]);
       smem_write32le(st, bytesize);
 
@@ -216,7 +210,7 @@ static int WriteStateChunk(StateMem *st, const char *sname, SFORMAT *sf)
    memcpy((char *)sname_tmp, sname, (sname_len < 32) ? sname_len : 32);
 
 #ifndef NDEBUG
-   if(strlen(sname) > 32)
+   if(sname_len > 32)
       printf("Warning: section name is too long: %s\n", sname);
 #endif
 
