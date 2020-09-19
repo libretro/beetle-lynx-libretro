@@ -102,7 +102,6 @@ CRam::CRam(MDFNFILE *fp)
 		md5.update(&mRamXORData[0x0000], rc1);
 		mCRC32 = crc32(mCRC32, &mRamXORData[0x0000], rc1);
 
-		md5.finish(MD5);
 		InfoRAMSize = size;
 
 		for(unsigned i = 0; i < RAM_SIZE; i++)

@@ -73,7 +73,6 @@ class CRam : public CLynxBase
 		uint8*	GetRamPointer(void) { return mRamData; };
 		uint32	CRC32(void) { return mCRC32; };
 
-		uint8	MD5[16];
 		uint32	InfoRAMSize;
 	// Data members
 

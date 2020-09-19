@@ -404,8 +404,6 @@ CCart::CCart(MDFNFILE *fp)
 		md5.update(mCartBank1, size);
 	}
 
-	md5.finish(MD5);
-
 	// As this is a cartridge boot unset the boot address
 
 	gCPUBootAddress=0;

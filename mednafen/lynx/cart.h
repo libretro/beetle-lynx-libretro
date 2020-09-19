@@ -123,7 +123,6 @@ class CCart : public CLynxBase
 		uint32	mCartRAM;
 
 		uint32  InfoROMSize;
-		uint8	MD5[16];
 	private:
 		EMMODE	mBank;
 		uint32	mMaskBank0;
