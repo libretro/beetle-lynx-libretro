@@ -25,7 +25,6 @@
 
 #include "mednafen.h"
 #include "mednafen-endian.h"
-#include "driver.h"
 #include "general.h"
 #include "state.h"
 #include "video.h"

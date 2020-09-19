@@ -5,13 +5,8 @@
 
 #include "video.h"
 
-typedef struct
-{
- const char *extension; // Example ".nes"
- const char *description; // Example "iNES Format ROM Image"
-} FileExtensionSpecStruct;
-
 #include "file.h"
+#include "state.h"
 
 enum
 {
@@ -39,9 +34,6 @@ typedef enum
  GMT_CDROM,	// PC Engine CD, PC-FX
  GMT_PLAYER	// Music player(NSF, HES, GSF)
 } GameMediumTypes;
-
-#include "state.h"
-#include "settings-common.h"
 
 typedef enum
 {
@@ -280,8 +272,6 @@ class CDIF;
 
 typedef struct
 {
- const MDFNSetting *Settings;
-
  // Time base for EmulateSpecStruct::MasterCycles
  int64 MasterClock;
 
@@ -314,18 +304,12 @@ typedef struct
 
  int soundchan; 	// Number of output sound channels.
 
- uint8 MD5[16];
  int rotated;
 
  int soundrate;  /* For Ogg Vorbis expansion sound wacky support.  0 for default. */
 
  VideoSystems VideoSystem;
  GameMediumTypes GameType;
-
- //int DiskLogicalCount;	// A single double-sided disk would be 2 here.
- //const char *DiskNames;	// Null-terminated.
-
- const char *cspecial;  /* Special cart expansion: DIP switches, barcode reader, etc. */
 
  const char *DesiredInput; // Desired input device for the input ports, NULL for don't care
 
