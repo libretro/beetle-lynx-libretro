@@ -94,8 +94,6 @@ void retro_init(void)
    else
       log_cb = NULL;
 
-   MDFNI_InitializeModule();
-
    const char *dir = NULL;
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY, &dir) && dir)
@@ -107,8 +105,6 @@ void retro_init(void)
          last++;
 
       retro_base_directory = retro_base_directory.substr(0, last);
-
-      MDFNI_Initialize(retro_base_directory.c_str());
    }
    else
    {
@@ -629,12 +625,6 @@ void MDFND_DispMessage(unsigned char *str)
       log_cb(RETRO_LOG_INFO, "%s", str);
 }
 
-void MDFND_Message(const char *str)
-{
-   if (log_cb)
-      log_cb(RETRO_LOG_INFO, "%s", str);
-}
-
 void MDFND_MidSync(const EmulateSpecStruct *)
 {}
 
@@ -643,29 +633,11 @@ void MDFN_MidLineUpdate(EmulateSpecStruct *espec, int y)
  //MDFND_MidLineUpdate(espec, y);
 }
 
-void MDFND_PrintError(const char* err)
-{
-   if (log_cb)
-      log_cb(RETRO_LOG_ERROR, "%s\n", err);
-}
-
 extern MDFNGI EmulatedLynx;
 MDFNGI *MDFNGameInfo = &EmulatedLynx;
 
 /* forward declarations */
 extern void MDFND_DispMessage(unsigned char *str);
-
-void MDFN_DispMessage(const char *format, ...)
-{
- va_list ap;
- va_start(ap,format);
- char *msg = new char[4096];
-
- vsnprintf(msg, 4096, format,ap);
- va_end(ap);
-
- MDFND_DispMessage((UTF8*)msg);
-}
 
 void MDFN_ResetMessages(void)
 {
@@ -727,17 +699,6 @@ void MDFNI_CloseGame(void)
    MDFNGameInfo = NULL;
 }
 
-bool MDFNI_InitializeModule(void)
-{
-
- return(1);
-}
-
-int MDFNI_Initialize(const char *basedir)
-{
-	return(1);
-}
-
 static int curindent = 0;
 
 void MDFN_indent(int indent)
@@ -793,7 +754,8 @@ void MDFN_printf(const char *format, ...)
    vsnprintf(temp, 4096, format_temp, ap);
    free(format_temp);
 
-   MDFND_Message(temp);
+   if (log_cb)
+      log_cb(RETRO_LOG_INFO, "%s", temp);
    delete[] temp;
 
    va_end(ap);
@@ -809,7 +771,8 @@ void MDFN_PrintError(const char *format, ...)
 
  temp = new char[4096];
  vsnprintf(temp, 4096, format, ap);
- MDFND_PrintError(temp);
+ if (log_cb)
+    log_cb(RETRO_LOG_ERROR, "%s\n", temp);
  delete[] temp;
 
  va_end(ap);
