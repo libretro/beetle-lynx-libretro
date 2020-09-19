@@ -49,6 +49,9 @@ std::string retro_save_directory;
 
 static bool libretro_supports_input_bitmasks;
 
+extern MDFNGI EmulatedLynx;
+MDFNGI *MDFNGameInfo = &EmulatedLynx;
+
 static void set_basename(const char *path)
 {
    const char *base = strrchr(path, '/');
@@ -193,7 +196,44 @@ static void check_variables(void)
 #define MAX_BUTTONS 9
 static uint8_t input_buf[2];
 
-static MDFNGI *MDFNI_LoadGame(const uint8_t *data, size_t size);
+static bool MDFNI_LoadGame(const uint8_t *data, size_t size)
+{
+	if (!data || !size)
+   {
+		MDFN_indent(-2);
+      MDFNGameInfo = NULL;
+	}
+
+	MDFNFILE *GameFile = file_open_mem(data, size);
+
+   if (!GameFile)
+      return false;
+
+   MDFNGameInfo = &EmulatedLynx;
+
+	MDFN_indent(1);
+
+	MDFN_printf(_("Using module: lynx\n\n"));
+	MDFN_indent(1);
+
+	//
+	// Load per-game settings
+	//
+	// Maybe we should make a "pgcfg" subdir, and automatically load all files in it?
+	// End load per-game settings
+	//
+
+	Load(GameFile);
+
+	MDFN_LoadGameCheats(NULL);
+	MDFNMP_InstallReadPatches();
+
+	MDFN_indent(-2);
+
+   return true;
+}
+
+
 bool retro_load_game(const struct retro_game_info *info)
 {
    if (!info || failed_init)
@@ -228,9 +268,7 @@ bool retro_load_game(const struct retro_game_info *info)
    overscan = false;
    environ_cb(RETRO_ENVIRONMENT_GET_OVERSCAN, &overscan);
 
-   game = MDFNI_LoadGame((const uint8_t *)info->data, info->size);
-
-   if (!game)
+   if (!MDFNI_LoadGame((const uint8_t *)info->data, info->size))
       return false;
 
    MDFN_PixelFormat pix_fmt(MDFN_COLORSPACE_RGB, 16, 8, 0, 24);
@@ -250,7 +288,22 @@ bool retro_load_game(const struct retro_game_info *info)
    return game;
 }
 
-void retro_unload_game()
+static void MDFNI_CloseGame(void)
+{
+   if(!MDFNGameInfo)
+      return;
+
+   MDFN_FlushGameCheats(0);
+
+   CloseGame();
+
+   MDFNMP_Kill();
+
+   MDFNGameInfo = NULL;
+}
+
+
+void retro_unload_game(void)
 {
    if (!game)
       return;
@@ -633,71 +686,8 @@ void MDFN_MidLineUpdate(EmulateSpecStruct *espec, int y)
  //MDFND_MidLineUpdate(espec, y);
 }
 
-extern MDFNGI EmulatedLynx;
-MDFNGI *MDFNGameInfo = &EmulatedLynx;
-
 /* forward declarations */
 extern void MDFND_DispMessage(unsigned char *str);
-
-void MDFN_ResetMessages(void)
-{
- MDFND_DispMessage(NULL);
-}
-
-static MDFNGI *MDFNI_LoadGame(const uint8_t *data, size_t size)
-{
-	if (!data || !size) {
-		MDFN_indent(-2);
-      MDFNGameInfo = NULL;
-      return NULL;
-	}
-
-	MDFNFILE *GameFile = file_open_mem(data, size);
-
-   if (!GameFile)
-      return NULL;
-
-   MDFNGameInfo = &EmulatedLynx;
-
-	MDFN_indent(1);
-
-	MDFN_printf(_("Using module: lynx\n\n"));
-	MDFN_indent(1);
-
-	//
-	// Load per-game settings
-	//
-	// Maybe we should make a "pgcfg" subdir, and automatically load all files in it?
-	// End load per-game settings
-	//
-
-	Load(GameFile);
-
-	MDFN_LoadGameCheats(NULL);
-	MDFNMP_InstallReadPatches();
-
-	MDFN_ResetMessages();	// Save state, status messages, etc.
-
-	MDFN_indent(-2);
-
-   return(MDFNGameInfo);
-
-   return NULL;
-}
-
-void MDFNI_CloseGame(void)
-{
-   if(!MDFNGameInfo)
-      return;
-
-   MDFN_FlushGameCheats(0);
-
-   CloseGame();
-
-   MDFNMP_Kill();
-
-   MDFNGameInfo = NULL;
-}
 
 static int curindent = 0;
 
