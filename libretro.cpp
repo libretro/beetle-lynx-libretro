@@ -14,8 +14,6 @@
 #include <compat/msvc.h>
 #endif
 
-static MDFNGI *game;
-
 struct retro_perf_callback perf_cb;
 retro_get_cpu_features_t perf_get_cpu_features_cb = NULL;
 retro_log_printf_t log_cb;
@@ -285,7 +283,7 @@ bool retro_load_game(const struct retro_game_info *info)
 
    check_variables();
 
-   return game;
+   return true;
 }
 
 static void MDFNI_CloseGame(void)
@@ -305,9 +303,6 @@ static void MDFNI_CloseGame(void)
 
 void retro_unload_game(void)
 {
-   if (!game)
-      return;
-
    MDFNI_CloseGame();
 }
 
