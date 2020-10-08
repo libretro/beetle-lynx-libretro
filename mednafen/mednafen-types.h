@@ -19,7 +19,6 @@ typedef uint64_t uint64;
 #define MDFN_LIKELY(n) __builtin_expect((n) != 0, 1)
 
   #define INLINE inline __attribute__((always_inline))
-  #define NO_INLINE __attribute__((noinline))
 
   #if defined(__386__) || defined(__i386__) || defined(__i386) || defined(_M_IX86) || defined(_M_I386)
     #define MDFN_FASTCALL __attribute__((fastcall))
@@ -40,7 +39,6 @@ typedef uint64_t uint64;
   #endif
 
   #define INLINE inline
-  #define NO_INLINE
   #define MDFN_LIKELY(n) ((n) != 0)
   #define MDFN_UNLIKELY(n) ((n) != 0)
 
@@ -54,9 +52,8 @@ typedef uint64_t uint64;
   #define MDFN_NOWARN_UNUSED
 
 #else
+#include <retro_inline.h>
   #error "Not compiling with GCC nor MSVC"
-  #define INLINE inline
-  #define NO_INLINE
 
   #define MDFN_FASTCALL
 
