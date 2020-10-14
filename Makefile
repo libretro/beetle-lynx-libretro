@@ -6,31 +6,23 @@ CORE_DIR := .
 
 ifeq ($(platform),)
 platform = unix
-ifeq ($(shell uname -a),)
+ifeq ($(shell uname -s),)
    platform = win
-else ifneq ($(findstring MINGW,$(shell uname -a)),)
-   platform = win
-else ifneq ($(findstring Darwin,$(shell uname -a)),)
+else ifneq ($(findstring Darwin,$(shell uname -s)),)
    platform = osx
-else ifneq ($(findstring win,$(shell uname -a)),)
-	platform = win
-endif
-endif
-
-# system platform
-system_platform = unix
-ifeq ($(shell uname -a),)
-	EXE_EXT = .exe
-	system_platform = win
-else ifneq ($(findstring Darwin,$(shell uname -a)),)
-	system_platform = osx
+   arch = intel
 ifeq ($(shell uname -p),powerpc)
-	arch = ppc
-else
-	arch = intel
+   arch = ppc
 endif
-else ifneq ($(findstring MINGW,$(shell uname -a)),)
-	system_platform = win
+else ifneq ($(findstring MINGW,$(shell uname -s)),)
+   platform = win
+endif
+else ifneq (,$(findstring armv,$(platform)))
+	ifeq (,$(findstring classic_,$(platform)))
+		override platform += unix
+endif
+else ifneq (,$(findstring rpi,$(platform)))
+   override platform += unix
 endif
 
 core = lynx
@@ -60,12 +52,31 @@ filter_out2 = $(call filter_out1,$(call filter_out1,$1))
 unixpath = $(subst \,/,$1)
 unixcygpath = /$(subst :,,$(call unixpath,$1))
 
-ifeq ($(platform), unix)
+ifneq (,$(findstring unix,$(platform)))
    TARGET := $(TARGET_NAME)_libretro.so
    fpic := -fPIC
    SHARED := -shared -Wl,--no-undefined -Wl,--version-script=link.T
-   ifneq ($(shell uname -p | grep -E '((i.|x)86|amd64)'),)
-      IS_X86 = 1
+   ifneq (,$(findstring Haiku,$(shell uname -s)))
+   LDFLAGS += -lroot
+   CXXFLAGS += -fpermissive
+   else
+   LDFLAGS += -lrt
+   endif
+
+   ifneq ($(findstring Linux,$(shell uname -s)),)
+     HAVE_CDROM = 1
+   endif
+
+   # Raspberry Pi
+   ifneq (,$(findstring rpi,$(platform)))
+      FLAGS += -fomit-frame-pointer -ffast-math
+      ifneq (,$(findstring rpi1,$(platform)))
+         FLAGS += -DARM -marm -march=armv6j -mfpu=vfp -mfloat-abi=hard
+      else ifneq (,$(findstring rpi2,$(platform)))
+         FLAGS += -DARM -marm -mcpu=cortex-a7 -mfpu=neon-vfpv4 -mfloat-abi=hard
+      else ifneq (,$(findstring rpi3,$(platform)))
+         FLAGS += -DARM -marm -mcpu=cortex-a53 -mfpu=neon-fp-armv8 -mfloat-abi=hard
+      endif
    endif
    FLAGS += -DHAVE_MKDIR
 else ifeq ($(platform), osx)
