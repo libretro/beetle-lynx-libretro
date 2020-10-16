@@ -68,7 +68,7 @@ struct LYNX_HEADER
 struct LYNX_DB
 {
    uint32 crc32;
-   char name[100];
+   const char *name;
    uint32 filesize;
    uint32 rotation;
    uint32 reserved;

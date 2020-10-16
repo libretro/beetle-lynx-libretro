@@ -293,7 +293,7 @@ void Emulate(EmulateSpecStruct *espec)
 		 color_black = MAKECOLOR_16(30, 30, 30, 0);
 		 for (int y = 0; y < 102; y++)
 		 {
-			 uint16 *row = espec->surface->pixels16 + y * espec->surface->pitch;
+			 uint16 *row = espec->surface->pixels + y * espec->surface->pitch;
 
 			 if (!LynxLineDrawn[y])
 			 {
@@ -307,7 +307,7 @@ void Emulate(EmulateSpecStruct *espec)
 		 color_black = MAKECOLOR_32(30, 30, 30, 0);
 		 for (int y = 0; y < 102; y++)
 		 {
-			 uint32 *row = espec->surface->pixels + y * espec->surface->pitch;
+			 uint32 *row = (uint32*)espec->surface->pixels + y * espec->surface->pitch;
 
 			 if (!LynxLineDrawn[y])
 			 {
