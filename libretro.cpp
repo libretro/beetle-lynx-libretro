@@ -545,8 +545,19 @@ void retro_get_system_av_info(struct retro_system_av_info *info)
 
 void retro_deinit()
 {
-   delete surf;
-   surf = NULL;
+   if (surf)
+   {
+      if (surf->pixels16)
+         free(surf->pixels16);
+      surf->pixels16 = NULL;
+
+      if (surf->pixels)
+         free(surf->pixels);
+      surf->pixels = NULL;
+
+      free (surf);
+      surf = NULL;
+   }
 
    libretro_supports_input_bitmasks = false;
 }
