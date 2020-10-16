@@ -222,10 +222,10 @@ CCart::CCart(MDFNFILE *fp)
 
 	if(fp)
 	{
-		gamesize = GET_FSIZE_PTR(fp);
+		gamesize = fp->size;
 
 		// Calculate file's CRC32
-		mCRC32 = crc32(0, GET_FDATA_PTR(fp), gamesize);
+		mCRC32 = crc32(0, fp->data, gamesize);
 	   	MDFN_printf("File CRC32:   0x%08X.\n", mCRC32);
 
 		// Checkout the header bytes
@@ -268,7 +268,7 @@ CCart::CCart(MDFNFILE *fp)
     if (fp)
     {
        // re-calculate file crc32 minus header if any
-       mCRC32     = crc32(0, GET_FDATA_PTR(fp) + header_size, gamesize);
+       mCRC32     = crc32(0, fp->data + header_size, gamesize);
        LYNX_DB db = CheckHash(mCRC32);
        if (found)
        {

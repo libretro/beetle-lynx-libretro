@@ -206,7 +206,7 @@ static bool MDFNI_LoadGame(const uint8_t *data, size_t size)
 
 	MDFN_indent(1);
 
-	MDFN_printf(_("Using module: lynx\n\n"));
+	MDFN_printf("Using module: lynx\n\n");
 	MDFN_indent(1);
 
 	//
