@@ -256,7 +256,7 @@ void Emulate(EmulateSpecStruct *espec)
  espec->DisplayRect.h = 102;
 
  if(espec->VideoFormatChanged)
-  lynxie->DisplaySetAttributes(espec->surface->format); // FIXME, pitch
+  lynxie->DisplaySetAttributes(espec->surface->bpp);
 
  if(espec->SoundFormatChanged)
  {
@@ -286,32 +286,36 @@ void Emulate(EmulateSpecStruct *espec)
  }
 
  {
-  // FIXME, we should integrate this into mikie.*
-  uint32 color_black = espec->surface->MakeColor(30, 30, 30);
+	 // FIXME, we should integrate this into mikie.*
+	 uint32 color_black;
+	 if (espec->surface->bpp == 16)
+	 {
+		 color_black = MAKECOLOR_16(30, 30, 30, 0);
+		 for (int y = 0; y < 102; y++)
+		 {
+			 uint16 *row = espec->surface->pixels16 + y * espec->surface->pitch;
 
-  for(int y = 0; y < 102; y++)
-  {
-   if(espec->surface->format.bpp == 16)
-   {
-    uint16 *row = espec->surface->pixels16 + y * espec->surface->pitchinpix;
+			 if (!LynxLineDrawn[y])
+			 {
+				 for (int x = 0; x < 160; x++)
+					 row[x] = color_black;
+			 }
+		 }
+	 }
+	 else if (espec->surface->bpp == 32)
+	 {
+		 color_black = MAKECOLOR_32(30, 30, 30, 0);
+		 for (int y = 0; y < 102; y++)
+		 {
+			 uint32 *row = espec->surface->pixels + y * espec->surface->pitch;
 
-    if(!LynxLineDrawn[y])
-    {
-     for(int x = 0; x < 160; x++)
-      row[x] = color_black;
-    }
-   }
-   else
-   {
-    uint32 *row = espec->surface->pixels + y * espec->surface->pitchinpix;
-
-    if(!LynxLineDrawn[y])
-    {
-     for(int x = 0; x < 160; x++)
-      row[x] = color_black;
-    }
-   }
-  }
+			 if (!LynxLineDrawn[y])
+			 {
+				 for (int x = 0; x < 160; x++)
+					 row[x] = color_black;
+			 }
+		 }
+	 }
  }
 
  espec->MasterCycles = gSystemCycleCount - lynxie->mMikie->startTS;

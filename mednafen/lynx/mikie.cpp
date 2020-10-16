@@ -379,7 +379,7 @@ void CMikie::ComLynxTxCallback(void (*function)(int data,uint32 objref),uint32 o
 }
 
 
-void CMikie::DisplaySetAttributes(const MDFN_PixelFormat &format)
+void CMikie::DisplaySetAttributes(int32 bpp)
 {
 	mpDisplayCurrent=NULL;
 
@@ -394,40 +394,81 @@ void CMikie::DisplaySetAttributes(const MDFN_PixelFormat &format)
       uint8 g = ((Spot.Colours.Green * 15) + 30);
       uint8 b = ((Spot.Colours.Blue * 15) + 30);
 
-      mColourMap[Spot.Index]= format.MakeColor(r, g, b);
+	  switch (bpp)
+	  {
+	  case 16:
+		  mColourMap[Spot.Index] = MAKECOLOR_16(r, g, b, 0);
+		  break;
+
+	  case 32:
+		  mColourMap[Spot.Index] = MAKECOLOR_32(r, g, b, 0);
+		  break;
+
+	  default:
+		  break;
+	  }
 	}
 }
 
-template<typename T>
-void CMikie::CopyLineSurface(void)
+void CMikie::CopyLineSurface(int32 bpp)
 {
-	T* bitmap_tmp = mpDisplayCurrent->pix<T>() + mpDisplayCurrentLine * mpDisplayCurrent->pitchinpix;
-
 	if(mpDisplayCurrentLine > 102)
 	{
 	 printf("Lynx Line Overflow: %d\n", mpDisplayCurrentLine);
 	 return;
 	}
 
-	for(uint32 loop = 0; loop < SCREEN_WIDTH / 2; loop++)
+	switch (bpp)
 	{
-		uint32 source = mpRamPointer[(uint16)mLynxAddr];
-		if(mDISPCTL_Flip)
+	case 16:
+	{
+		uint16 *bitmap_tmp = mpDisplayCurrent->pixels16 + mpDisplayCurrentLine * mpDisplayCurrent->pitch;
+		for (uint32 loop = 0; loop < SCREEN_WIDTH / 2; loop++)
 		{
-			mLynxAddr--;
-			*bitmap_tmp=mColourMap[mPalette[source&0x0f].Index];
-			bitmap_tmp++;
-			*bitmap_tmp=mColourMap[mPalette[source>>4].Index];
-			bitmap_tmp++;
+			uint32 source = mpRamPointer[(uint16)mLynxAddr];
+			if (mDISPCTL_Flip)
+			{
+				mLynxAddr--;
+				*bitmap_tmp = mColourMap[mPalette[source & 0x0f].Index];
+				bitmap_tmp++;
+				*bitmap_tmp = mColourMap[mPalette[source >> 4].Index];
+				bitmap_tmp++;
+			}
+			else
+			{
+				mLynxAddr++;
+				*bitmap_tmp = mColourMap[mPalette[source >> 4].Index];
+				bitmap_tmp++;
+				*bitmap_tmp = mColourMap[mPalette[source & 0x0f].Index];
+				bitmap_tmp++;
+			}
 		}
-		else
+		break;
+	}
+	case 32:
+	{
+		uint32 *bitmap_tmp = mpDisplayCurrent->pixels + mpDisplayCurrentLine * mpDisplayCurrent->pitch;
+		for (uint32 loop = 0; loop < SCREEN_WIDTH / 2; loop++)
 		{
-			mLynxAddr++;
-			*bitmap_tmp = mColourMap[mPalette[source>>4].Index];
-			bitmap_tmp++;
-			*bitmap_tmp = mColourMap[mPalette[source&0x0f].Index];
-			bitmap_tmp++;
+			uint32 source = mpRamPointer[(uint16)mLynxAddr];
+			if (mDISPCTL_Flip)
+			{
+				mLynxAddr--;
+				*bitmap_tmp = mColourMap[mPalette[source & 0x0f].Index];
+				bitmap_tmp++;
+				*bitmap_tmp = mColourMap[mPalette[source >> 4].Index];
+				bitmap_tmp++;
+			}
+			else
+			{
+				mLynxAddr++;
+				*bitmap_tmp = mColourMap[mPalette[source >> 4].Index];
+				bitmap_tmp++;
+				*bitmap_tmp = mColourMap[mPalette[source & 0x0f].Index];
+				bitmap_tmp++;
+			}
 		}
+	}
 	}
 }
 
@@ -486,16 +527,7 @@ uint32 CMikie::DisplayRenderLine(void)
 		// Assign the temporary pointer;
 		if(!mpSkipFrame)
 		{
-			switch(mpDisplayCurrent->format.bpp)
-			{
-				case 16:
-					CopyLineSurface<uint16>();
-					break;
-
-				case 32:
-					CopyLineSurface<uint32>();
-					break;
-			}
+	        CopyLineSurface(mpDisplayCurrent->bpp);
 
 			if(mpDisplayCurrentLine < 102)
 			 LynxLineDrawn[mpDisplayCurrentLine] = true;

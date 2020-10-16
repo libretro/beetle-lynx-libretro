@@ -46,6 +46,7 @@ std::string retro_base_name;
 std::string retro_save_directory;
 
 static bool libretro_supports_input_bitmasks;
+static int system_color_depth = 16;
 
 extern MDFNGI EmulatedLynx;
 MDFNGI *MDFNGameInfo = &EmulatedLynx;
@@ -134,12 +135,6 @@ void retro_init(void)
          log_cb(RETRO_LOG_WARN, "Save directory is not defined. Fallback on using SYSTEM directory ...\n");
 	  retro_save_directory = retro_base_directory;
    }
-
-#if defined(WANT_16BPP) && defined(FRONTEND_SUPPORTS_RGB565)
-   enum retro_pixel_format rgb565 = RETRO_PIXEL_FORMAT_RGB565;
-   if (environ_cb(RETRO_ENVIRONMENT_SET_PIXEL_FORMAT, &rgb565) && log_cb)
-      log_cb(RETRO_LOG_INFO, "Frontend supports RGB565 - will use that instead of XRGB1555.\n");
-#endif
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_PERF_INTERFACE, &perf_cb))
       perf_get_cpu_features_cb = perf_cb.get_cpu_features;
@@ -231,6 +226,41 @@ static bool MDFNI_LoadGame(const uint8_t *data, size_t size)
    return true;
 }
 
+static bool init_pix_format(void)
+{
+   struct retro_variable var = { "lynx_pix_format", NULL };
+   bool ret = true;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      system_color_depth = atoi(var.value);
+   }
+
+   if (system_color_depth == 32)
+   {
+      enum retro_pixel_format fmt = RETRO_PIXEL_FORMAT_XRGB8888;
+      if (!environ_cb(RETRO_ENVIRONMENT_SET_PIXEL_FORMAT, &fmt))
+      {
+         if (log_cb)
+            log_cb(RETRO_LOG_ERROR, "Pixel format XRGB8888 not supported by platform.\n");
+         ret = false;
+      }
+   }
+
+   if (!ret || system_color_depth == 16)
+   {
+      enum retro_pixel_format rgb565 = RETRO_PIXEL_FORMAT_RGB565;
+      if (environ_cb(RETRO_ENVIRONMENT_SET_PIXEL_FORMAT, &rgb565))
+      {
+         log_cb(RETRO_LOG_INFO, "Frontend supports RGB565 - will use that instead of XRGB1555.\n");
+         system_color_depth = 16;
+      }
+      else
+         ret = false;
+   }
+   return ret;
+}
+
 
 bool retro_load_game(const struct retro_game_info *info)
 {
@@ -253,26 +283,51 @@ bool retro_load_game(const struct retro_game_info *info)
 
    environ_cb(RETRO_ENVIRONMENT_SET_INPUT_DESCRIPTORS, desc);
 
-#ifdef WANT_32BPP
-   enum retro_pixel_format fmt = RETRO_PIXEL_FORMAT_XRGB8888;
-   if (!environ_cb(RETRO_ENVIRONMENT_SET_PIXEL_FORMAT, &fmt))
-   {
-      if (log_cb)
-         log_cb(RETRO_LOG_ERROR, "Pixel format XRGB8888 not supported by platform, cannot use %s.\n", MEDNAFEN_CORE_NAME);
-      return false;
-   }
-#endif
-
    overscan = false;
    environ_cb(RETRO_ENVIRONMENT_GET_OVERSCAN, &overscan);
+
+   if (!init_pix_format())
+      log_cb(RETRO_LOG_ERROR, "Unable to initialize pixel format. Aborting.\n");
 
    if (!MDFNI_LoadGame((const uint8_t *)info->data, info->size))
       return false;
 
-   MDFN_PixelFormat pix_fmt(MDFN_COLORSPACE_RGB, 16, 8, 0, 24);
-   last_pixel_format = MDFN_PixelFormat();
+   surf = (MDFN_Surface*)calloc(1, sizeof(*surf));
+   
+   if (!surf)
+      return false;
+   
+   surf->width  = FB_WIDTH;
+   surf->height = FB_HEIGHT;
+   surf->pitch  = FB_WIDTH;
+   surf->bpp    = system_color_depth;
 
-   surf = new MDFN_Surface(NULL, FB_WIDTH, FB_HEIGHT, FB_WIDTH, pix_fmt);
+   if (system_color_depth == 32)
+   {
+      surf->pixels = (uint32_t*)calloc(4, FB_WIDTH * FB_HEIGHT);
+
+      if (!surf->pixels)
+      {
+         free(surf);
+         surf = NULL;
+         return false;
+      }
+   }
+   else if (system_color_depth == 16)
+   {
+      surf->pixels16 = (uint16_t*)calloc(2, FB_WIDTH * FB_HEIGHT);
+
+      if (!surf->pixels16)
+      {
+         free(surf);
+         surf = NULL;
+         return false;
+      }
+   }
+   else
+      return false;
+
+   lynxie->DisplaySetAttributes(surf->bpp);
 
    SetInput(0, "gamepad", (uint8_t*)&input_buf);
 
@@ -428,13 +483,6 @@ void retro_run()
    spec.VideoFormatChanged = false;
    spec.SoundFormatChanged = false;
 
-   if (memcmp(&last_pixel_format, &spec.surface->format, sizeof(MDFN_PixelFormat)))
-   {
-      spec.VideoFormatChanged = true;
-
-      last_pixel_format = spec.surface->format;
-   }
-
    if (spec.SoundRate != last_sound_rate)
    {
       spec.SoundFormatChanged = true;
@@ -452,13 +500,16 @@ void retro_run()
    unsigned width  = spec.DisplayRect.w;
    unsigned height = spec.DisplayRect.h;
 
-#if defined(WANT_32BPP)
-   const uint32_t *pix = surf->pixels;
-   video_cb(pix, width, height, FB_WIDTH << 2);
-#elif defined(WANT_16BPP)
-   const uint16_t *pix = surf->pixels16;
-   video_cb(pix, width, height, FB_WIDTH << 1);
-#endif
+   if (surf->bpp == 32)
+   {
+      const uint32_t *pix = surf->pixels;
+      video_cb(pix, width, height, FB_WIDTH << 2);
+   }
+   else if (surf->bpp == 16)
+   {
+      const uint16_t *pix = surf->pixels16;
+      video_cb(pix, width, height, FB_WIDTH << 1);
+   }
 
    audio_batch_cb(spec.SoundBuf, spec.SoundBufSize);
 
@@ -494,8 +545,19 @@ void retro_get_system_av_info(struct retro_system_av_info *info)
 
 void retro_deinit()
 {
-   delete surf;
-   surf = NULL;
+   if (surf)
+   {
+      if (surf->pixels16)
+         free(surf->pixels16);
+      surf->pixels16 = NULL;
+
+      if (surf->pixels)
+         free(surf->pixels);
+      surf->pixels = NULL;
+
+      free (surf);
+      surf = NULL;
+   }
 
    libretro_supports_input_bitmasks = false;
 }
