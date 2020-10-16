@@ -63,7 +63,19 @@ struct retro_core_option_definition option_defs_us[] = {
          { "disabled", NULL },
          { NULL, NULL},
       },
-      "enabled"
+      "enabled",
+   },
+
+   {
+      "lynx_pix_format",
+      "Color Format (Restart)",
+      "",
+      {
+         { "16", "16-Bit (RGB565)" },
+         { "32", "32-Bit (RGB8888)" },
+         { NULL, NULL},
+      },
+      "16",
    },
 
    { NULL, NULL, NULL, {{0}}, NULL },

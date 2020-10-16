@@ -201,7 +201,7 @@ class CMikie : public CLynxBase
 		void	ComLynxTxLoopback(int data);
 		void	ComLynxTxCallback(void (*function)(int data,uint32 objref),uint32 objref);
 		
-		void	DisplaySetAttributes(const MDFN_PixelFormat &format);
+		void	DisplaySetAttributes(int32 bpp);
 		
 		void	BlowOut(void);
 
@@ -395,7 +395,7 @@ class CMikie : public CLynxBase
 		uint32		mLynxLineDMACounter;
 		uint32		mLynxAddr;
 
-		template<typename T> void CopyLineSurface(void);
+		void CopyLineSurface(int32 bpp);
 };
 
 
