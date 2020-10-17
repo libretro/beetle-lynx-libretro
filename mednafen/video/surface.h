@@ -50,8 +50,7 @@ typedef struct
 
 typedef struct
 {
-   uint16 *pixels16;
-   uint32 *pixels;
+   uint16 *pixels;
    int32 width;
    int32 height;
    int32 pitch;

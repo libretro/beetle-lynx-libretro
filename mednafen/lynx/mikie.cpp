@@ -422,7 +422,7 @@ void CMikie::CopyLineSurface(int32 bpp)
 	{
 	case 16:
 	{
-		uint16 *bitmap_tmp = mpDisplayCurrent->pixels16 + mpDisplayCurrentLine * mpDisplayCurrent->pitch;
+		uint16 *bitmap_tmp = mpDisplayCurrent->pixels + mpDisplayCurrentLine * mpDisplayCurrent->pitch;
 		for (uint32 loop = 0; loop < SCREEN_WIDTH / 2; loop++)
 		{
 			uint32 source = mpRamPointer[(uint16)mLynxAddr];
@@ -447,7 +447,7 @@ void CMikie::CopyLineSurface(int32 bpp)
 	}
 	case 32:
 	{
-		uint32 *bitmap_tmp = mpDisplayCurrent->pixels + mpDisplayCurrentLine * mpDisplayCurrent->pitch;
+		uint32 *bitmap_tmp = (uint32 *)mpDisplayCurrent->pixels + mpDisplayCurrentLine * mpDisplayCurrent->pitch;
 		for (uint32 loop = 0; loop < SCREEN_WIDTH / 2; loop++)
 		{
 			uint32 source = mpRamPointer[(uint16)mLynxAddr];

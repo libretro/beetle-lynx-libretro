@@ -82,7 +82,7 @@ CSystem::CSystem(MDFNFILE *fp)
      mFileType=HANDY_FILETYPE_HOMEBREW;
 	else if(!strcmp(&clip[0],"LYNX"))
      mFileType=HANDY_FILETYPE_LNX;
-	else if(GET_FSIZE_PTR(fp)==128*1024 || GET_FSIZE_PTR(fp)==256*1024 || GET_FSIZE_PTR(fp)==512*1024)
+	else if(fp->size==128*1024 || fp->size==256*1024 || fp->size==512*1024)
 		/* Invalid Cart (type). but 128/256/512k size -> set to RAW and try to load raw rom image */
 		mFileType=HANDY_FILETYPE_RAW;
 	else
@@ -293,7 +293,7 @@ void Emulate(EmulateSpecStruct *espec)
 		 color_black = MAKECOLOR_16(30, 30, 30, 0);
 		 for (int y = 0; y < 102; y++)
 		 {
-			 uint16 *row = espec->surface->pixels16 + y * espec->surface->pitch;
+			 uint16 *row = espec->surface->pixels + y * espec->surface->pitch;
 
 			 if (!LynxLineDrawn[y])
 			 {
@@ -307,7 +307,7 @@ void Emulate(EmulateSpecStruct *espec)
 		 color_black = MAKECOLOR_32(30, 30, 30, 0);
 		 for (int y = 0; y < 102; y++)
 		 {
-			 uint32 *row = espec->surface->pixels + y * espec->surface->pitch;
+			 uint32 *row = (uint32*)espec->surface->pixels + y * espec->surface->pitch;
 
 			 if (!LynxLineDrawn[y])
 			 {

@@ -206,7 +206,7 @@ static bool MDFNI_LoadGame(const uint8_t *data, size_t size)
 
 	MDFN_indent(1);
 
-	MDFN_printf(_("Using module: lynx\n\n"));
+	MDFN_printf("Using module: lynx\n\n");
 	MDFN_indent(1);
 
 	//
@@ -301,31 +301,14 @@ bool retro_load_game(const struct retro_game_info *info)
    surf->height = FB_HEIGHT;
    surf->pitch  = FB_WIDTH;
    surf->bpp    = system_color_depth;
+   surf->pixels = (uint16_t*)calloc(4, FB_WIDTH * FB_HEIGHT);
 
-   if (system_color_depth == 32)
+   if (!surf->pixels)
    {
-      surf->pixels = (uint32_t*)calloc(4, FB_WIDTH * FB_HEIGHT);
-
-      if (!surf->pixels)
-      {
-         free(surf);
-         surf = NULL;
-         return false;
-      }
-   }
-   else if (system_color_depth == 16)
-   {
-      surf->pixels16 = (uint16_t*)calloc(2, FB_WIDTH * FB_HEIGHT);
-
-      if (!surf->pixels16)
-      {
-         free(surf);
-         surf = NULL;
-         return false;
-      }
-   }
-   else
+      free(surf);
+      surf = NULL;
       return false;
+   }
 
    lynxie->DisplaySetAttributes(surf->bpp);
 
@@ -499,17 +482,9 @@ void retro_run()
 
    unsigned width  = spec.DisplayRect.w;
    unsigned height = spec.DisplayRect.h;
+   unsigned pitch  = FB_WIDTH << (system_color_depth >> 4);
 
-   if (surf->bpp == 32)
-   {
-      const uint32_t *pix = surf->pixels;
-      video_cb(pix, width, height, FB_WIDTH << 2);
-   }
-   else if (surf->bpp == 16)
-   {
-      const uint16_t *pix = surf->pixels16;
-      video_cb(pix, width, height, FB_WIDTH << 1);
-   }
+   video_cb(surf->pixels, width, height, pitch);
 
    audio_batch_cb(spec.SoundBuf, spec.SoundBufSize);
 
@@ -547,10 +522,6 @@ void retro_deinit()
 {
    if (surf)
    {
-      if (surf->pixels16)
-         free(surf->pixels16);
-      surf->pixels16 = NULL;
-
       if (surf->pixels)
          free(surf->pixels);
       surf->pixels = NULL;
