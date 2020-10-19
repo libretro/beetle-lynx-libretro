@@ -42,9 +42,9 @@ static void hookup_ports(bool force);
 
 static bool initial_ports_hookup = false;
 
-std::string retro_base_directory;
-std::string retro_base_name;
-std::string retro_save_directory;
+static std::string retro_base_directory;
+static std::string retro_base_name;
+static std::string retro_save_directory;
 
 static bool libretro_supports_input_bitmasks;
 static int system_color_depth = 16;
