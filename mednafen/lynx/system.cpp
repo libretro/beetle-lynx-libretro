@@ -290,7 +290,11 @@ void Emulate(EmulateSpecStruct *espec)
 	 uint32 color_black;
 	 if (espec->surface->bpp == 16)
 	 {
+#if defined(ABGR1555)
+		 color_black = MAKECOLOR_15_1(30, 30, 30, 0);
+#else
 		 color_black = MAKECOLOR_16(30, 30, 30, 0);
+#endif
 		 for (int y = 0; y < 102; y++)
 		 {
 			 uint16 *row = espec->surface->pixels + y * espec->surface->pitch;
