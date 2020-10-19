@@ -14,6 +14,12 @@
 #include <compat/msvc.h>
 #endif
 
+#ifdef _WIN32
+static char slash = '\\';
+#else
+static char slash = '/';
+#endif
+
 struct retro_perf_callback perf_cb;
 retro_get_cpu_features_t perf_get_cpu_features_cb = NULL;
 retro_log_printf_t log_cb;
@@ -42,29 +48,13 @@ static void hookup_ports(bool force);
 
 static bool initial_ports_hookup = false;
 
-static std::string retro_base_directory;
-static std::string retro_base_name;
-static std::string retro_save_directory;
+static char retro_system_directory[4096];
 
 static bool libretro_supports_input_bitmasks;
 static int system_color_depth = 16;
 
 extern MDFNGI EmulatedLynx;
 MDFNGI *MDFNGameInfo = &EmulatedLynx;
-
-static void set_basename(const char *path)
-{
-   const char *base = strrchr(path, '/');
-   if (!base)
-      base = strrchr(path, '\\');
-
-   if (base)
-      retro_base_name = base + 1;
-   else
-      retro_base_name = path;
-
-   retro_base_name = retro_base_name.substr(0, retro_base_name.find_last_of('.'));
-}
 
 #define MEDNAFEN_CORE_NAME_MODULE "lynx"
 #define MEDNAFEN_CORE_NAME "Beetle Lynx"
@@ -100,42 +90,7 @@ void retro_init(void)
    const char *dir = NULL;
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY, &dir) && dir)
-   {
-      retro_base_directory = dir;
-      // Make sure that we don't have any lingering slashes, etc, as they break Windows.
-      size_t last = retro_base_directory.find_last_not_of("/\\");
-      if (last != std::string::npos)
-         last++;
-
-      retro_base_directory = retro_base_directory.substr(0, last);
-   }
-   else
-   {
-      /* TODO: Add proper fallback */
-      if (log_cb)
-         log_cb(RETRO_LOG_WARN, "System directory is not defined. Fallback on using same dir as ROM for system directory later ...\n");
-      failed_init = true;
-   }
-
-   if (environ_cb(RETRO_ENVIRONMENT_GET_SAVE_DIRECTORY, &dir) && dir)
-   {
-	  // If save directory is defined use it, otherwise use system directory
-      //retro_save_directory = *dir ? dir : retro_base_directory;
-	  retro_save_directory = dir;
-      // Make sure that we don't have any lingering slashes, etc, as they break Windows.
-      size_t last = retro_save_directory.find_last_not_of("/\\");
-      if (last != std::string::npos)
-         last++;
-
-      retro_save_directory = retro_save_directory.substr(0, last);
-   }
-   else
-   {
-      /* TODO: Add proper fallback */
-      if (log_cb)
-         log_cb(RETRO_LOG_WARN, "Save directory is not defined. Fallback on using SYSTEM directory ...\n");
-	  retro_save_directory = retro_base_directory;
-   }
+      snprintf(retro_system_directory, sizeof(retro_system_directory), "%s", dir);
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_PERF_INTERFACE, &perf_cb))
       perf_get_cpu_features_cb = perf_cb.get_cpu_features;
@@ -244,8 +199,12 @@ static bool MDFNI_LoadGame(const uint8_t *data, size_t size)
 	// Maybe we should make a "pgcfg" subdir, and automatically load all files in it?
 	// End load per-game settings
 	//
+   char bios_path[2048];
+   snprintf(bios_path, sizeof(bios_path), "%s%c%s", retro_system_directory, slash, "lynxboot.img");
 
-	Load(GameFile);
+   MDFN_printf("Loading bios: %s\n", bios_path);
+
+	Load(GameFile, bios_path);
 
 	MDFN_LoadGameCheats(NULL);
 	MDFNMP_InstallReadPatches();
@@ -707,37 +666,6 @@ static void sanitize_path(std::string &path)
          path[i] = '\\';
 }
 #endif
-
-// Use a simpler approach to make sure that things go right for libretro.
-std::string MDFN_MakeFName(MakeFName_Type type, int id1, const char *cd1)
-{
-   char slash;
-#ifdef _WIN32
-   slash = '\\';
-#else
-   slash = '/';
-#endif
-   std::string ret;
-   switch (type)
-   {
-      case MDFNMKF_SAV:
-         ret = retro_save_directory +slash + retro_base_name +
-            std::string(".") + std::string(cd1);
-         break;
-      case MDFNMKF_FIRMWARE:
-         ret = retro_base_directory + slash + std::string(cd1);
-#ifdef _WIN32
-   sanitize_path(ret); // Because Windows path handling is mongoloid.
-#endif
-         break;
-      default:
-         break;
-   }
-
-   if (log_cb)
-      log_cb(RETRO_LOG_INFO, "MDFN_MakeFName: %s\n", ret.c_str());
-   return ret;
-}
 
 void MDFND_DispMessage(unsigned char *str)
 {
