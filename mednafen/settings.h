@@ -3,13 +3,6 @@
 
 #include <string>
 
-bool MDFN_LoadSettings(const char *path, const char *section = NULL, bool override = false);
-bool MDFN_MergeSettings(const void*);
-// bool MDFN_MergeSettings(const std::vector<void> &);
-bool MDFN_SaveSettings(const char *path);
-
-void MDFN_KillSettings(void);	// Free any resources acquired.
-
 // This should assert() or something if the setting isn't found, since it would
 // be a totally tubular error!
 uint64 MDFN_GetSettingUI(const char *name);

@@ -114,7 +114,7 @@ class CSystem;
 class CSystem : public CSystemBase
 {
 	public:
-		CSystem(MDFNFILE *fp) MDFN_COLD;
+		CSystem(MDFNFILE *fp, const char *bios_path) MDFN_COLD;
 		~CSystem() MDFN_COLD;
 
 	public:
@@ -220,7 +220,7 @@ class CSystem : public CSystemBase
 
 extern bool LynxLineDrawn[256];
 
-void Load(MDFNFILE *fp);
+void Load(MDFNFILE *fp, const char *bios_path);
 void CloseGame(void);
 void Emulate(EmulateSpecStruct *espec);
 void SetInput(unsigned port, const char *type, uint8 *ptr);

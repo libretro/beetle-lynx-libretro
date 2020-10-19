@@ -61,7 +61,7 @@
 #include "mednafen/mempatcher.h"
 #include "mednafen/md5.h"
 
-CSystem::CSystem(MDFNFILE *fp)
+CSystem::CSystem(MDFNFILE *fp, const char *bios_path)
 	:mCart(NULL),
 	mRom(NULL),
 	mMemMap(NULL),
@@ -97,7 +97,7 @@ CSystem::CSystem(MDFNFILE *fp)
 
 	// Attempt to load the cartridge errors caught above here...
 
-	mRom = new CRom(MDFN_MakeFName(MDFNMKF_FIRMWARE, 0, "lynxboot.img").c_str());
+	mRom = new CRom(bios_path);
 
 	// An exception from this will be caught by the level above
 
@@ -215,9 +215,9 @@ static void Cleanup(void)
  }
 }
 
-void Load(MDFNFILE *fp)
+void Load(MDFNFILE *fp, const char *bios_path)
 {
- lynxie = new CSystem(fp);
+ lynxie = new CSystem(fp, bios_path);
 
  switch(lynxie->CartGetRotate())
  {

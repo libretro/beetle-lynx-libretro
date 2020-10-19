@@ -21,11 +21,6 @@
 #include <string>
 #include "settings.h"
 
-bool MDFN_SaveSettings(const char *path)
-{
-   return(1);
-}
-
 uint64 MDFN_GetSettingUI(const char *name)
 {
 
@@ -47,37 +42,18 @@ double MDFN_GetSettingF(const char *name)
 
 bool MDFN_GetSettingB(const char *name)
 {
+   if (!strcmp("lynx.lowpass", name))
+      return 0;
+   if (!strcmp("lynx.rotateinput", name))
+      return 0;
    if (!strcmp("cheats", name))
       return 0;
-   /* FILESYS */
-   if (!strcmp("filesys.untrusted_fip_check", name))
-      return 0;
-   if (!strcmp("filesys.disablesavegz", name))
-      return 1;
    fprintf(stderr, "unhandled setting B: %s\n", name);
    return 0;
-}
-
-extern std::string retro_base_directory;
-extern std::string retro_base_name;
+};
 
 std::string MDFN_GetSettingS(const char *name)
 {
-   /* FILESYS */
-   if (!strcmp("filesys.path_firmware", name))
-      return retro_base_directory;
-   if (!strcmp("filesys.path_palette", name))
-      return retro_base_directory;
-   if (!strcmp("filesys.path_sav", name))
-      return retro_base_directory;
-   if (!strcmp("filesys.path_state", name))
-      return retro_base_directory;
-   if (!strcmp("filesys.path_cheat", name))
-      return retro_base_directory;
-   if (!strcmp("filesys.fname_state", name))
-      return retro_base_name + std::string(".sav");
-   if (!strcmp("filesys.fname_sav", name))
-      return retro_base_name + std::string(".bsv");
    fprintf(stderr, "unhandled setting S: %s\n", name);
    return 0;
 }
