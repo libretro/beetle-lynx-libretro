@@ -397,7 +397,11 @@ void CMikie::DisplaySetAttributes(int32 bpp)
 	  switch (bpp)
 	  {
 	  case 16:
+#if defined(ABGR1555)
+		  mColourMap[Spot.Index] = MAKECOLOR_15_1(r, g, b, 0);
+#else
 		  mColourMap[Spot.Index] = MAKECOLOR_16(r, g, b, 0);
+#endif
 		  break;
 
 	  case 32:

@@ -168,13 +168,23 @@ else ifeq ($(platform), psl1ght)
    FLAGS += -DHAVE_MKDIR
    STATIC_LINKING = 1
 
+# PS2
+else ifeq ($(platform), ps2)
+   TARGET := $(TARGET_NAME)_libretro_$(platform).a
+   CC = ee-gcc$(EXE_EXT)
+   CXX = ee-g++$(EXE_EXT)
+   AR = ee-ar$(EXE_EXT)
+   FLAGS += -DPS2 -G0 -DABGR1555 -O3
+   FLAGS += -DHAVE_MKDIR
+   STATIC_LINKING = 1
+
 # PSP
 else ifeq ($(platform), psp1)
    TARGET := $(TARGET_NAME)_libretro_$(platform).a
    CC = psp-gcc$(EXE_EXT)
    CXX = psp-g++$(EXE_EXT)
    AR = psp-ar$(EXE_EXT)
-   FLAGS += -DPSP -G0
+   FLAGS += -DPSP -G0 -O3
    FLAGS += -DHAVE_MKDIR
    STATIC_LINKING = 1
 
@@ -566,13 +576,16 @@ endif
 include Makefile.common
 
 ifeq (,$(findstring msvc,$(platform)))
+   ifeq ($(NEW_GCC),1)
+      NEW_GCC_WARNING_FLAGS := -Wno-strict-aliasing $(NEW_GCC_WARNING_FLAGS)
+   endif
+
    WARNINGS := -Wall \
       -Wno-sign-compare \
       -Wno-unused-variable \
       -Wno-unused-function \
       -Wno-uninitialized \
-      $(NEW_GCC_WARNING_FLAGS) \
-      -Wno-strict-aliasing
+      $(NEW_GCC_WARNING_FLAGS)
    EXTRA_GCC_FLAGS := -funroll-loops
 endif
 
