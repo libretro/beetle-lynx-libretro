@@ -28,9 +28,10 @@ static bool overscan;
 static double last_sound_rate;
 static MDFN_PixelFormat last_pixel_format;
 
-static bool auto_rotate;
-static unsigned rot_screen;
-static unsigned rot_screen_last_frame;
+static unsigned rotate_mode;
+static unsigned rotate_fixed;
+static unsigned rotate_screen;
+static unsigned rotate_screen_last_frame;
 static unsigned select_pressed_last_frame;
 
 static MDFN_Surface *surf;
@@ -176,12 +177,40 @@ static void check_variables(void)
    var.key = "lynx_rot_screen";
    var.value = NULL;
 
-   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value) {
-      if (strcmp(var.value, "disabled") == 0)
-         auto_rotate = false;
-      else
-         auto_rotate = true;
-      rot_screen = 0;
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      unsigned last_val1 = rotate_mode;
+      unsigned last_val2 = rotate_fixed;
+      if (strcmp(var.value, "auto") == 0)
+      {
+         rotate_mode   = 1;
+         rotate_fixed  = 0;
+      }
+      else if (strcmp(var.value, "manual") == 0)
+      {
+         rotate_mode   = 2;
+         rotate_fixed  = 0;
+      }
+      else if (strcmp(var.value, "0") == 0)
+      {
+         rotate_mode   = 0;
+         rotate_fixed  = 0;
+      }
+      else if (strcmp(var.value, "90") == 0)
+      {
+         rotate_mode   = 0;
+         rotate_fixed  = 1;
+      }
+      else if (strcmp(var.value, "180") == 0)
+      {
+         rotate_mode   = 0;
+         rotate_fixed  = 2;
+      }
+      else if (strcmp(var.value, "270") == 0)
+      {
+         rotate_mode   = 0;
+         rotate_fixed  = 3;
+      }
    }
 }
 
@@ -314,10 +343,11 @@ bool retro_load_game(const struct retro_game_info *info)
 
    SetInput(0, "gamepad", (uint8_t*)&input_buf);
 
-   auto_rotate = false;
-   rot_screen = 0;
+   rotate_mode = 0;
+   rotate_fixed = 0;
+   rotate_screen = 0;
    select_pressed_last_frame = 0;
-   rot_screen_last_frame = 0;
+   rotate_screen_last_frame = 0;
 
    check_variables();
 
@@ -400,13 +430,13 @@ static void update_input(void)
    {
       int16_t ret = input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_MASK);
       for (unsigned i = 0; i < MAX_BUTTONS; i++)
-         input_state |= ret & (1 << map[rot_screen][i]) ? (1 << i) : 0;
+         input_state |= ret & (1 << map[rotate_screen][i]) ? (1 << i) : 0;
       select_button = ret & (1 << RETRO_DEVICE_ID_JOYPAD_SELECT);
    }
    else
    {
       for (unsigned i = 0; i < MAX_BUTTONS; i++)
-         input_state |= input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, map[rot_screen][i]) ? (1 << i) : 0;
+         input_state |= input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, map[rotate_screen][i]) ? (1 << i) : 0;
       select_button = input_state_cb(0, RETRO_DEVICE_JOYPAD, 0, RETRO_DEVICE_ID_JOYPAD_SELECT);
    }
 
@@ -414,34 +444,43 @@ static void update_input(void)
    input_buf[0] = (input_state >> 0) & 0xff;
    input_buf[1] = (input_state >> 8) & 0xff;
 
-   if (auto_rotate)
+   switch (rotate_mode)
    {
+   case 1: /* auto rotation */
       switch (lynxie->CartGetRotate())
       {
-      case CART_ROTATE_RIGHT: rot_screen = 3; break;
-      case CART_ROTATE_LEFT:  rot_screen = 1;  break;
-      default: rot_screen = 0; break;
+      case CART_ROTATE_RIGHT: rotate_screen = 3; break;
+      case CART_ROTATE_LEFT:  rotate_screen = 1;  break;
+      default: rotate_screen = 0; break;
       }
+      break;
+   case 2: /* manual rotation */
+      if (select_button && !select_pressed_last_frame)
+         rotate_screen++;
+      break;
+   case 0: /* fixed rotation */
+      rotate_screen = rotate_fixed;
+      break;
+   default: /* just set to normal */
+      rotate_screen = 0;
+      break;
    }
 
-   if (!auto_rotate && (select_button && !select_pressed_last_frame))
-      rot_screen++;
-
-   if (rot_screen != rot_screen_last_frame)
+   if (rotate_screen != rotate_screen_last_frame)
    {
-      if (rot_screen > 3)
-         rot_screen = 0;
-      rot_screen_last_frame = rot_screen;
+      if (rotate_screen > 3)
+         rotate_screen = 0;
+      rotate_screen_last_frame = rotate_screen;
 
       const float aspect[2] = { (80.0 / 51.0), (51.0 / 80.0) };
       const unsigned rot_angle[4] = { 0, 1, 2, 3 };
-      struct retro_game_geometry new_geom = { FB_WIDTH, FB_HEIGHT, FB_WIDTH, FB_HEIGHT, aspect[rot_screen & 1] };
+      struct retro_game_geometry new_geom = { FB_WIDTH, FB_HEIGHT, FB_WIDTH, FB_HEIGHT, aspect[rotate_screen & 1] };
       environ_cb(RETRO_ENVIRONMENT_SET_GEOMETRY, (void*)&new_geom);
-      environ_cb(RETRO_ENVIRONMENT_SET_ROTATION, (void*)&rot_angle[rot_screen]);
+      environ_cb(RETRO_ENVIRONMENT_SET_ROTATION, (void*)&rot_angle[rotate_screen]);
    }
 
    select_pressed_last_frame = select_button;
-   rot_screen_last_frame     = rot_screen;
+   rotate_screen_last_frame  = rotate_screen;
 }
 
 void retro_run()
