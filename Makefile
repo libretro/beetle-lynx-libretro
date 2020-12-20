@@ -80,12 +80,10 @@ ifneq (,$(findstring unix,$(platform)))
          FLAGS += -DARM -march=armv8-a+crc+simd -mtune=cortex-a72
       endif
    endif
-   FLAGS += -DHAVE_MKDIR
 else ifeq ($(platform), osx)
    TARGET := $(TARGET_NAME)_libretro.dylib
    fpic := -fPIC
    SHARED := -dynamiclib
-   FLAGS += -DHAVE_MKDIR
 ifeq ($(arch),ppc)
    ENDIANNESS_DEFINES := -DMSB_FIRST
    OLD_GCC := 1
@@ -136,38 +134,16 @@ else ifeq ($(platform), qnx)
    TARGET := $(TARGET_NAME)_libretro_$(platform).so
    fpic := -fPIC
    SHARED := -lcpp -lm -shared -Wl,--no-undefined -Wl,--version-script=link.T
-   FLAGS += -DHAVE_MKDIR
    CC = qcc -Vgcc_ntoarmv7le
    CXX = QCC -Vgcc_ntoarmv7le_cpp
    AR = QCC -Vgcc_ntoarmv7le
    FLAGS += -D__BLACKBERRY_QNX__ -marm -mcpu=cortex-a9 -mfpu=neon -mfloat-abi=softfp
-else ifeq ($(platform), ps3)
-   TARGET := $(TARGET_NAME)_libretro_$(platform).a
-   CC = $(CELL_SDK)/host-win32/ppu/bin/ppu-lv2-gcc.exe
-   CXX = $(CELL_SDK)/host-win32/ppu/bin/ppu-lv2-g++.exe
-   AR = $(CELL_SDK)/host-win32/ppu/bin/ppu-lv2-ar.exe
-   ENDIANNESS_DEFINES := -DMSB_FIRST
-   OLD_GCC := 1
-   FLAGS += -DHAVE_MKDIR -DARCH_POWERPC_ALTIVEC
-   STATIC_LINKING = 1
-else ifeq ($(platform), sncps3)
-   TARGET := $(TARGET_NAME)_libretro_ps3.a
-   CC = $(CELL_SDK)/host-win32/sn/bin/ps3ppusnc.exe
-   CXX = $(CELL_SDK)/host-win32/sn/bin/ps3ppusnc.exe
-   AR = $(CELL_SDK)/host-win32/sn/bin/ps3snarl.exe
-   ENDIANNESS_DEFINES := -DMSB_FIRST
-   CXXFLAGS += -Xc+=exceptions
-   OLD_GCC := 1
-   NO_GCC := 1
-   FLAGS += -DHAVE_MKDIR -DARCH_POWERPC_ALTIVEC
-   STATIC_LINKING = 1
 else ifeq ($(platform), psl1ght)
    TARGET := $(TARGET_NAME)_libretro_$(platform).a
    CC = $(PS3DEV)/ppu/bin/ppu-gcc$(EXE_EXT)
    CXX = $(PS3DEV)/ppu/bin/ppu-g++$(EXE_EXT)
    AR = $(PS3DEV)/ppu/bin/ppu-ar$(EXE_EXT)
    ENDIANNESS_DEFINES := -DMSB_FIRST
-   FLAGS += -DHAVE_MKDIR
    STATIC_LINKING = 1
 
 # PS2
@@ -177,7 +153,6 @@ else ifeq ($(platform), ps2)
    CXX = ee-g++$(EXE_EXT)
    AR = ee-ar$(EXE_EXT)
    FLAGS += -DPS2 -G0 -DABGR1555 -O3
-   FLAGS += -DHAVE_MKDIR
    STATIC_LINKING = 1
 
 # PSP
@@ -187,7 +162,6 @@ else ifeq ($(platform), psp1)
    CXX = psp-g++$(EXE_EXT)
    AR = psp-ar$(EXE_EXT)
    FLAGS += -DPSP -G0 -O3
-   FLAGS += -DHAVE_MKDIR
    STATIC_LINKING = 1
 
 # Vita
@@ -196,7 +170,7 @@ else ifeq ($(platform), vita)
 	CC = arm-vita-eabi-gcc$(EXE_EXT)
 	CXX = arm-vita-eabi-g++$(EXE_EXT)
 	AR = arm-vita-eabi-ar$(EXE_EXT)
-   FLAGS += -DVITA -DHAVE_MKDIR
+   FLAGS += -DVITA
    STATIC_LINKING = 1
 
 else ifeq ($(platform), xenon)
@@ -205,7 +179,6 @@ else ifeq ($(platform), xenon)
    CXX = xenon-g++$(EXE_EXT)
    AR = xenon-ar$(EXE_EXT)
    ENDIANNESS_DEFINES += -D__LIBXENON__ -m32 -D__ppc__ -DMSB_FIRST
-   FLAGS += -DHAVE_MKDIR
    STATIC_LINKING = 1
 else ifeq ($(platform), ngc)
    TARGET := $(TARGET_NAME)_libretro_$(platform).a
@@ -215,7 +188,6 @@ else ifeq ($(platform), ngc)
    ENDIANNESS_DEFINES += -DGEKKO -DHW_DOL -mrvl -mcpu=750 -meabi -mhard-float -DMSB_FIRST
 
    EXTRA_INCLUDES := -I$(DEVKITPRO)/libogc/include
-   FLAGS += -DHAVE_MKDIR
    STATIC_LINKING = 1
 
 else ifeq ($(platform), wii)
@@ -226,7 +198,6 @@ else ifeq ($(platform), wii)
    ENDIANNESS_DEFINES += -DGEKKO -DHW_RVL -mrvl -mcpu=750 -meabi -mhard-float -DMSB_FIRST
 
    EXTRA_INCLUDES := -I$(DEVKITPRO)/libogc/include
-   FLAGS += -DHAVE_MKDIR
    STATIC_LINKING = 1
 
 # Nintendo Switch (libnx)
@@ -238,7 +209,6 @@ else ifeq ($(platform), libnx)
         FLAGS += -D__SWITCH__ -DHAVE_LIBNX -DHAVE_GETPWUID=0 -DHAVE_GETCWD=1
         FLAGS += -march=armv8-a -mtune=cortex-a57 -mtp=soft -ffast-math -mcpu=cortex-a57+crc+fp+simd -ffunction-sections
         FLAGS += -Ifrontend/switch -ftree-vectorize
-        FLAGS += -DHAVE_MKDIR
         STATIC_LINKING = 1
 
 else ifeq ($(platform), wiiu)
@@ -249,7 +219,6 @@ else ifeq ($(platform), wiiu)
    ENDIANNESS_DEFINES += -DGEKKO -DWIIU -DHW_RVL -mrvl -mcpu=750 -meabi -mhard-float -DMSB_FIRST
 
    EXTRA_INCLUDES := -I$(DEVKITPRO)/libogc/include
-   FLAGS += -DHAVE_MKDIR
    STATIC_LINKING = 1
 
 # Classic Platforms ####################
@@ -274,7 +243,6 @@ else ifeq ($(platform), classic_armv7_a7)
 	CPPFLAGS += $(CFLAGS)
 	HAVE_NEON = 1
 	ARCH = arm
-	FLAGS += -DHAVE_MKDIR
 	ifeq ($(shell echo `$(CC) -dumpversion` "< 4.9" | bc -l), 1)
 	  CFLAGS += -march=armv7-a
 	else
@@ -290,7 +258,6 @@ else ifeq ($(platform), rpi3)
    TARGET := $(TARGET_NAME)_libretro.so
    fpic := -fPIC
    SHARED := -shared -Wl,--no-undefined -Wl,--version-script=link.T
-   FLAGS += -DHAVE_MKDIR
    FLAGS += -marm -mcpu=cortex-a53 -mfpu=neon-fp-armv8 -mfloat-abi=hard -ffast-math
    ASFLAGS += -mfpu=neon-fp-armv8
    FLAGS += -DARM
@@ -300,7 +267,6 @@ else ifneq (,$(findstring armv,$(platform)))
    fpic := -fPIC
    SHARED := -shared -Wl,--no-undefined -Wl,--version-script=link.T
    CC = gcc
-   FLAGS += -DHAVE_MKDIR
    IS_X86 = 0
 ifneq (,$(findstring cortexa8,$(platform)))
    FLAGS += -marm -mcpu=cortex-a8
@@ -335,7 +301,6 @@ else ifeq ($(platform), gcw0)
    AR = /opt/gcw0-toolchain/usr/bin/mipsel-linux-ar
    fpic := -fPIC
    SHARED := -shared -Wl,--no-undefined -Wl,--version-script=link.T
-   FLAGS += -DHAVE_MKDIR
    FLAGS += -ffast-math -march=mips32 -mtune=mips32r2 -mhard-float
 
 # Windows MSVC 2010 x64
@@ -344,7 +309,6 @@ else ifeq ($(platform), windows_msvc2010_x64)
    CXX = cl.exe
 
    NO_GCC := 1
-   FLAGS += -DHAVE_MKDIR
    WINDOWS_VERSION = 1
    IS_X86 = 1
 
@@ -372,7 +336,6 @@ else ifeq ($(platform), windows_msvc2010_x86)
    CXX = cl.exe
 
    NO_GCC := 1
-   FLAGS += -DHAVE_MKDIR
    WINDOWS_VERSION = 1
    IS_X86 = 1
 
@@ -400,7 +363,6 @@ else ifeq ($(platform), windows_msvc2005_x86)
    CXX = cl.exe
 
    NO_GCC := 1
-   FLAGS += -DHAVE_MKDIR
    WINDOWS_VERSION = 1
    IS_X86 = 1
 
@@ -428,7 +390,6 @@ else ifeq ($(platform), xbox1_msvc2003)
    LD   = lib.exe
 
    NO_GCC := 1
-   FLAGS += -DHAVE_MKDIR
    WINDOWS_VERSION = 1
    IS_X86 = 1
 
@@ -446,7 +407,6 @@ else ifeq ($(platform), windows_msvc2003_x86)
    CXX = cl.exe
 
    NO_GCC := 1
-   FLAGS += -DHAVE_MKDIR
    WINDOWS_VERSION = 1
    IS_X86 = 1
 
@@ -473,7 +433,6 @@ else ifneq (,$(findstring windows_msvc2017,$(platform)))
    CXXFLAGS += -DNOMINMAX
 
    NO_GCC := 1
-   FLAGS += -DHAVE_MKDIR
    WINDOWS_VERSION = 1
    IS_X86 = 1
 
@@ -572,7 +531,6 @@ else
    IS_X86 = 1
    SHARED := -shared -Wl,--no-undefined -Wl,--version-script=link.T
    LDFLAGS += -static-libgcc -static-libstdc++ -lwinmm
-   FLAGS += -DHAVE__MKDIR
 endif
 
 include Makefile.common
