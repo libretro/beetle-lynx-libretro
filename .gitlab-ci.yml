@@ -16,6 +16,7 @@ include:
   # Windows 64-bit
   - project: 'libretro-infrastructure/ci-templates'
     file: '/windows-x64-mingw.yml'
+    
   # Linux 64-bit
   - project: 'libretro-infrastructure/ci-templates'
     file: '/linux-x64.yml'
@@ -49,6 +50,10 @@ include:
   # Nintendo Wii
   - project: 'libretro-infrastructure/ci-templates'
     file: '/wii-static.yml'
+
+  # Nintendo WiiU
+  - project: 'libretro-infrastructure/ci-templates'
+    file: '/wiiu-static.yml'
 
   # Nintendo Switch
   - project: 'libretro-infrastructure/ci-templates'
@@ -138,9 +143,15 @@ libretro-build-wii:
   extends:
     - .libretro-wii-static-retroarch-master
     - .core-defs
-    
+
+# Nintendo WiiU
+libretro-build-wiiu:
+  extends:
+    - .libretro-wiiu-static-retroarch-master
+    - .core-defs
+
 # Nintendo Switch
 libretro-build-libnx-aarch64:
   extends:
     - .libretro-libnx-static-retroarch-master
-    - .core-defs  
+    - .core-defs
