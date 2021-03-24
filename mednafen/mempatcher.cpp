@@ -372,8 +372,6 @@ static bool TestConditions(const char *string)
    if(value_at_address | v_value)
     passed = 0;
   }
-  else
-   puts("Invalid operation");
   string = strchr(string, ',');
   if(string == NULL)
    break;
