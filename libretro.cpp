@@ -516,7 +516,7 @@ void retro_get_system_av_info(struct retro_system_av_info *info)
    info->geometry.aspect_ratio = MEDNAFEN_CORE_GEOMETRY_ASPECT_RATIO;
 }
 
-void retro_deinit()
+void retro_deinit(void)
 {
    if (surf)
    {
