@@ -72,7 +72,7 @@ struct retro_core_option_definition option_defs_us[] = {
 
    {
       "lynx_pix_format",
-      "Color Format (Restart)",
+      "Color Format (Restart Required)",
       "",
       {
          { "16", "16-Bit (RGB565)" },
@@ -96,7 +96,7 @@ struct retro_core_option_definition *option_defs_intl[RETRO_LANGUAGE_LAST] = {
    option_defs_us, /* RETRO_LANGUAGE_ENGLISH */
    NULL,           /* RETRO_LANGUAGE_JAPANESE */
    NULL,           /* RETRO_LANGUAGE_FRENCH */
-   NULL,           /* RETRO_LANGUAGE_SPANISH */
+   option_defs_es, /* RETRO_LANGUAGE_SPANISH */
    NULL,           /* RETRO_LANGUAGE_GERMAN */
    NULL,           /* RETRO_LANGUAGE_ITALIAN */
    NULL,           /* RETRO_LANGUAGE_DUTCH */
