@@ -29,10 +29,6 @@
 #define htole16 le16toh
 #endif
 
-int write16le(uint16 b, FILE *fp);
-int write32le(uint32 b, FILE *fp);
-int read32le(uint32 *Bufo, FILE *fp);
-
 void Endian_A16_Swap(void *src, uint32 nelements);
 void Endian_A32_Swap(void *src, uint32 nelements);
 void Endian_A64_Swap(void *src, uint32 nelements);

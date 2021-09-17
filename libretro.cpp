@@ -762,19 +762,3 @@ void MDFN_PrintError(const char *format, ...)
 
  va_end(ap);
 }
-
-void MDFN_DebugPrintReal(const char *file, const int line, const char *format, ...)
-{
- char *temp;
-
- va_list ap;
-
- va_start(ap, format);
-
- temp = new char[4096];
- vsnprintf(temp, 4096, format, ap);
- fprintf(stderr, "%s:%d  %s\n", file, line, temp);
- delete[] temp;
-
- va_end(ap);
-}
