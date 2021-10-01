@@ -45,9 +45,6 @@
 
 #define RAM_CPP
 
-//#include <crtdbg.h>
-//#define   TRACE_RAM
-
 #include "system.h"
 #include "ram.h"
 #include "../mempatcher.h"

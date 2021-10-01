@@ -44,9 +44,6 @@
 
 #define ROM_CPP
 
-//#include <crtdbg.h>
-//#define   TRACE_ROM
-
 #include "system.h"
 #include "rom.h"
 

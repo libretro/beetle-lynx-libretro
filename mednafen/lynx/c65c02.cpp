@@ -20,7 +20,6 @@ void C65C02::Update(void)
 		}
 	// Fetch opcode
 	mOpcode=CPU_PEEK(mPC);
-	TRACE_CPU2("Update() PC=$%04x, Opcode=%02x",mPC,mOpcode);
 	mPC++;
 
 	// Execute Opcode

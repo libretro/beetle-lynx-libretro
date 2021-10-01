@@ -51,9 +51,6 @@
 
 #define SYSTEM_CPP
 
-//#include <crtdbg.h>
-//#define	TRACE_SYSTEM
-
 #include "mednafen/lynx/system.h"
 #include "mednafen/mednafen-endian.h"
 
