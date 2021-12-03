@@ -1412,7 +1412,8 @@ uint8 CMikie::Peek(uint32 addr)
 // Register to let programs know handy is running
 
 		case (0xfd97&0xff):
-			return 0x42;
+			// return 0x42;
+			break;
 
 // Errors on illegal location accesses
 
