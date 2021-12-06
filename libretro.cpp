@@ -48,6 +48,8 @@ static void hookup_ports(bool force);
 
 static bool initial_ports_hookup = false;
 
+static bool libretro_supports_option_categories = false;
+
 static char retro_system_directory[4096];
 
 static bool libretro_supports_input_bitmasks;
@@ -99,7 +101,8 @@ void retro_init(void)
 
    check_system_specs();
 
-   libretro_set_core_options(environ_cb);
+   libretro_set_core_options(environ_cb,
+                             &libretro_supports_option_categories);
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_INPUT_BITMASKS, NULL))
       libretro_supports_input_bitmasks = true;
