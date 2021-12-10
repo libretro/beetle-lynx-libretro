@@ -519,11 +519,11 @@ struct retro_core_options_v2 options_da = {
 
 /* RETRO_LANGUAGE_DE */
 
-#define LYNX_ROT_SCREEN_LABEL_DE NULL
-#define LYNX_ROT_SCREEN_INFO_0_DE NULL
+#define LYNX_ROT_SCREEN_LABEL_DE "Bildschirm automatisch drehen"
+#define LYNX_ROT_SCREEN_INFO_0_DE "Bildschirmausrichtung und Tastenbelegung bei bekannten Spielen automatisch drehen. Bei \"Manuell\" wird die Bildschirmrotation durch Drücken der SELECT-Taste angepasst, andernfalls kann eine feste Drehung von 0, 90, 180 oder 270 Grad gegen den Uhrzeigersinn eingestellt werden."
 #define OPTION_VAL_AUTO_DE NULL
 #define OPTION_VAL_MANUAL_DE NULL
-#define LYNX_PIX_FORMAT_LABEL_DE NULL
+#define LYNX_PIX_FORMAT_LABEL_DE "Farbformat (Neustart erforderlich)"
 #define OPTION_VAL_16_DE NULL
 #define OPTION_VAL_32_DE NULL
 
@@ -700,9 +700,9 @@ struct retro_core_options_v2 options_eo = {
 /* RETRO_LANGUAGE_ES */
 
 #define LYNX_ROT_SCREEN_LABEL_ES "Rotación automática de pantalla"
-#define LYNX_ROT_SCREEN_INFO_0_ES "Rota automáticamente la orientación de la pantalla y los controles en aquellos juegos que lo necesiten. Al seleccionar la opción «Manual», la rotación de pantalla se podrá ajustar al pulsar el botón Select, en caso contrario, se puede asignar una rotación fija de 0º, 90º, 180º o 270º (en el sentido contrario al de las agujas del reloj)."
-#define OPTION_VAL_AUTO_ES "Automática"
-#define OPTION_VAL_MANUAL_ES "Manual"
+#define LYNX_ROT_SCREEN_INFO_0_ES "Rota automáticamente la orientación de la pantalla y los controles en aquellos juegos que lo necesiten. Al seleccionar la opción «Manual», la rotación de pantalla se podrá ajustar al pulsar el botón SELECT, en caso contrario, se puede asignar una rotación fija de 0º, 90º, 180º o 270º (en el sentido contrario al de las agujas del reloj)."
+#define OPTION_VAL_AUTO_ES "Selección automática"
+#define OPTION_VAL_MANUAL_ES "Selección manual"
 #define LYNX_PIX_FORMAT_LABEL_ES "Formato de color (es necesario reiniciar)"
 #define OPTION_VAL_16_ES "16 bits (RGB565)"
 #define OPTION_VAL_32_ES "32 bits (RGB8888)"
@@ -819,10 +819,10 @@ struct retro_core_options_v2 options_fa = {
 
 /* RETRO_LANGUAGE_FI */
 
-#define LYNX_ROT_SCREEN_LABEL_FI NULL
+#define LYNX_ROT_SCREEN_LABEL_FI "Näytön automaattinen kierto"
 #define LYNX_ROT_SCREEN_INFO_0_FI NULL
-#define OPTION_VAL_AUTO_FI NULL
-#define OPTION_VAL_MANUAL_FI NULL
+#define OPTION_VAL_AUTO_FI "Automaattinen"
+#define OPTION_VAL_MANUAL_FI "Manuaalinen"
 #define LYNX_PIX_FORMAT_LABEL_FI NULL
 #define OPTION_VAL_16_FI NULL
 #define OPTION_VAL_32_FI NULL
@@ -879,13 +879,13 @@ struct retro_core_options_v2 options_fi = {
 
 /* RETRO_LANGUAGE_FR */
 
-#define LYNX_ROT_SCREEN_LABEL_FR NULL
-#define LYNX_ROT_SCREEN_INFO_0_FR NULL
+#define LYNX_ROT_SCREEN_LABEL_FR "Rotation automatique de l'écran"
+#define LYNX_ROT_SCREEN_INFO_0_FR "Faire pivoter automatiquement l'orientation de l'écran et le mappage des touches pour les jeux connus. Lorsque définie sur 'Manuelle', la rotation de l'écran est réglée en appuyant sur la touche SELECT, sinon une rotation fixe peut être réglée à 0, 90, 180 ou 270 degrés dans le sens anti-horaire."
 #define OPTION_VAL_AUTO_FR NULL
-#define OPTION_VAL_MANUAL_FR NULL
-#define LYNX_PIX_FORMAT_LABEL_FR NULL
-#define OPTION_VAL_16_FR NULL
-#define OPTION_VAL_32_FR NULL
+#define OPTION_VAL_MANUAL_FR "Manuelle"
+#define LYNX_PIX_FORMAT_LABEL_FR "Format des couleurs (Redémarrage requis)"
+#define OPTION_VAL_16_FR "16 bits (RVB565)"
+#define OPTION_VAL_32_FR "32 bits (RVB8888)"
 
 struct retro_core_option_v2_category option_cats_fr[] = {
    { NULL, NULL, NULL },
@@ -1179,11 +1179,11 @@ struct retro_core_options_v2 options_id = {
 
 /* RETRO_LANGUAGE_IT */
 
-#define LYNX_ROT_SCREEN_LABEL_IT NULL
-#define LYNX_ROT_SCREEN_INFO_0_IT NULL
-#define OPTION_VAL_AUTO_IT NULL
-#define OPTION_VAL_MANUAL_IT NULL
-#define LYNX_PIX_FORMAT_LABEL_IT NULL
+#define LYNX_ROT_SCREEN_LABEL_IT "Rotazione Automatica Schermo"
+#define LYNX_ROT_SCREEN_INFO_0_IT "Ruota virtualmente l'orientamento dello schermo e i tasti automaticamente per i giochi conosciuti. Quando impostato su 'Manuale', la rotazione dello schermo viene regolata premendo il pulsante SELECT, altrimenti una rotazione fissa può essere impostata a 0, 90, 180 o 270 gradi in senso antiorario."
+#define OPTION_VAL_AUTO_IT "Automatico"
+#define OPTION_VAL_MANUAL_IT "Manuale"
+#define LYNX_PIX_FORMAT_LABEL_IT "Formato Colore (Riavvio Richiesto)"
 #define OPTION_VAL_16_IT NULL
 #define OPTION_VAL_32_IT NULL
 
@@ -1419,7 +1419,7 @@ struct retro_core_options_v2 options_mt = {
 
 /* RETRO_LANGUAGE_NL */
 
-#define LYNX_ROT_SCREEN_LABEL_NL NULL
+#define LYNX_ROT_SCREEN_LABEL_NL "Scherm automatisch draaien"
 #define LYNX_ROT_SCREEN_INFO_0_NL NULL
 #define OPTION_VAL_AUTO_NL NULL
 #define OPTION_VAL_MANUAL_NL NULL
@@ -1539,10 +1539,10 @@ struct retro_core_options_v2 options_oc = {
 
 /* RETRO_LANGUAGE_PL */
 
-#define LYNX_ROT_SCREEN_LABEL_PL NULL
+#define LYNX_ROT_SCREEN_LABEL_PL "Autoobracanie ekranu"
 #define LYNX_ROT_SCREEN_INFO_0_PL NULL
 #define OPTION_VAL_AUTO_PL NULL
-#define OPTION_VAL_MANUAL_PL NULL
+#define OPTION_VAL_MANUAL_PL "Ręcznie"
 #define LYNX_PIX_FORMAT_LABEL_PL NULL
 #define OPTION_VAL_16_PL NULL
 #define OPTION_VAL_32_PL NULL
@@ -1599,11 +1599,11 @@ struct retro_core_options_v2 options_pl = {
 
 /* RETRO_LANGUAGE_PT_BR */
 
-#define LYNX_ROT_SCREEN_LABEL_PT_BR NULL
-#define LYNX_ROT_SCREEN_INFO_0_PT_BR NULL
-#define OPTION_VAL_AUTO_PT_BR NULL
+#define LYNX_ROT_SCREEN_LABEL_PT_BR "Giro automático da tela"
+#define LYNX_ROT_SCREEN_INFO_0_PT_BR "Gira automaticamente a orientação da tela e os controles nos jogos que o requerem. Ao selecionar a opção 'Manual', a rotação da tela pode ser ajustada pressionando o botão SELECT, caso contrário, uma rotação fixa de 0°, 90°, 180° ou 270° no sentido anti-horário pode ser atribuída."
+#define OPTION_VAL_AUTO_PT_BR "Automático"
 #define OPTION_VAL_MANUAL_PT_BR NULL
-#define LYNX_PIX_FORMAT_LABEL_PT_BR NULL
+#define LYNX_PIX_FORMAT_LABEL_PT_BR "Formato de cor (requer reinício)"
 #define OPTION_VAL_16_PT_BR NULL
 #define OPTION_VAL_32_PT_BR NULL
 
@@ -1781,8 +1781,8 @@ struct retro_core_options_v2 options_ro = {
 
 #define LYNX_ROT_SCREEN_LABEL_RU NULL
 #define LYNX_ROT_SCREEN_INFO_0_RU NULL
-#define OPTION_VAL_AUTO_RU NULL
-#define OPTION_VAL_MANUAL_RU NULL
+#define OPTION_VAL_AUTO_RU "Авто"
+#define OPTION_VAL_MANUAL_RU "Вручную"
 #define LYNX_PIX_FORMAT_LABEL_RU NULL
 #define OPTION_VAL_16_RU NULL
 #define OPTION_VAL_32_RU NULL
@@ -2079,7 +2079,7 @@ struct retro_core_options_v2 options_sv = {
 
 /* RETRO_LANGUAGE_TR */
 
-#define LYNX_ROT_SCREEN_LABEL_TR NULL
+#define LYNX_ROT_SCREEN_LABEL_TR "Ekranı Otomatik Döndür"
 #define LYNX_ROT_SCREEN_INFO_0_TR NULL
 #define OPTION_VAL_AUTO_TR NULL
 #define OPTION_VAL_MANUAL_TR NULL
