@@ -1299,13 +1299,13 @@ struct retro_core_options_v2 options_ja = {
 
 /* RETRO_LANGUAGE_KO */
 
-#define LYNX_ROT_SCREEN_LABEL_KO NULL
-#define LYNX_ROT_SCREEN_INFO_0_KO NULL
-#define OPTION_VAL_AUTO_KO NULL
-#define OPTION_VAL_MANUAL_KO NULL
-#define LYNX_PIX_FORMAT_LABEL_KO NULL
-#define OPTION_VAL_16_KO NULL
-#define OPTION_VAL_32_KO NULL
+#define LYNX_ROT_SCREEN_LABEL_KO "화면 자동 회전"
+#define LYNX_ROT_SCREEN_INFO_0_KO "알려진 게임에 대해 화면과 키 입력 방향을 회전시킵니다. '수동'으로 설정할 경우 선택 버튼을 눌러 화면을 회전할 수 있으며, 또는 0, 90, 180, 270도의 고정된 반시계방향 회전을 선택할 수도 있습니다."
+#define OPTION_VAL_AUTO_KO "자동"
+#define OPTION_VAL_MANUAL_KO "수동"
+#define LYNX_PIX_FORMAT_LABEL_KO "색 포맷 (재시작 필요)"
+#define OPTION_VAL_16_KO "16비트 (RGB565)"
+#define OPTION_VAL_32_KO "32비트 (RGB8888)"
 
 struct retro_core_option_v2_category option_cats_ko[] = {
    { NULL, NULL, NULL },
@@ -1779,13 +1779,13 @@ struct retro_core_options_v2 options_ro = {
 
 /* RETRO_LANGUAGE_RU */
 
-#define LYNX_ROT_SCREEN_LABEL_RU NULL
-#define LYNX_ROT_SCREEN_INFO_0_RU NULL
+#define LYNX_ROT_SCREEN_LABEL_RU "Автоповорот экрана"
+#define LYNX_ROT_SCREEN_INFO_0_RU "Автоматически поворачивает ориентацию экрана и раскладку кнопок для поддерживаемых игр. В режиме 'Вручную' поворот экрана задаётся кнопкой SELECT, или же вращение выбирается из фикс. значений, равных 0, 90, 180 или 270 градусам против часовой стрелки."
 #define OPTION_VAL_AUTO_RU "Авто"
 #define OPTION_VAL_MANUAL_RU "Вручную"
-#define LYNX_PIX_FORMAT_LABEL_RU NULL
-#define OPTION_VAL_16_RU NULL
-#define OPTION_VAL_32_RU NULL
+#define LYNX_PIX_FORMAT_LABEL_RU "Глубина цвета (требуется перезапуск)"
+#define OPTION_VAL_16_RU "16-битный (RGB565)"
+#define OPTION_VAL_32_RU "32-битный (RGB8888)"
 
 struct retro_core_option_v2_category option_cats_ru[] = {
    { NULL, NULL, NULL },
