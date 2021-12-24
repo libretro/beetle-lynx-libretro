@@ -41,8 +41,8 @@ extern "C" {
 
 #define LYNX_ROT_SCREEN_LABEL_AR NULL
 #define LYNX_ROT_SCREEN_INFO_0_AR NULL
-#define OPTION_VAL_AUTO_AR NULL
-#define OPTION_VAL_MANUAL_AR NULL
+#define OPTION_VAL_AUTO_AR "تلقائي"
+#define OPTION_VAL_MANUAL_AR "يدوي"
 #define LYNX_PIX_FORMAT_LABEL_AR NULL
 #define OPTION_VAL_16_AR NULL
 #define OPTION_VAL_32_AR NULL
@@ -221,8 +221,8 @@ struct retro_core_options_v2 options_ca = {
 
 #define LYNX_ROT_SCREEN_LABEL_CHS NULL
 #define LYNX_ROT_SCREEN_INFO_0_CHS NULL
-#define OPTION_VAL_AUTO_CHS NULL
-#define OPTION_VAL_MANUAL_CHS NULL
+#define OPTION_VAL_AUTO_CHS "自动"
+#define OPTION_VAL_MANUAL_CHS "手工"
 #define LYNX_PIX_FORMAT_LABEL_CHS NULL
 #define OPTION_VAL_16_CHS NULL
 #define OPTION_VAL_32_CHS NULL
@@ -281,7 +281,7 @@ struct retro_core_options_v2 options_chs = {
 
 #define LYNX_ROT_SCREEN_LABEL_CHT NULL
 #define LYNX_ROT_SCREEN_INFO_0_CHT NULL
-#define OPTION_VAL_AUTO_CHT NULL
+#define OPTION_VAL_AUTO_CHT "自動"
 #define OPTION_VAL_MANUAL_CHT NULL
 #define LYNX_PIX_FORMAT_LABEL_CHT NULL
 #define OPTION_VAL_16_CHT NULL
@@ -521,8 +521,8 @@ struct retro_core_options_v2 options_da = {
 
 #define LYNX_ROT_SCREEN_LABEL_DE "Bildschirm automatisch drehen"
 #define LYNX_ROT_SCREEN_INFO_0_DE "Bildschirmausrichtung und Tastenbelegung bei bekannten Spielen automatisch drehen. Bei \"Manuell\" wird die Bildschirmrotation durch Drücken der SELECT-Taste angepasst, andernfalls kann eine feste Drehung von 0, 90, 180 oder 270 Grad gegen den Uhrzeigersinn eingestellt werden."
-#define OPTION_VAL_AUTO_DE NULL
-#define OPTION_VAL_MANUAL_DE NULL
+#define OPTION_VAL_AUTO_DE "Automatisch"
+#define OPTION_VAL_MANUAL_DE "Manuell"
 #define LYNX_PIX_FORMAT_LABEL_DE "Farbformat (Neustart erforderlich)"
 #define OPTION_VAL_16_DE NULL
 #define OPTION_VAL_32_DE NULL
@@ -1062,7 +1062,7 @@ struct retro_core_options_v2 options_he = {
 #define LYNX_ROT_SCREEN_LABEL_HU NULL
 #define LYNX_ROT_SCREEN_INFO_0_HU NULL
 #define OPTION_VAL_AUTO_HU NULL
-#define OPTION_VAL_MANUAL_HU NULL
+#define OPTION_VAL_MANUAL_HU "Kézi"
 #define LYNX_PIX_FORMAT_LABEL_HU NULL
 #define OPTION_VAL_16_HU NULL
 #define OPTION_VAL_32_HU NULL
@@ -1241,8 +1241,8 @@ struct retro_core_options_v2 options_it = {
 
 #define LYNX_ROT_SCREEN_LABEL_JA NULL
 #define LYNX_ROT_SCREEN_INFO_0_JA NULL
-#define OPTION_VAL_AUTO_JA NULL
-#define OPTION_VAL_MANUAL_JA NULL
+#define OPTION_VAL_AUTO_JA "自動"
+#define OPTION_VAL_MANUAL_JA "手動"
 #define LYNX_PIX_FORMAT_LABEL_JA NULL
 #define OPTION_VAL_16_JA NULL
 #define OPTION_VAL_32_JA NULL
@@ -1421,7 +1421,7 @@ struct retro_core_options_v2 options_mt = {
 
 #define LYNX_ROT_SCREEN_LABEL_NL "Scherm automatisch draaien"
 #define LYNX_ROT_SCREEN_INFO_0_NL NULL
-#define OPTION_VAL_AUTO_NL NULL
+#define OPTION_VAL_AUTO_NL "Automatisch"
 #define OPTION_VAL_MANUAL_NL NULL
 #define LYNX_PIX_FORMAT_LABEL_NL NULL
 #define OPTION_VAL_16_NL NULL
@@ -2021,7 +2021,7 @@ struct retro_core_options_v2 options_sr = {
 
 #define LYNX_ROT_SCREEN_LABEL_SV NULL
 #define LYNX_ROT_SCREEN_INFO_0_SV NULL
-#define OPTION_VAL_AUTO_SV NULL
+#define OPTION_VAL_AUTO_SV "Automatiskt"
 #define OPTION_VAL_MANUAL_SV NULL
 #define LYNX_PIX_FORMAT_LABEL_SV NULL
 #define OPTION_VAL_16_SV NULL
@@ -2080,10 +2080,10 @@ struct retro_core_options_v2 options_sv = {
 /* RETRO_LANGUAGE_TR */
 
 #define LYNX_ROT_SCREEN_LABEL_TR "Ekranı Otomatik Döndür"
-#define LYNX_ROT_SCREEN_INFO_0_TR NULL
-#define OPTION_VAL_AUTO_TR NULL
-#define OPTION_VAL_MANUAL_TR NULL
-#define LYNX_PIX_FORMAT_LABEL_TR NULL
+#define LYNX_ROT_SCREEN_INFO_0_TR "Bilinen oyunlar için ekran yönünü ve tuş haritalarını sanal olarak otomatik olarak döndürün. 'El İle' ayarlandığında, SELECT düğmesine basılarak ekran dönüşü ayarlanır, yoksa sabit bir dönüş saat yönünün tersine 0, 90, 180 veya 270 derece olarak ayarlanabilir."
+#define OPTION_VAL_AUTO_TR "Otomatik"
+#define OPTION_VAL_MANUAL_TR "El İle"
+#define LYNX_PIX_FORMAT_LABEL_TR "Renk Biçimi (Yeniden Başlatılmalı)"
 #define OPTION_VAL_16_TR NULL
 #define OPTION_VAL_32_TR NULL
 
@@ -2141,8 +2141,8 @@ struct retro_core_options_v2 options_tr = {
 
 #define LYNX_ROT_SCREEN_LABEL_UK NULL
 #define LYNX_ROT_SCREEN_INFO_0_UK NULL
-#define OPTION_VAL_AUTO_UK NULL
-#define OPTION_VAL_MANUAL_UK NULL
+#define OPTION_VAL_AUTO_UK "Авто"
+#define OPTION_VAL_MANUAL_UK "Ручний"
 #define LYNX_PIX_FORMAT_LABEL_UK NULL
 #define OPTION_VAL_16_UK NULL
 #define OPTION_VAL_32_UK NULL
@@ -2201,8 +2201,8 @@ struct retro_core_options_v2 options_uk = {
 
 #define LYNX_ROT_SCREEN_LABEL_VN NULL
 #define LYNX_ROT_SCREEN_INFO_0_VN NULL
-#define OPTION_VAL_AUTO_VN NULL
-#define OPTION_VAL_MANUAL_VN NULL
+#define OPTION_VAL_AUTO_VN "Tự động"
+#define OPTION_VAL_MANUAL_VN "Thủ công"
 #define LYNX_PIX_FORMAT_LABEL_VN NULL
 #define OPTION_VAL_16_VN NULL
 #define OPTION_VAL_32_VN NULL
