@@ -579,11 +579,11 @@ struct retro_core_options_v2 options_de = {
 
 /* RETRO_LANGUAGE_EL */
 
-#define LYNX_ROT_SCREEN_LABEL_EL NULL
-#define LYNX_ROT_SCREEN_INFO_0_EL NULL
-#define OPTION_VAL_AUTO_EL NULL
-#define OPTION_VAL_MANUAL_EL NULL
-#define LYNX_PIX_FORMAT_LABEL_EL NULL
+#define LYNX_ROT_SCREEN_LABEL_EL "Αυτόματη Περιστροφή Οθόνης"
+#define LYNX_ROT_SCREEN_INFO_0_EL "Αυτόματη ρύθμιση του προσανατολισμού της οθόνης και των πλήκτρων για τα γνωστά παιχνίδια. Εάν επιλεχθεί 'Χειροκίνητο', η περιστροφή οθόνης ρυθμίζεται πατώντας το κουμπί SELECT, διαφορετικά μπορεί να ρυθμιστεί σταθερή περιστροφή 0, 90, 180 ή 270 μοίρες αριστερόστροφα."
+#define OPTION_VAL_AUTO_EL "Αυτόματο"
+#define OPTION_VAL_MANUAL_EL "Χειροκίνητο"
+#define LYNX_PIX_FORMAT_LABEL_EL "Μορφή Χρώματος (Απαιτείται Επανεκκίνηση)"
 #define OPTION_VAL_16_EL NULL
 #define OPTION_VAL_32_EL NULL
 
