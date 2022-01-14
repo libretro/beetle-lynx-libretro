@@ -823,7 +823,7 @@ struct retro_core_options_v2 options_fa = {
 #define LYNX_ROT_SCREEN_INFO_0_FI NULL
 #define OPTION_VAL_AUTO_FI "Automaattinen"
 #define OPTION_VAL_MANUAL_FI "Manuaalinen"
-#define LYNX_PIX_FORMAT_LABEL_FI NULL
+#define LYNX_PIX_FORMAT_LABEL_FI "Väriformaatti (Uudelleenkäynnistys vaaditaan)"
 #define OPTION_VAL_16_FI NULL
 #define OPTION_VAL_32_FI NULL
 
@@ -1475,6 +1475,66 @@ struct retro_core_option_v2_definition option_defs_nl[] = {
 struct retro_core_options_v2 options_nl = {
    option_cats_nl,
    option_defs_nl
+};
+
+/* RETRO_LANGUAGE_NO */
+
+#define LYNX_ROT_SCREEN_LABEL_NO NULL
+#define LYNX_ROT_SCREEN_INFO_0_NO NULL
+#define OPTION_VAL_AUTO_NO NULL
+#define OPTION_VAL_MANUAL_NO NULL
+#define LYNX_PIX_FORMAT_LABEL_NO NULL
+#define OPTION_VAL_16_NO NULL
+#define OPTION_VAL_32_NO NULL
+
+struct retro_core_option_v2_category option_cats_no[] = {
+   { NULL, NULL, NULL },
+};
+struct retro_core_option_v2_definition option_defs_no[] = {
+
+   /* These variable names and possible values constitute an ABI with ZMZ (ZSNES Libretro player).
+    * Changing "Show layer 1" is fine, but don't change "layer_1"/etc or the possible values ("Yes|No").
+    * Adding more variables and rearranging them is safe. */
+
+   {
+      "lynx_rot_screen",
+      LYNX_ROT_SCREEN_LABEL_NO,
+      NULL,
+      LYNX_ROT_SCREEN_INFO_0_NO,
+      NULL,
+      NULL,
+      {
+         { "auto", OPTION_VAL_AUTO_NO },
+         { "manual", OPTION_VAL_MANUAL_NO },
+         { "0",    NULL },
+         { "90",   NULL },
+         { "180",  NULL },
+         { "270",  NULL },
+         { NULL, NULL},
+      },
+      "auto",
+   },
+
+   {
+      "lynx_pix_format",
+      LYNX_PIX_FORMAT_LABEL_NO,
+      NULL,
+      "",
+      NULL,
+      NULL,
+      {
+         { "16", OPTION_VAL_16_NO },
+         { "32", OPTION_VAL_32_NO },
+         { NULL, NULL},
+      },
+      "16",
+   },
+
+   { NULL, NULL, NULL, NULL, NULL, NULL, {{0}}, NULL },
+};
+struct retro_core_options_v2 options_no = {
+   option_cats_no,
+   option_defs_no
 };
 
 /* RETRO_LANGUAGE_OC */
