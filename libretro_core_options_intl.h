@@ -700,7 +700,7 @@ struct retro_core_options_v2 options_eo = {
 /* RETRO_LANGUAGE_ES */
 
 #define LYNX_ROT_SCREEN_LABEL_ES "Rotación automática de pantalla"
-#define LYNX_ROT_SCREEN_INFO_0_ES "Rota automáticamente la orientación de la pantalla y los controles en aquellos juegos que lo necesiten. Al seleccionar la opción «Manual», la rotación de pantalla se podrá ajustar al pulsar el botón SELECT, en caso contrario, se puede asignar una rotación fija de 0º, 90º, 180º o 270º (en el sentido contrario al de las agujas del reloj)."
+#define LYNX_ROT_SCREEN_INFO_0_ES "Rota automáticamente la orientación de la pantalla y las asignaciones de controles en aquellos juegos que lo necesiten. Al seleccionar la opción «Manual», la rotación de pantalla se podrá ajustar al pulsar el botón SELECT, en caso contrario, se puede asignar una rotación fija de 0º, 90º, 180º o 270º (en el sentido contrario al de las agujas del reloj)."
 #define OPTION_VAL_AUTO_ES "Selección automática"
 #define OPTION_VAL_MANUAL_ES "Selección manual"
 #define LYNX_PIX_FORMAT_LABEL_ES "Formato de color (es necesario reiniciar)"
@@ -2255,6 +2255,66 @@ struct retro_core_option_v2_definition option_defs_uk[] = {
 struct retro_core_options_v2 options_uk = {
    option_cats_uk,
    option_defs_uk
+};
+
+/* RETRO_LANGUAGE_VAL */
+
+#define LYNX_ROT_SCREEN_LABEL_VAL NULL
+#define LYNX_ROT_SCREEN_INFO_0_VAL NULL
+#define OPTION_VAL_AUTO_VAL NULL
+#define OPTION_VAL_MANUAL_VAL NULL
+#define LYNX_PIX_FORMAT_LABEL_VAL NULL
+#define OPTION_VAL_16_VAL NULL
+#define OPTION_VAL_32_VAL NULL
+
+struct retro_core_option_v2_category option_cats_val[] = {
+   { NULL, NULL, NULL },
+};
+struct retro_core_option_v2_definition option_defs_val[] = {
+
+   /* These variable names and possible values constitute an ABI with ZMZ (ZSNES Libretro player).
+    * Changing "Show layer 1" is fine, but don't change "layer_1"/etc or the possible values ("Yes|No").
+    * Adding more variables and rearranging them is safe. */
+
+   {
+      "lynx_rot_screen",
+      LYNX_ROT_SCREEN_LABEL_VAL,
+      NULL,
+      LYNX_ROT_SCREEN_INFO_0_VAL,
+      NULL,
+      NULL,
+      {
+         { "auto", OPTION_VAL_AUTO_VAL },
+         { "manual", OPTION_VAL_MANUAL_VAL },
+         { "0",    NULL },
+         { "90",   NULL },
+         { "180",  NULL },
+         { "270",  NULL },
+         { NULL, NULL},
+      },
+      "auto",
+   },
+
+   {
+      "lynx_pix_format",
+      LYNX_PIX_FORMAT_LABEL_VAL,
+      NULL,
+      "",
+      NULL,
+      NULL,
+      {
+         { "16", OPTION_VAL_16_VAL },
+         { "32", OPTION_VAL_32_VAL },
+         { NULL, NULL},
+      },
+      "16",
+   },
+
+   { NULL, NULL, NULL, NULL, NULL, NULL, {{0}}, NULL },
+};
+struct retro_core_options_v2 options_val = {
+   option_cats_val,
+   option_defs_val
 };
 
 /* RETRO_LANGUAGE_VN */
