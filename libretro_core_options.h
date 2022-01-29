@@ -64,7 +64,7 @@ struct retro_core_option_v2_definition option_defs_us[] = {
       "lynx_rot_screen",
       "Auto-rotate Screen",
       NULL,
-      "Virtually rotate screen orientation and keymaps automatically for known games. When set to 'Manual', screen rotation is adjusted by pressing the SELECT button, otherwise a fixed rotation can be set to either 0, 90, 180 or 270 degrees counter-clockwise.",
+      "Virtually rotate screen orientation and button mappings automatically for known games. When set to 'Manual', screen rotation is adjusted by pressing the SELECT button, otherwise a fixed rotation can be set to either 0, 90, 180 or 270 degrees counter-clockwise.",
       NULL,
       NULL,
       {
