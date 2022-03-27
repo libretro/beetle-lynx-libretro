@@ -49,6 +49,10 @@
 #include <compat/msvc.h>
 #endif
 
+#if defined(__PS3__) && !defined(__PSL1GHT__)
+#include <sys/fs_external.h>
+#endif
+
 static INLINE void bits_or_bits(uint32_t *a, uint32_t *b, uint32_t count)
 {
    uint32_t i;
@@ -77,6 +81,8 @@ static INLINE bool bits_any_set(uint32_t* ptr, uint32_t count)
 #ifndef PATH_MAX_LENGTH
 #if defined(_XBOX1) || defined(_3DS) || defined(PSP) || defined(PS2) || defined(GEKKO)|| defined(WIIU) || defined(ORBIS)
 #define PATH_MAX_LENGTH 512
+#elif defined(__PS3__)
+#define PATH_MAX_LENGTH 1024
 #else
 #define PATH_MAX_LENGTH 4096
 #endif
