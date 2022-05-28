@@ -17,9 +17,7 @@
 
 extern MDFNGI *MDFNGameInfo;
 
-void MDFN_LoadGameCheats(void *override);
-void MDFN_FlushGameCheats(int nosave);
-
-void MDFN_MidSync(EmulateSpecStruct *espec);
+void MDFN_LoadGameCheats(void);
+void MDFN_FlushGameCheats(void);
 
 #endif

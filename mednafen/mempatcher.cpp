@@ -178,12 +178,12 @@ static int AddCheatEntry(char *name, char *conditions, uint32 addr, uint64 val, 
  return(1);
 }
 
-void MDFN_LoadGameCheats(void *override_ptr)
+void MDFN_LoadGameCheats(void)
 {
  RebuildSubCheats();
 }
 
-void MDFN_FlushGameCheats(int nosave)
+void MDFN_FlushGameCheats(void)
 {
    std::vector<CHEATF>::iterator chit;
 

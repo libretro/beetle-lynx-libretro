@@ -180,7 +180,7 @@ static bool MDFNI_LoadGame(const uint8_t *data, size_t size)
 
 	Load(GameFile, bios_path);
 
-	MDFN_LoadGameCheats(NULL);
+	MDFN_LoadGameCheats();
 	MDFNMP_InstallReadPatches();
 
 	return true;
@@ -290,7 +290,7 @@ static void MDFNI_CloseGame(void)
    if(!MDFNGameInfo)
       return;
 
-   MDFN_FlushGameCheats(0);
+   MDFN_FlushGameCheats();
 
    CloseGame();
 
