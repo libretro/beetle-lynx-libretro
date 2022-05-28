@@ -100,10 +100,9 @@ void CMemMap::Reset(void)
 
 INLINE void CMemMap::Poke(uint32 addr, uint8 data)
 {
-	int newstate,loop;
-
+	int loop;
 	// FC00-FCFF Susie area
-	newstate=(data&0x01)?false:true;
+	int newstate=(data&0x01)?false:true;
 	if(newstate!=mSusieEnabled)
 	{
 		mSusieEnabled=newstate;
@@ -210,6 +209,3 @@ int CMemMap::StateAction(StateMem *sm, int load, int data_only)
 
  return ret;
 }
-
-
-//END OF FILE

@@ -177,10 +177,8 @@ void CSusie::DoMathMultiply(void)
 	//
 
 
-	uint32 result;
-
 	// Basic multiply is ALWAYS unsigned, sign conversion is done later
-	result=(uint32)mMATHABCD.Words.AB*(uint32)mMATHABCD.Words.CD;
+	uint32 result=(uint32)mMATHABCD.Words.AB*(uint32)mMATHABCD.Words.CD;
 	mMATHEFGH.Long=result;
 
 	if(mSPRSYS_SignedMath)
@@ -319,7 +317,6 @@ uint32 CSusie::PaintSprites(void)
 
 			cycles_used+=6*SPR_RDWR_CYC;
 
-			bool enable_sizing=false;
 			bool enable_stretch=false;
 			bool enable_tilt=false;
 		
@@ -328,8 +325,6 @@ uint32 CSusie::PaintSprites(void)
 			switch(mSPRCTL1_ReloadDepth)
 			{
 				case 1:
-					enable_sizing=true;
-
 					mSPRHSIZ.Val16=RAM_PEEKW(mTMPADR.Val16);	// Sprite Horizontal size
 					mTMPADR.Val16+=2;
 
@@ -340,7 +335,6 @@ uint32 CSusie::PaintSprites(void)
 					break;
 
 				case 2:
-					enable_sizing=true;
 					enable_stretch=true;
 
 					mSPRHSIZ.Val16=RAM_PEEKW(mTMPADR.Val16);	// Sprite Horizontal size
@@ -356,7 +350,6 @@ uint32 CSusie::PaintSprites(void)
 					break;
 
 				case 3:
-					enable_sizing=true;
 					enable_stretch=true;
 					enable_tilt=true;
 

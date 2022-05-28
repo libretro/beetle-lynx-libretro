@@ -179,23 +179,10 @@ typedef struct
 	// The framebuffer pointed to by surface->pixels is written to by the system emulation code.
 	MDFN_Surface *surface;
 
-	// Will be set to TRUE if the video pixel format has changed since the last call to Emulate(), FALSE otherwise.
-	// Will be set to TRUE on the first call to the Emulate() function/method
-	bool VideoFormatChanged;
-
 	// Set by the system emulation code every frame, to denote the horizontal and vertical offsets of the image, and the size
 	// of the image.  If the emulated system sets the elements of LineWidths, then the horizontal offset(x) and width(w) of this structure
 	// are ignored while drawing the image.
 	MDFN_Rect DisplayRect;
-
-	// Pointer to an array of MDFN_Rect, number of elements = fb_height, set by the driver code.  Individual MDFN_Rect structs written
-	// to by system emulation code.  If the emulated system doesn't support multiple screen widths per frame, or if you handle
-	// such a situation by outputting at a constant width-per-frame that is the least-common-multiple of the screen widths, then
-	// you can ignore this.  If you do wish to use this, you must set all elements every frame.
-	MDFN_Rect *LineWidths;
-
-	// TODO
-	bool *IsFMV;
 
 	// Set(optionally) by emulation code.  If InterlaceOn is true, then assume field height is 1/2 DisplayRect.h, and
 	// only every other line in surface (with the start line defined by InterlacedField) has valid data
@@ -227,70 +214,12 @@ typedef struct
 
 	// Number of frames currently in internal sound buffer.  Set by the system emulation code, to be read by the driver code.
 	int32 SoundBufSize;
-	int32 SoundBufSizeALMS;	// SoundBufSize value at last MidSync(), 0
-				// if mid sync isn't implemented for the emulation module in use.
-
-	// Number of cycles that this frame consumed, using MDFNGI::MasterClock as a time base.
-	// Set by emulation code.
-	int64 MasterCycles;
-	int64 MasterCyclesALMS;	// MasterCycles value at last MidSync(), 0
-				// if mid sync isn't implemented for the emulation module in use.
-
-	// Current sound volume(0.000...<=volume<=1.000...).  If, after calling Emulate(), it is still != 1, Mednafen will handle it internally.
-	// Emulation modules can handle volume themselves if they like, for speed reasons.  If they do, afterwards, they should set its value to 1.
-	double SoundVolume;
-
-	// Current sound speed multiplier.  Set by the driver code.  If, after calling Emulate(), it is still != 1, Mednafen will handle it internally
-	// by resampling the audio.  This means that emulation modules can handle(and set the value to 1 after handling it) it if they want to get the most
-	// performance possible.  HOWEVER, emulation modules must make sure the value is in a range(with minimum and maximum) that their code can handle
-	// before they try to handle it.
-	double soundmultiplier;
-
-	// True if we want to rewind one frame.  Set by the driver code.
-	bool NeedRewind;
-
-	// Sound reversal during state rewinding is normally done in mednafen.cpp, but
-        // individual system emulation code can also do it if this is set, and clear it after it's done.
-        // (Also, the driver code shouldn't touch this variable)
-	bool NeedSoundReverse;
-
 } EmulateSpecStruct;
-
-typedef enum
-{
- MODPRIO_INTERNAL_EXTRA_LOW = 0,	// For "cdplay" module, mostly.
-
- MODPRIO_INTERNAL_LOW = 10,
- MODPRIO_EXTERNAL_LOW = 20,
- MODPRIO_INTERNAL_HIGH = 30,
- MODPRIO_EXTERNAL_HIGH = 40
-} ModPrio;
-
-class CDIF;
 
  #define MDFN_MASTERCLOCK_FIXED(n)	((int64)((double)(n) * (1LL << 32)))
 
 typedef struct
 {
- // Time base for EmulateSpecStruct::MasterCycles
- int64 MasterClock;
-
- uint32 fps; // frames per second * 65536 * 256, truncated
-
- // multires is a hint that, if set, indicates that the system has fairly programmable video modes(particularly, the ability
- // to display multiple horizontal resolutions, such as the PCE, PC-FX, or Genesis).  In practice, it will cause the driver
- // code to set the linear interpolation on by default.
- //
- // lcm_width and lcm_height are the least common multiples of all possible
- // resolutions in the frame buffer as specified by DisplayRect/LineWidths(Ex for PCE: widths of 256, 341.333333, 512,
- // lcm = 1024)
- //
- // nominal_width and nominal_height specify the resolution that Mednafen should display
- // the framebuffer image in at 1x scaling, scaled from the dimensions of DisplayRect, and optionally the LineWidths array
- // passed through espec to the Emulate() function.
- //
- bool multires;
-
  int lcm_width;
  int lcm_height;
 
@@ -302,16 +231,9 @@ typedef struct
  int fb_width;		// Width of the framebuffer(not necessarily width of the image).  MDFN_Surface width should be >= this.
  int fb_height;		// Height of the framebuffer passed to the Emulate() function(not necessarily height of the image)
 
- int soundchan; 	// Number of output sound channels.
-
  int rotated;
 
  int soundrate;  /* For Ogg Vorbis expansion sound wacky support.  0 for default. */
-
- VideoSystems VideoSystem;
- GameMediumTypes GameType;
-
- const char *DesiredInput; // Desired input device for the input ports, NULL for don't care
 
  double mouse_sensitivity;
 } MDFNGI;

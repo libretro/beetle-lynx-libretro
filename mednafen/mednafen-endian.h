@@ -42,9 +42,6 @@ void Endian_A16_BE_to_NE(void *src, uint32 nelements);
 void Endian_A32_LE_to_NE(void *src, uint32 nelements);
 void Endian_A64_LE_to_NE(void *src, uint32 nelements);
 
-void Endian_V_LE_to_NE(void *src, uint32 bytesize);
-void Endian_V_NE_to_LE(void *src, uint32 bytesize);
-
 void FlipByteOrder(uint8 *src, uint32 count);
 
 // The following functions can encode/decode to unaligned addresses.
@@ -122,11 +119,6 @@ static inline uint16 MDFN_de16lsb(const uint8 *morp)
  return(morp[0] | (morp[1] << 8));
 }
 
-static inline uint32 MDFN_de24lsb(const uint8 *morp)
-{
- return(morp[0]|(morp[1]<<8)|(morp[2]<<16));
-}
-
 static inline uint32 MDFN_de32lsb(const uint8 *morp)
 {
  return(morp[0]|(morp[1]<<8)|(morp[2]<<16)|(morp[3]<<24));
@@ -151,17 +143,6 @@ static inline uint64 MDFN_de64lsb(const uint8 *morp)
 static inline uint16 MDFN_de16msb(const uint8 *morp)
 {
  return(morp[1] | (morp[0] << 8));
-}
-
-static inline uint32 MDFN_de24msb(const uint8 *morp)
-{
- return((morp[2]<<0)|(morp[1]<<8)|(morp[0]<<16));
-}
-
-
-static inline uint32 MDFN_de32msb(const uint8 *morp)
-{
- return(morp[3]|(morp[2]<<8)|(morp[1]<<16)|(morp[0]<<24));
 }
 
 #endif

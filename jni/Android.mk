@@ -8,17 +8,11 @@ NEED_BPP                 := 32
 NEED_BLIP                := 1
 NEED_STEREO_SOUND        := 1
 NEED_CRC32               := 1
-IS_X86                   := 0
 FLAGS                    :=
-
-ifeq ($(TARGET_ARCH),x86)
-  IS_X86 := 1
-endif
 
 include $(CORE_DIR)/Makefile.common
 
-COREFLAGS := -funroll-loops $(INCFLAGS) -DMEDNAFEN_VERSION=\"0.9.26\" -DMEDNAFEN_VERSION_NUMERIC=926 -DPSS_STYLE=1 -D__LIBRETRO__ -D_LOW_ACCURACY_ -DINLINE="inline" $(FLAGS)
-COREFLAGS += -DWANT_LYNX_EMU
+COREFLAGS := -funroll-loops $(INCFLAGS) -DMEDNAFEN_VERSION_NUMERIC=926 -D__LIBRETRO__ -DINLINE="inline" $(FLAGS)
 
 GIT_VERSION := " $(shell git rev-parse --short HEAD || echo unknown)"
 ifneq ($(GIT_VERSION)," unknown")

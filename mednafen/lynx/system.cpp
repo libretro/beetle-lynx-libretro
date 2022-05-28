@@ -227,16 +227,10 @@ void Load(MDFNFILE *fp, const char *bios_path)
    break;
  }
 
- MDFNGameInfo->fps = (uint32)(59.8 * 65536 * 256);
-
  if(MDFN_GetSettingB("lynx.lowpass"))
- {
   lynxie->mMikie->miksynth.treble_eq(-35);
- }
  else
- {
   lynxie->mMikie->miksynth.treble_eq(0);
- }
 }
 
 void CloseGame(void)
@@ -251,9 +245,6 @@ void Emulate(EmulateSpecStruct *espec)
  espec->DisplayRect.y = 0;
  espec->DisplayRect.w = 160;
  espec->DisplayRect.h = 102;
-
- if(espec->VideoFormatChanged)
-  lynxie->DisplaySetAttributes(espec->surface->bpp);
 
  if(espec->SoundFormatChanged)
  {
@@ -318,8 +309,6 @@ void Emulate(EmulateSpecStruct *espec)
 		 }
 	 }
  }
-
- espec->MasterCycles = gSystemCycleCount - lynxie->mMikie->startTS;
 
  if(espec->SoundBuf)
  {
@@ -433,11 +422,6 @@ static InputInfoStruct InputInfo =
 
 MDFNGI EmulatedLynx =
 {
- MDFN_MASTERCLOCK_FIXED(16000000),
- 0,
-
- false, // Multires possible?
-
  160,   // lcm_width
  102,   // lcm_height
  NULL,  // Dummy
@@ -448,7 +432,5 @@ MDFNGI EmulatedLynx =
 
  160,	// Framebuffer width
  102,	// Framebuffer height
-
- 2,     // Number of output sound channels
 };
 

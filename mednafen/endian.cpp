@@ -185,17 +185,3 @@ void FlipByteOrder(uint8 *src, uint32 count)
   start++;
  }
 }
-
-void Endian_V_LE_to_NE(void *src, uint32 bytesize)
-{
- #ifdef MSB_FIRST
- FlipByteOrder((uint8 *)src, bytesize);
- #endif
-}
-
-void Endian_V_NE_to_LE(void *src, uint32 bytesize)
-{
- #ifdef MSB_FIRST
- FlipByteOrder((uint8 *)src, bytesize);
- #endif
-}

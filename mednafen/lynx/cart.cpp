@@ -226,7 +226,6 @@ CCart::CCart(MDFNFILE *fp)
 
 		// Calculate file's CRC32
 		mCRC32 = crc32(0, fp->data, gamesize);
-	   	MDFN_printf("File CRC32:   0x%08X.\n", mCRC32);
 
 		// Checkout the header bytes
 		file_read(fp, raw_header, sizeof(LYNX_HEADER), 1);
@@ -243,10 +242,7 @@ CCart::CCart(MDFNFILE *fp)
 			header.page_size_bank0 = gamesize >> 8; // Hard workaround...
 		}
 	  	else
-		{
 			gamesize -= HEADER_RAW_SIZE;
-			MDFN_printf("Found LYNX header!\n");
-		}
 	}
 	else
 	{
@@ -272,8 +268,6 @@ CCart::CCart(MDFNFILE *fp)
        LYNX_DB db = CheckHash(mCRC32);
        if (found)
        {
-          MDFN_printf("Found lynx rom in database.\n");
-          MDFN_printf("Title:        %s.\n", db.name);
           header.page_size_bank0 = db.filesize >> 8;
           header.rotation        = db.rotation;
        }
@@ -283,45 +277,37 @@ CCart::CCart(MDFNFILE *fp)
     strncpy(mName, (char *)&header.cartname, 32);
     strncpy(mManufacturer, (char *)&header.manufname, 16);
 
-    MDFN_printf("Cart Name:    %s\n", mName);
-	MDFN_printf("Manufacturer: %s\n", mManufacturer);
-
 	// Setup rotation
 	mRotation=header.rotation;
 	if(mRotation!=CART_NO_ROTATE && mRotation!=CART_ROTATE_LEFT && mRotation!=CART_ROTATE_RIGHT) mRotation=CART_NO_ROTATE;
 
 	// Set the filetypes
 
-	CTYPE banktype0,banktype1;
+	CTYPE banktype1;
 
     switch(header.page_size_bank0)
    {
       case 0x000:
-         banktype0=UNUSED;
          mMaskBank0=0;
          mShiftCount0=0;
          mCountMask0=0;
          break;
       case 0x100:
-         banktype0=C64K;
          mMaskBank0=0x00ffff;
          mShiftCount0=8;
          mCountMask0=0x0ff;
          break;
       case 0x200:
-         banktype0=C128K;
          mMaskBank0=0x01ffff;
          mShiftCount0=9;
          mCountMask0=0x1ff;
          break;
       case 0x400:
-         banktype0=C256K;
          mMaskBank0=0x03ffff;
          mShiftCount0=10;
          mCountMask0=0x3ff;
          break;
       case 0x800:
-         banktype0=C512K;
          mMaskBank0=0x07ffff;
          mShiftCount0=11;
          mCountMask0=0x7ff;

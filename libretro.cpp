@@ -15,9 +15,9 @@
 #endif
 
 #ifdef _WIN32
-static char slash = '\\';
+#define SLASH "\\"
 #else
-static char slash = '/';
+#define SLASH "/"
 #endif
 
 struct retro_perf_callback perf_cb;
@@ -31,7 +31,6 @@ static retro_input_poll_t input_poll_cb;
 static retro_input_state_t input_state_cb;
 
 static bool overscan;
-static double last_sound_rate;
 static MDFN_PixelFormat last_pixel_format;
 
 static unsigned rotate_mode;
@@ -41,12 +40,6 @@ static unsigned rotate_screen_last_frame;
 static unsigned select_pressed_last_frame;
 
 static MDFN_Surface *surf;
-
-static bool failed_init;
-
-static void hookup_ports(bool force);
-
-static bool initial_ports_hookup = false;
 
 static bool libretro_supports_option_categories = false;
 
@@ -73,8 +66,6 @@ MDFNGI *MDFNGameInfo = &EmulatedLynx;
 
 #define FB_MAX_HEIGHT FB_HEIGHT
 
-const char *mednafen_core_str = MEDNAFEN_CORE_NAME;
-
 static void check_system_specs(void)
 {
    unsigned level = 0;
@@ -83,13 +74,12 @@ static void check_system_specs(void)
 
 void retro_init(void)
 {
+   const char *dir = NULL;
    struct retro_log_callback log;
    if (environ_cb(RETRO_ENVIRONMENT_GET_LOG_INTERFACE, &log))
       log_cb = log.log;
    else
       log_cb = NULL;
-
-   const char *dir = NULL;
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_SYSTEM_DIRECTORY, &dir) && dir)
       snprintf(retro_system_directory, sizeof(retro_system_directory), "%s", dir);
@@ -102,7 +92,7 @@ void retro_init(void)
    check_system_specs();
 
    libretro_set_core_options(environ_cb,
-                             &libretro_supports_option_categories);
+		   &libretro_supports_option_categories);
 
    if (environ_cb(RETRO_ENVIRONMENT_GET_INPUT_BITMASKS, NULL))
       libretro_supports_input_bitmasks = true;
@@ -116,16 +106,6 @@ void retro_reset(void)
 bool retro_load_game_special(unsigned, const struct retro_game_info *, size_t)
 {
    return false;
-}
-
-static void set_volume (uint32_t *ptr, unsigned number)
-{
-   switch(number)
-   {
-      default:
-         *ptr = number;
-         break;
-   }
 }
 
 static void check_variables(void)
@@ -179,42 +159,31 @@ static uint8_t input_buf[2];
 static bool MDFNI_LoadGame(const uint8_t *data, size_t size)
 {
 	if (!data || !size)
-   {
-		MDFN_indent(-2);
-      MDFNGameInfo = NULL;
-	}
+		MDFNGameInfo = NULL;
 
 	MDFNFILE *GameFile = file_open_mem(data, size);
 
-   if (!GameFile)
-      return false;
+	if (!GameFile)
+		return false;
 
-   MDFNGameInfo = &EmulatedLynx;
-
-	MDFN_indent(1);
-
-	MDFN_printf("Using module: lynx\n\n");
-	MDFN_indent(1);
+	MDFNGameInfo = &EmulatedLynx;
 
 	//
 	// Load per-game settings
 	//
-	// Maybe we should make a "pgcfg" subdir, and automatically load all files in it?
+	// Maybe we should make a "pgcfg" subdir, 
+	// and automatically load all files in it?
 	// End load per-game settings
 	//
-   char bios_path[2048];
-   snprintf(bios_path, sizeof(bios_path), "%s%c%s", retro_system_directory, slash, "lynxboot.img");
-
-   MDFN_printf("Loading bios: %s\n", bios_path);
+	char bios_path[2048];
+	snprintf(bios_path, sizeof(bios_path),"%s" SLASH "%s", retro_system_directory, "lynxboot.img");
 
 	Load(GameFile, bios_path);
 
 	MDFN_LoadGameCheats(NULL);
 	MDFNMP_InstallReadPatches();
 
-	MDFN_indent(-2);
-
-   return true;
+	return true;
 }
 
 static bool init_pix_format(void)
@@ -255,7 +224,7 @@ static bool init_pix_format(void)
 
 bool retro_load_game(const struct retro_game_info *info)
 {
-   if (!info || failed_init)
+   if (!info)
       return false;
 
    struct retro_input_descriptor desc[] = {
@@ -445,41 +414,30 @@ static void update_input(void)
    rotate_screen_last_frame  = rotate_screen;
 }
 
-void retro_run()
+void retro_run(void)
 {
-   input_poll_cb();
+   static int16_t sound_buf[0x10000];
+   static double last_sound_rate;
+   EmulateSpecStruct spec = {0};
+   bool updated           = false;
 
+   input_poll_cb();
    update_input();
 
-   static int16_t sound_buf[0x10000];
-   static MDFN_Rect rects[FB_MAX_HEIGHT];
-   rects[0].w = ~0;
-
-   EmulateSpecStruct spec = {0};
-   spec.surface = surf;
-   spec.SoundRate = 44100;
-   spec.SoundBuf = sound_buf;
-   spec.LineWidths = rects;
-   spec.SoundBufMaxSize = sizeof(sound_buf) / 2;
-   spec.SoundVolume = 1.0;
-   spec.soundmultiplier = 1.0;
-   spec.SoundBufSize = 0;
-   spec.VideoFormatChanged = false;
+   spec.surface            = surf;
+   spec.SoundRate          = 44100;
+   spec.SoundBuf           = sound_buf;
+   spec.SoundBufMaxSize    = sizeof(sound_buf) / 2;
+   spec.SoundBufSize       = 0;
    spec.SoundFormatChanged = false;
 
    if (spec.SoundRate != last_sound_rate)
    {
       spec.SoundFormatChanged = true;
-      last_sound_rate = spec.SoundRate;
+      last_sound_rate         = spec.SoundRate;
    }
 
    Emulate(&spec);
-
-   int16 *const SoundBuf = spec.SoundBuf + spec.SoundBufSizeALMS * 2;
-   int32 SoundBufSize = spec.SoundBufSize - spec.SoundBufSizeALMS;
-   const int32 SoundBufMaxSize = spec.SoundBufMaxSize - spec.SoundBufSizeALMS;
-
-   spec.SoundBufSize = spec.SoundBufSizeALMS + SoundBufSize;
 
    unsigned width  = spec.DisplayRect.w;
    unsigned height = spec.DisplayRect.h;
@@ -489,8 +447,8 @@ void retro_run()
 
    audio_batch_cb(spec.SoundBuf, spec.SoundBufSize);
 
-   bool updated = false;
-   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE_UPDATE, &updated) && updated)
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE_UPDATE,
+			   &updated) && updated)
       check_variables();
 }
 
@@ -544,9 +502,7 @@ unsigned retro_api_version(void)
    return RETRO_API_VERSION;
 }
 
-void retro_set_controller_port_device(unsigned in_port, unsigned device)
-{
-}
+void retro_set_controller_port_device(unsigned in_port, unsigned device) {}
 
 void retro_set_environment(retro_environment_t cb)
 {
@@ -586,8 +542,6 @@ void retro_set_video_refresh(retro_video_refresh_t cb)
    video_cb = cb;
 }
 
-static size_t serialize_size;
-
 size_t retro_serialize_size(void)
 {
    StateMem st;
@@ -603,7 +557,7 @@ size_t retro_serialize_size(void)
 
    free(st.data);
 
-   return serialize_size = st.len;
+   return st.len;
 }
 
 bool retro_serialize(void *data, size_t size)
@@ -654,114 +608,5 @@ size_t retro_get_memory_size(unsigned type)
    return 0;
 }
 
-void retro_cheat_reset(void)
-{}
-
-void retro_cheat_set(unsigned, bool, const char *)
-{}
-
-#ifdef _WIN32
-static void sanitize_path(std::string &path)
-{
-   size_t size = path.size();
-   for (size_t i = 0; i < size; i++)
-      if (path[i] == '/')
-         path[i] = '\\';
-}
-#endif
-
-void MDFND_DispMessage(unsigned char *str)
-{
-   if (log_cb)
-      log_cb(RETRO_LOG_INFO, "%s", str);
-}
-
-void MDFND_MidSync(const EmulateSpecStruct *)
-{}
-
-void MDFN_MidLineUpdate(EmulateSpecStruct *espec, int y)
-{
- //MDFND_MidLineUpdate(espec, y);
-}
-
-/* forward declarations */
-extern void MDFND_DispMessage(unsigned char *str);
-
-static int curindent = 0;
-
-void MDFN_indent(int indent)
-{
- curindent += indent;
-}
-
-static uint8 lastchar = 0;
-
-void MDFN_printf(const char *format, ...)
-{
-   char *format_temp;
-   char *temp;
-   unsigned int x, newlen;
-
-   va_list ap;
-   va_start(ap,format);
-
-
-   // First, determine how large our format_temp buffer needs to be.
-   uint8 lastchar_backup = lastchar; // Save lastchar!
-   for(newlen=x=0;x<strlen(format);x++)
-   {
-      if(lastchar == '\n' && format[x] != '\n')
-      {
-         int y;
-         for(y=0;y<curindent;y++)
-            newlen++;
-      }
-      newlen++;
-      lastchar = format[x];
-   }
-
-   format_temp = (char *)malloc(newlen + 1); // Length + NULL character, duh
-
-   // Now, construct our format_temp string
-   lastchar = lastchar_backup; // Restore lastchar
-   for(newlen=x=0;x<strlen(format);x++)
-   {
-      if(lastchar == '\n' && format[x] != '\n')
-      {
-         int y;
-         for(y=0;y<curindent;y++)
-            format_temp[newlen++] = ' ';
-      }
-      format_temp[newlen++] = format[x];
-      lastchar = format[x];
-   }
-
-   format_temp[newlen] = 0;
-
-   temp = new char[4096];
-   vsnprintf(temp, 4096, format_temp, ap);
-   free(format_temp);
-
-   if (log_cb)
-      log_cb(RETRO_LOG_INFO, "%s", temp);
-   delete[] temp;
-
-   va_end(ap);
-}
-
-void MDFN_PrintError(const char *format, ...)
-{
- char *temp;
-
- va_list ap;
-
- va_start(ap, format);
-
- temp = new char[4096];
- vsnprintf(temp, 4096, format, ap);
- if (log_cb)
-    log_cb(RETRO_LOG_ERROR, "%s\n", temp);
- delete[] temp;
-
- va_end(ap);
-}
+void retro_cheat_reset(void) { }
+void retro_cheat_set(unsigned, bool, const char *) { }

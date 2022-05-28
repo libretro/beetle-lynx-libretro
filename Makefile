@@ -29,7 +29,7 @@ core = lynx
 NEED_BPP = 32
 NEED_BLIP = 1
 NEED_STEREO_SOUND = 1
-CORE_DEFINE := -DWANT_LYNX_EMU
+CORE_DEFINE :=
 NEED_CRC32 = 1
 
 prefix := /usr
@@ -313,7 +313,6 @@ else ifneq (,$(findstring armv,$(platform)))
    fpic := -fPIC
    SHARED := -shared -Wl,--no-undefined -Wl,--version-script=link.T
    CC = gcc
-   IS_X86 = 0
 ifneq (,$(findstring cortexa8,$(platform)))
    FLAGS += -marm -mcpu=cortex-a8
    ASFLAGS += -mcpu=cortex-a8
@@ -356,7 +355,6 @@ else ifeq ($(platform), windows_msvc2010_x64)
 
    NO_GCC := 1
    WINDOWS_VERSION = 1
-   IS_X86 = 1
 
    PATH := $(shell IFS=$$'\n'; cygpath "$(VS100COMNTOOLS)../../VC/bin/amd64"):$(PATH)
    PATH := $(PATH):$(shell IFS=$$'\n'; cygpath "$(VS100COMNTOOLS)../IDE")
@@ -373,7 +371,6 @@ else ifeq ($(platform), windows_msvc2010_x64)
    export INCLUDE := $(INCLUDE)
    export LIB := $(LIB);$(WindowsSdkDir)
    TARGET := $(TARGET_NAME)_libretro.dll
-   PSS_STYLE :=2
    LDFLAGS += -DLL
 
 # Windows MSVC 2010 x86
@@ -383,7 +380,6 @@ else ifeq ($(platform), windows_msvc2010_x86)
 
    NO_GCC := 1
    WINDOWS_VERSION = 1
-   IS_X86 = 1
 
    PATH := $(shell IFS=$$'\n'; cygpath "$(VS100COMNTOOLS)../../VC/bin"):$(PATH)
    PATH := $(PATH):$(shell IFS=$$'\n'; cygpath "$(VS100COMNTOOLS)../IDE")
@@ -400,7 +396,6 @@ else ifeq ($(platform), windows_msvc2010_x86)
    export INCLUDE := $(INCLUDE)
    export LIB := $(LIB);$(WindowsSdkDir)
    TARGET := $(TARGET_NAME)_libretro.dll
-   PSS_STYLE :=2
    LDFLAGS += -DLL
 
 # Windows MSVC 2005 x86
@@ -410,7 +405,6 @@ else ifeq ($(platform), windows_msvc2005_x86)
 
    NO_GCC := 1
    WINDOWS_VERSION = 1
-   IS_X86 = 1
 
    PATH := $(shell IFS=$$'\n'; cygpath "$(VS80COMNTOOLS)../../VC/bin"):$(PATH)
    PATH := $(PATH):$(shell IFS=$$'\n'; cygpath "$(VS80COMNTOOLS)../IDE")
@@ -423,7 +417,6 @@ else ifeq ($(platform), windows_msvc2005_x86)
    export INCLUDE := $(INCLUDE);$(INETSDK)/Include;libretro-common/include/compat/msvc
    export LIB := $(LIB);$(WindowsSdkDir);$(INETSDK)/Lib
    TARGET := $(TARGET_NAME)_libretro.dll
-   PSS_STYLE :=2
    LDFLAGS += -DLL
    CFLAGS += -D_CRT_SECURE_NO_DEPRECATE
    LIBS =
@@ -437,12 +430,10 @@ else ifeq ($(platform), xbox1_msvc2003)
 
    NO_GCC := 1
    WINDOWS_VERSION = 1
-   IS_X86 = 1
 
    export INCLUDE := $(XDK)/xbox/include
    export LIB := $(XDK)/xbox/lib
    PATH := $(call unixcygpath,$(XDK)/xbox/bin/vc71):$(PATH)
-   PSS_STYLE :=2
    CFLAGS   += -D_XBOX -D_XBOX1
    CXXFLAGS += -D_XBOX -D_XBOX1
    STATIC_LINKING=1
@@ -454,7 +445,6 @@ else ifeq ($(platform), windows_msvc2003_x86)
 
    NO_GCC := 1
    WINDOWS_VERSION = 1
-   IS_X86 = 1
 
    PATH := $(shell IFS=$$'\n'; cygpath "$(VS71COMNTOOLS)../../Vc7/bin"):$(PATH)
    PATH := $(PATH):$(shell IFS=$$'\n'; cygpath "$(VS71COMNTOOLS)../IDE")
@@ -467,7 +457,6 @@ else ifeq ($(platform), windows_msvc2003_x86)
    export INCLUDE := $(INCLUDE);$(INETSDK)/Include;libretro-common/include/compat/msvc
    export LIB := $(LIB);$(WindowsSdkDir);$(INETSDK)/Lib
    TARGET := $(TARGET_NAME)_libretro.dll
-   PSS_STYLE :=2
    LDFLAGS += -DLL
    CFLAGS += -D_CRT_SECURE_NO_DEPRECATE
    WINDOWS_VERSION=1
@@ -480,7 +469,6 @@ else ifneq (,$(findstring windows_msvc2017,$(platform)))
 
    NO_GCC := 1
    WINDOWS_VERSION = 1
-   IS_X86 = 1
 
    PlatformSuffix = $(subst windows_msvc2017_,,$(platform))
    ifneq (,$(findstring desktop,$(PlatformSuffix)))
@@ -566,7 +554,6 @@ else ifneq (,$(findstring windows_msvc2017,$(platform)))
    export INCLUDE := $(INCLUDE);$(WindowsSDKSharedIncludeDir);$(WindowsSDKUCRTIncludeDir);$(WindowsSDKUMIncludeDir)
    export LIB := $(LIB);$(WindowsSDKUCRTLibDir);$(WindowsSDKUMLibDir)
    TARGET := $(TARGET_NAME)_libretro.dll
-   PSS_STYLE :=2
    LDFLAGS += -DLL
 
 # Windows
@@ -574,7 +561,6 @@ else
    TARGET := $(TARGET_NAME)_libretro.dll
    CC ?= gcc
    CXX ?= g++
-   IS_X86 = 1
    SHARED := -shared -Wl,--no-undefined -Wl,--version-script=link.T
    LDFLAGS += -static-libgcc -static-libstdc++ -lwinmm
 endif
@@ -614,7 +600,7 @@ LDFLAGS += $(fpic) $(SHARED)
 FLAGS   += $(fpic) $(NEW_GCC_FLAGS)
 FLAGS   += $(INCFLAGS) $(INCFLAGS_PLATFORM)
 
-FLAGS += $(ENDIANNESS_DEFINES) -DSIZEOF_DOUBLE=8 $(WARNINGS) -DMEDNAFEN_VERSION=\"1.24.0\" -DPACKAGE=\"mednafen\" -DMEDNAFEN_VERSION_NUMERIC=1240 -DPSS_STYLE=1 -DMPC_FIXED_POINT $(CORE_DEFINE) -DSTDC_HEADERS -D__STDC_LIMIT_MACROS -D__LIBRETRO__ -D_LOW_ACCURACY_ $(EXTRA_INCLUDES) $(SOUND_DEFINE)
+FLAGS += $(ENDIANNESS_DEFINES) $(WARNINGS) -DMEDNAFEN_VERSION_NUMERIC=1240 $(CORE_DEFINE) -DSTDC_HEADERS -D__STDC_LIMIT_MACROS -D__LIBRETRO__ $(EXTRA_INCLUDES) $(SOUND_DEFINE)
 
 ifneq ($(SANITIZER),)
    CFLAGS += -fsanitize=$(SANITIZER)
