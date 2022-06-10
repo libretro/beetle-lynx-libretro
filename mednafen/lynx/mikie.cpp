@@ -56,8 +56,6 @@ void CMikie::BlowOut(void)
 {
 	C6502_REGS regs;
 	mSystem.GetRegs(regs);
-	//sprintf(addr,"Runtime Error - System Halted\nCMikie::Poke() - Read/Write to counter clocks at PC=$%04x.",regs.PC);
-	//gError->Warning(addr);
 	gSystemHalt=true;
 }
 
@@ -395,10 +393,7 @@ void CMikie::DisplaySetAttributes(int32 bpp)
 void CMikie::CopyLineSurface(int32 bpp)
 {
 	if(mpDisplayCurrentLine > 102)
-	{
-	 printf("Lynx Line Overflow: %d\n", mpDisplayCurrentLine);
 	 return;
-	}
 
 	switch (bpp)
 	{
@@ -2564,8 +2559,8 @@ void CMikie::Update(void)
 			// OR is required to ensure serial IRQ's are not masked accidentally
 		
 			gSystemIRQ=(mTimerStatusFlags)?true:false;
-			if(gSystemIRQ && gSystemCPUSleep) { ClearCPUSleep(); /*puts("ARLARM"); */ }
-			//else if(gSuzieDoneTime) SetCPUSleep();
+			if(gSystemIRQ && gSystemCPUSleep)
+				ClearCPUSleep();
 
 			// Now all the timer updates are done we can increment the system
 			// counter for any work done within the Update() function, gSystemCycleCounter

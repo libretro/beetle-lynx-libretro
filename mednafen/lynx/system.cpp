@@ -268,10 +268,7 @@ void Emulate(EmulateSpecStruct *espec)
  lynxie->mMikie->startTS = gSystemCycleCount;
 
  while(lynxie->mMikie->mpDisplayCurrent && (gSystemCycleCount - lynxie->mMikie->startTS) < 700000)
- {
   lynxie->Update();
-//  printf("%d ", gSystemCycleCount - lynxie->mMikie->startTS);
- }
 
  {
 	 // FIXME, we should integrate this into mikie.*
@@ -337,7 +334,6 @@ static void TransformInput(void)
 	      (((butt_data >> bp[1]) & 1) << bp[(1 + offs) & 3]) |
 	      (((butt_data >> bp[2]) & 1) << bp[(2 + offs) & 3]) |
 	      (((butt_data >> bp[3]) & 1) << bp[(3 + offs) & 3]);
-  //printf("%d, %04x\n", MDFNGameInfo->rotated, butt_data);
   MDFN_en16lsb(chee, butt_data);
  }
 }

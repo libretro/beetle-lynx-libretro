@@ -480,11 +480,6 @@ uint32 CSusie::PaintSprites(void)
 					if(mSPRCTL0_Vflip) modquad=vquadflip[modquad];
 					if(mSPRCTL0_Hflip) modquad=hquadflip[modquad];
 
-					// This is causing Eurosoccer to fail!!
-					//if(enable_tilt && mTILT.Val16&0x8000) modquad=hquadflip[modquad];
-					//if(quadrant == 0 && sprite_v == 219 && sprite_h == 890)
-					//printf("%d:%d %d %d\n", quadrant, modquad, sprite_h, sprite_v);
-
 					switch(modquad)
 					{
 						case 3:

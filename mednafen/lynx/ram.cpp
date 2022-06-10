@@ -90,8 +90,6 @@ CRam::CRam(MDFNFILE *fp)
 		const unsigned rc0 = std::min<unsigned>((RAM_SIZE - load_address), size);
 		const unsigned rc1 = size - rc0;
 
-		//printf("load_addr=%04x, size=%04x, rc0=%04x, rc1=%04x\n", load_address, size, rc0, rc1);
-
 		file_read(fp, &mRamXORData[load_address], rc0, 1);
 		md5.update(&mRamXORData[load_address], rc0);
 		mCRC32 = crc32(mCRC32, &mRamXORData[load_address], rc0);
