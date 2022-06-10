@@ -70,8 +70,8 @@ CSystem::CSystem(MDFNFILE *fp, const char *bios_path)
 	mFileType=HANDY_FILETYPE_ILLEGAL;
 
 	char clip[11];
-   file_read(fp, clip, 11, 1);
-   file_seek(fp, 0, SEEK_SET);
+	file_read(fp, clip, 11, 1);
+	file_seek(fp, 0, SEEK_SET);
 	clip[4]=0;
 	clip[10]=0;
 
@@ -82,11 +82,6 @@ CSystem::CSystem(MDFNFILE *fp, const char *bios_path)
 	else if(fp->size==128*1024 || fp->size==256*1024 || fp->size==512*1024)
 		/* Invalid Cart (type). but 128/256/512k size -> set to RAW and try to load raw rom image */
 		mFileType=HANDY_FILETYPE_RAW;
-	else
-	{
-      /* File format is unknown to module. This will then
-       * just load the core into an "Insert Game" screen */
-	}
 
 	MDFNMP_Init(65536, 1);
 
@@ -122,17 +117,14 @@ CSystem::CSystem(MDFNFILE *fp, const char *bios_path)
 	mMikie = new CMikie(*this);
 	mSusie = new CSusie(*this);
 
-// Instantiate the memory map handler
-
+	// Instantiate the memory map handler
 	mMemMap = new CMemMap(*this);
 
-// Now the handlers are set we can instantiate the CPU as is will use handlers on reset
-
+	// Now the handlers are set we can instantiate the CPU as is will use handlers on reset
 	mCpu = new C65C02(*this);
 
-// Now init is complete do a reset, this will cause many things to be reset twice
-// but what the hell, who cares, I don't.....
-
+	// Now init is complete do a reset, this will cause many things to be reset twice
+	// but what the hell, who cares, I don't.....
 	Reset();
 }
 
@@ -186,22 +178,6 @@ void CSystem::Reset(void)
 bool LynxLineDrawn[256];
 
 CSystem *lynxie = NULL;
-
-static bool TestMagic(const char *name, MDFNFILE *fp)
-{
- uint8 data[64];
- uint64 rc;
-
- rc = fp->size;
-
- if(rc >= CCart::HEADER_RAW_SIZE && CCart::TestMagic(data, sizeof(data)))
-  return true;
-
- if(rc >= CRam::HEADER_RAW_SIZE && CRam::TestMagic(data, sizeof(data)))
-  return true;
-
- return false;
-}
 
 static void Cleanup(void)
 {
@@ -361,12 +337,6 @@ int StateAction(StateMem *sm, int load, int data_only)
  ret &= lynxie->mMikie->StateAction(sm, load, data_only);
  ret &= lynxie->mCpu->StateAction(sm, load, data_only);
  return ret;
-}
-
-static void SetLayerEnableMask(uint64 mask)
-{
-
-
 }
 
 void DoSimpleCommand(int cmd)

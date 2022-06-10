@@ -53,17 +53,6 @@
 #include "../../scrc32.h"
 #include <algorithm>
 
-bool CRam::TestMagic(const uint8* data, uint64 test_size)
-{
- if(test_size < 10)
-  return false;
-
- if(memcmp(&data[6], "BS93", 4))
-  return false;
-
- return true;
-}
-
 CRam::CRam(MDFNFILE *fp)
 	:mRamXORData(NULL)
 {

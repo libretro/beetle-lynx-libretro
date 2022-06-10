@@ -196,17 +196,6 @@ LYNX_HEADER CCart::DecodeHeader(const uint8 *data)
  return(header);
 }
 
-bool CCart::TestMagic(const uint8 *data, uint32 size)
-{
- if(size < HEADER_RAW_SIZE)
-  return(false);
-
- if(memcmp(data, "LYNX", 4) || data[8] != 0x01)
-  return(false);
-
- return(true);
-}
-
 CCart::CCart(MDFNFILE *fp)
 {
 	uint64 gamesize;
@@ -443,13 +432,8 @@ INLINE void CCart::Poke(uint32 addr, uint8 data)
 INLINE uint8 CCart::Peek(uint32 addr)
 {
 	if(mBank==bank0)
-	{
 		return(mCartBank0[addr&mMaskBank0]);
-	}
-	else
-	{
-		return(mCartBank1[addr&mMaskBank1]);
-	}
+	return(mCartBank1[addr&mMaskBank1]);
 }
 
 
@@ -459,11 +443,7 @@ void CCart::CartAddressStrobe(bool strobe)
 
 	if(mStrobe) mCounter=0;
 
-	//
 	// Either of the two below seem to work OK.
-	//
-	// if(!strobe && last_strobe)
-	//
 	if(mStrobe && !last_strobe)
 	{
 		// Clock a bit into the shifter
@@ -557,9 +537,6 @@ int CCart::StateAction(StateMem *sm, int load, int data_only)
 	SFARRAYN(mCartBank1, mCartRAM ? mMaskBank1 + 1 : 0, "mCartBank1"),
 	SFEND
  };
- int ret = MDFNSS_StateAction(sm, load, data_only, CartRegs, "CART", false);
-
-
- return(ret);
+ return MDFNSS_StateAction(sm, load, data_only, CartRegs, "CART", false);
 }
 

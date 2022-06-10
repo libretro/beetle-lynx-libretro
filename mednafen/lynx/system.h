@@ -61,9 +61,8 @@
 
 #define HANDY_SCREEN_WIDTH	160
 #define HANDY_SCREEN_HEIGHT	102
-//
+
 // Define the global variable list
-//
 
 #ifdef SYSTEM_CPP
 	uint32   gSuzieDoneTime = 0;
@@ -122,25 +121,16 @@ class CSystem : public CSystemBase
 
 		inline void Update(void)
 		{
-			// 
 			// Only update if there is a predicted timer event
-			//
 			if(gSystemCycleCount>=gNextTimerEvent)
-			{
 				mMikie->Update();
-			}
-			//
+
 			// Step the processor through 1 instruction
-			//
 			mCpu->Update();
 
-			//
 			// If the CPU is asleep then skip to the next timer event
-			//			
 			if(gSystemCPUSleep)
-			{
 				gSystemCycleCount=gNextTimerEvent;
-			}
 		}
 
 		//

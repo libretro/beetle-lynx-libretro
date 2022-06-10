@@ -59,7 +59,6 @@ class CRam : public CLynxBase
 
 		CRam(MDFNFILE *fp) MDFN_COLD;
 		~CRam() MDFN_COLD;
-		static bool TestMagic(const uint8* data, uint64 test_size) MDFN_COLD;
 
 	public:
 

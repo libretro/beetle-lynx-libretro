@@ -89,7 +89,6 @@ class CCart : public CLynxBase
 		enum { HEADER_RAW_SIZE = 64 };
 
 		static LYNX_HEADER DecodeHeader(const uint8 *data);
-		static bool TestMagic(const uint8 *data, uint32 size);
 
 		void	Reset(void) MDFN_COLD;
 		void	Poke(uint32 addr,uint8 data);
