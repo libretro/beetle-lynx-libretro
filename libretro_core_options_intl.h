@@ -99,7 +99,7 @@ struct retro_core_options_v2 options_ar = {
 
 /* RETRO_LANGUAGE_AST */
 
-#define LYNX_ROT_SCREEN_LABEL_AST NULL
+#define LYNX_ROT_SCREEN_LABEL_AST "Voltiar automáticamente la pantalla"
 #define LYNX_ROT_SCREEN_INFO_0_AST NULL
 #define OPTION_VAL_AUTO_AST NULL
 #define OPTION_VAL_MANUAL_AST NULL
@@ -161,7 +161,7 @@ struct retro_core_options_v2 options_ast = {
 
 #define LYNX_ROT_SCREEN_LABEL_CA NULL
 #define LYNX_ROT_SCREEN_INFO_0_CA NULL
-#define OPTION_VAL_AUTO_CA NULL
+#define OPTION_VAL_AUTO_CA "Automàtic"
 #define OPTION_VAL_MANUAL_CA NULL
 #define LYNX_PIX_FORMAT_LABEL_CA NULL
 #define OPTION_VAL_16_CA NULL
@@ -279,13 +279,13 @@ struct retro_core_options_v2 options_chs = {
 
 /* RETRO_LANGUAGE_CHT */
 
-#define LYNX_ROT_SCREEN_LABEL_CHT NULL
-#define LYNX_ROT_SCREEN_INFO_0_CHT NULL
+#define LYNX_ROT_SCREEN_LABEL_CHT "自動旋轉螢幕"
+#define LYNX_ROT_SCREEN_INFO_0_CHT "設定旋轉螢幕的模式。設定為 <手動> 時，使用「選擇鍵」調整畫面逆時針旋轉，90度、180度、270度和0度的順序重複切換。"
 #define OPTION_VAL_AUTO_CHT "自動"
-#define OPTION_VAL_MANUAL_CHT NULL
-#define LYNX_PIX_FORMAT_LABEL_CHT NULL
-#define OPTION_VAL_16_CHT NULL
-#define OPTION_VAL_32_CHT NULL
+#define OPTION_VAL_MANUAL_CHT "手動"
+#define LYNX_PIX_FORMAT_LABEL_CHT "色彩格式 (需要重新啟動)"
+#define OPTION_VAL_16_CHT "16位元 (RGB565)"
+#define OPTION_VAL_32_CHT "32位元 (RGB8888)"
 
 struct retro_core_option_v2_category option_cats_cht[] = {
    { NULL, NULL, NULL },
@@ -339,11 +339,11 @@ struct retro_core_options_v2 options_cht = {
 
 /* RETRO_LANGUAGE_CS */
 
-#define LYNX_ROT_SCREEN_LABEL_CS NULL
-#define LYNX_ROT_SCREEN_INFO_0_CS NULL
-#define OPTION_VAL_AUTO_CS NULL
-#define OPTION_VAL_MANUAL_CS NULL
-#define LYNX_PIX_FORMAT_LABEL_CS NULL
+#define LYNX_ROT_SCREEN_LABEL_CS "Automatické otáčení obrazovky"
+#define LYNX_ROT_SCREEN_INFO_0_CS "Prakticky automaticky otáčí orientaci obrazovky a mapování tlačítek pro známé hry. Pokud je nastaveno \"Ruční\", otáčení obrazovky se upravuje stisknutím tlačítka SELECT, jinak lze nastavit pevné otáčení buď na 0, 90, 180 nebo 270 stupňů proti směru hodinových ručiček."
+#define OPTION_VAL_AUTO_CS "Automatické"
+#define OPTION_VAL_MANUAL_CS "Manuální"
+#define LYNX_PIX_FORMAT_LABEL_CS "Formát barev (nutný restart)"
 #define OPTION_VAL_16_CS NULL
 #define OPTION_VAL_32_CS NULL
 
@@ -520,7 +520,7 @@ struct retro_core_options_v2 options_da = {
 /* RETRO_LANGUAGE_DE */
 
 #define LYNX_ROT_SCREEN_LABEL_DE "Bildschirm automatisch drehen"
-#define LYNX_ROT_SCREEN_INFO_0_DE NULL
+#define LYNX_ROT_SCREEN_INFO_0_DE "Bildschirmausrichtung und Tastenzuordnung für bekannte Spiele automatisch virtuell drehen. Bei der Einstellung „Manuell“ wird die Bildschirmdrehung durch Drücken der SELECT-Taste angepasst, andernfalls kann eine feste Drehung auf 0, 90, 180 oder 270 Grad gegen den Uhrzeigersinn eingestellt werden."
 #define OPTION_VAL_AUTO_DE "Automatisch"
 #define OPTION_VAL_MANUAL_DE "Manuell"
 #define LYNX_PIX_FORMAT_LABEL_DE "Farbformat (Neustart erforderlich)"
@@ -635,6 +635,66 @@ struct retro_core_option_v2_definition option_defs_el[] = {
 struct retro_core_options_v2 options_el = {
    option_cats_el,
    option_defs_el
+};
+
+/* RETRO_LANGUAGE_EN */
+
+#define LYNX_ROT_SCREEN_LABEL_EN NULL
+#define LYNX_ROT_SCREEN_INFO_0_EN NULL
+#define OPTION_VAL_AUTO_EN NULL
+#define OPTION_VAL_MANUAL_EN NULL
+#define LYNX_PIX_FORMAT_LABEL_EN "Colour Format (Restart Required)"
+#define OPTION_VAL_16_EN NULL
+#define OPTION_VAL_32_EN NULL
+
+struct retro_core_option_v2_category option_cats_en[] = {
+   { NULL, NULL, NULL },
+};
+struct retro_core_option_v2_definition option_defs_en[] = {
+
+   /* These variable names and possible values constitute an ABI with ZMZ (ZSNES Libretro player).
+    * Changing "Show layer 1" is fine, but don't change "layer_1"/etc or the possible values ("Yes|No").
+    * Adding more variables and rearranging them is safe. */
+
+   {
+      "lynx_rot_screen",
+      LYNX_ROT_SCREEN_LABEL_EN,
+      NULL,
+      LYNX_ROT_SCREEN_INFO_0_EN,
+      NULL,
+      NULL,
+      {
+         { "auto", OPTION_VAL_AUTO_EN },
+         { "manual", OPTION_VAL_MANUAL_EN },
+         { "0",    NULL },
+         { "90",   NULL },
+         { "180",  NULL },
+         { "270",  NULL },
+         { NULL, NULL},
+      },
+      "auto",
+   },
+
+   {
+      "lynx_pix_format",
+      LYNX_PIX_FORMAT_LABEL_EN,
+      NULL,
+      "",
+      NULL,
+      NULL,
+      {
+         { "16", OPTION_VAL_16_EN },
+         { "32", OPTION_VAL_32_EN },
+         { NULL, NULL},
+      },
+      "16",
+   },
+
+   { NULL, NULL, NULL, NULL, NULL, NULL, {{0}}, NULL },
+};
+struct retro_core_options_v2 options_en = {
+   option_cats_en,
+   option_defs_en
 };
 
 /* RETRO_LANGUAGE_EO */
@@ -759,13 +819,13 @@ struct retro_core_options_v2 options_es = {
 
 /* RETRO_LANGUAGE_FA */
 
-#define LYNX_ROT_SCREEN_LABEL_FA NULL
-#define LYNX_ROT_SCREEN_INFO_0_FA NULL
-#define OPTION_VAL_AUTO_FA NULL
-#define OPTION_VAL_MANUAL_FA NULL
-#define LYNX_PIX_FORMAT_LABEL_FA NULL
-#define OPTION_VAL_16_FA NULL
-#define OPTION_VAL_32_FA NULL
+#define LYNX_ROT_SCREEN_LABEL_FA "چرخش خودکار نمایشگر"
+#define LYNX_ROT_SCREEN_INFO_0_FA "جهت‌گیری نمایشگر و نگاشت دکمه‌ها را به طور خودکار برای بازی‌های شناخته شده بچرخانید. هنگامی که روی «دستی» تنظیم می‌شود، چرخش صفحه با فشاردادن دکمه SELECT تنظیم می‌شود، در غیر این صورت یک چرخش ثابت را می‌توان روی ۰، ۹۰، ۱۸۰ یا ۲۷۰ درجه پادساعتگرد تنظیم کرد."
+#define OPTION_VAL_AUTO_FA "خودکار"
+#define OPTION_VAL_MANUAL_FA "دستی"
+#define LYNX_PIX_FORMAT_LABEL_FA "فرمت رنگ (نیازمند بازآغاز)"
+#define OPTION_VAL_16_FA "۱۶-بیتی (RGB۵۶۵)"
+#define OPTION_VAL_32_FA "۳۲-بیتی (RGB۸۸۸۸)"
 
 struct retro_core_option_v2_category option_cats_fa[] = {
    { NULL, NULL, NULL },
@@ -820,7 +880,7 @@ struct retro_core_options_v2 options_fa = {
 /* RETRO_LANGUAGE_FI */
 
 #define LYNX_ROT_SCREEN_LABEL_FI "Näytön automaattinen kierto"
-#define LYNX_ROT_SCREEN_INFO_0_FI NULL
+#define LYNX_ROT_SCREEN_INFO_0_FI "Kierrä virtuaalisesti näytön ja painikkeiden suuntaa automaattisesti tunnetuille peleille. Kun asetus on \"Manuaalinen\", näytön kierto säädetään painamalla SELECT-painiketta, muuten kiinteä kierto voidaan asettaa joko 0, 90, 180, tai 270 asteen vastapäivään."
 #define OPTION_VAL_AUTO_FI "Automaattinen"
 #define OPTION_VAL_MANUAL_FI "Manuaalinen"
 #define LYNX_PIX_FORMAT_LABEL_FI "Väriformaatti (Uudelleenkäynnistys vaaditaan)"
@@ -1057,15 +1117,75 @@ struct retro_core_options_v2 options_he = {
    option_defs_he
 };
 
+/* RETRO_LANGUAGE_HR */
+
+#define LYNX_ROT_SCREEN_LABEL_HR NULL
+#define LYNX_ROT_SCREEN_INFO_0_HR NULL
+#define OPTION_VAL_AUTO_HR NULL
+#define OPTION_VAL_MANUAL_HR NULL
+#define LYNX_PIX_FORMAT_LABEL_HR NULL
+#define OPTION_VAL_16_HR NULL
+#define OPTION_VAL_32_HR NULL
+
+struct retro_core_option_v2_category option_cats_hr[] = {
+   { NULL, NULL, NULL },
+};
+struct retro_core_option_v2_definition option_defs_hr[] = {
+
+   /* These variable names and possible values constitute an ABI with ZMZ (ZSNES Libretro player).
+    * Changing "Show layer 1" is fine, but don't change "layer_1"/etc or the possible values ("Yes|No").
+    * Adding more variables and rearranging them is safe. */
+
+   {
+      "lynx_rot_screen",
+      LYNX_ROT_SCREEN_LABEL_HR,
+      NULL,
+      LYNX_ROT_SCREEN_INFO_0_HR,
+      NULL,
+      NULL,
+      {
+         { "auto", OPTION_VAL_AUTO_HR },
+         { "manual", OPTION_VAL_MANUAL_HR },
+         { "0",    NULL },
+         { "90",   NULL },
+         { "180",  NULL },
+         { "270",  NULL },
+         { NULL, NULL},
+      },
+      "auto",
+   },
+
+   {
+      "lynx_pix_format",
+      LYNX_PIX_FORMAT_LABEL_HR,
+      NULL,
+      "",
+      NULL,
+      NULL,
+      {
+         { "16", OPTION_VAL_16_HR },
+         { "32", OPTION_VAL_32_HR },
+         { NULL, NULL},
+      },
+      "16",
+   },
+
+   { NULL, NULL, NULL, NULL, NULL, NULL, {{0}}, NULL },
+};
+struct retro_core_options_v2 options_hr = {
+   option_cats_hr,
+   option_defs_hr
+};
+
 /* RETRO_LANGUAGE_HU */
 
-#define LYNX_ROT_SCREEN_LABEL_HU NULL
-#define LYNX_ROT_SCREEN_INFO_0_HU NULL
-#define OPTION_VAL_AUTO_HU NULL
+#define LYNX_ROT_SCREEN_LABEL_HU "Automatikus képernyőforgatás"
+#define LYNX_ROT_SCREEN_INFO_0_HU "A képernyőirány és gombkiosztás virtuális elforgatása az ismert játékokhoz automatikusan. \"Kézi\" esetben a Select gomb lenyomásával forgatható, vagy fix elforgatás választható 0, 90, 180, vagy 270 fokban az óramutató járásával ellentétesen."
+#define OPTION_VAL_AUTO_HU "Automatikus"
 #define OPTION_VAL_MANUAL_HU "Kézi"
-#define LYNX_PIX_FORMAT_LABEL_HU NULL
-#define OPTION_VAL_16_HU NULL
-#define OPTION_VAL_32_HU NULL
+#define LYNX_PIX_FORMAT_LABEL_HU "Színformátum (újraindítás szükséges)"
+#define OPTION_VAL_16_HU "16 bites (RGB565)"
+#define OPTION_VAL_32_HU "32 bites (RGB8888)"
 
 struct retro_core_option_v2_category option_cats_hu[] = {
    { NULL, NULL, NULL },
@@ -1121,7 +1241,7 @@ struct retro_core_options_v2 options_hu = {
 
 #define LYNX_ROT_SCREEN_LABEL_ID NULL
 #define LYNX_ROT_SCREEN_INFO_0_ID NULL
-#define OPTION_VAL_AUTO_ID NULL
+#define OPTION_VAL_AUTO_ID "Otomatis"
 #define OPTION_VAL_MANUAL_ID NULL
 #define LYNX_PIX_FORMAT_LABEL_ID NULL
 #define OPTION_VAL_16_ID NULL
@@ -1600,10 +1720,10 @@ struct retro_core_options_v2 options_oc = {
 /* RETRO_LANGUAGE_PL */
 
 #define LYNX_ROT_SCREEN_LABEL_PL "Autoobracanie ekranu"
-#define LYNX_ROT_SCREEN_INFO_0_PL "Praktycznie obracaj orientację ekranu i mapowanie przycisków automatycznie dla znanych gier. Po ustawieniu na 'Ręczny', obrót ekranu jest regulowany poprzez naciśnięcie przycisku SELECT w przeciwnym razie stały obrót można ustawić na 0, 90, 180 lub 270 stopni w kierunku przeciwnym do ruchu wskazówek zegara."
+#define LYNX_ROT_SCREEN_INFO_0_PL "Automatycznie obracaj orietancję ekranu i przypisania klawiszy dla znanych gier. Po ustawieniu na 'Ręcznie', obrót ekranu jest regulowany poprzez naciśnięcie przycisku SELECT, w przeciwnym wypadku stałą wartość obrótu można ustawić na 0, 90, 180 lub 270 stopni w kierunku przeciwnym do ruchu wskazówek zegara."
 #define OPTION_VAL_AUTO_PL NULL
 #define OPTION_VAL_MANUAL_PL "Ręcznie"
-#define LYNX_PIX_FORMAT_LABEL_PL NULL
+#define LYNX_PIX_FORMAT_LABEL_PL "Format Kolorów (Wymagany Restart)"
 #define OPTION_VAL_16_PL NULL
 #define OPTION_VAL_32_PL NULL
 
@@ -1719,11 +1839,11 @@ struct retro_core_options_v2 options_pt_br = {
 
 /* RETRO_LANGUAGE_PT_PT */
 
-#define LYNX_ROT_SCREEN_LABEL_PT_PT NULL
-#define LYNX_ROT_SCREEN_INFO_0_PT_PT NULL
-#define OPTION_VAL_AUTO_PT_PT NULL
+#define LYNX_ROT_SCREEN_LABEL_PT_PT "Rodar automaticamente o ecrã"
+#define LYNX_ROT_SCREEN_INFO_0_PT_PT "Virtualmente girar a orientação da tela e mapeamentos de botões automaticamente para jogos conhecidos. Quando definido como 'Manual', a rotação da tela é ajustada pressionando o botão SELECT, caso contrário, uma rotação fixa pode ser definida para 0, 90, 180 ou 270 graus no sentido anti-horário."
+#define OPTION_VAL_AUTO_PT_PT "Automático"
 #define OPTION_VAL_MANUAL_PT_PT NULL
-#define LYNX_PIX_FORMAT_LABEL_PT_PT NULL
+#define LYNX_PIX_FORMAT_LABEL_PT_PT "Formato de cores (reinicialização necessária)"
 #define OPTION_VAL_16_PT_PT NULL
 #define OPTION_VAL_32_PT_PT NULL
 
@@ -1777,70 +1897,10 @@ struct retro_core_options_v2 options_pt_pt = {
    option_defs_pt_pt
 };
 
-/* RETRO_LANGUAGE_RO */
-
-#define LYNX_ROT_SCREEN_LABEL_RO NULL
-#define LYNX_ROT_SCREEN_INFO_0_RO NULL
-#define OPTION_VAL_AUTO_RO NULL
-#define OPTION_VAL_MANUAL_RO NULL
-#define LYNX_PIX_FORMAT_LABEL_RO NULL
-#define OPTION_VAL_16_RO NULL
-#define OPTION_VAL_32_RO NULL
-
-struct retro_core_option_v2_category option_cats_ro[] = {
-   { NULL, NULL, NULL },
-};
-struct retro_core_option_v2_definition option_defs_ro[] = {
-
-   /* These variable names and possible values constitute an ABI with ZMZ (ZSNES Libretro player).
-    * Changing "Show layer 1" is fine, but don't change "layer_1"/etc or the possible values ("Yes|No").
-    * Adding more variables and rearranging them is safe. */
-
-   {
-      "lynx_rot_screen",
-      LYNX_ROT_SCREEN_LABEL_RO,
-      NULL,
-      LYNX_ROT_SCREEN_INFO_0_RO,
-      NULL,
-      NULL,
-      {
-         { "auto", OPTION_VAL_AUTO_RO },
-         { "manual", OPTION_VAL_MANUAL_RO },
-         { "0",    NULL },
-         { "90",   NULL },
-         { "180",  NULL },
-         { "270",  NULL },
-         { NULL, NULL},
-      },
-      "auto",
-   },
-
-   {
-      "lynx_pix_format",
-      LYNX_PIX_FORMAT_LABEL_RO,
-      NULL,
-      "",
-      NULL,
-      NULL,
-      {
-         { "16", OPTION_VAL_16_RO },
-         { "32", OPTION_VAL_32_RO },
-         { NULL, NULL},
-      },
-      "16",
-   },
-
-   { NULL, NULL, NULL, NULL, NULL, NULL, {{0}}, NULL },
-};
-struct retro_core_options_v2 options_ro = {
-   option_cats_ro,
-   option_defs_ro
-};
-
 /* RETRO_LANGUAGE_RU */
 
 #define LYNX_ROT_SCREEN_LABEL_RU "Автоповорот экрана"
-#define LYNX_ROT_SCREEN_INFO_0_RU NULL
+#define LYNX_ROT_SCREEN_INFO_0_RU "Автоматический поворот экрана и раскладки кнопок для определённых игр. Поворот экрана настраивается кнопкой SELECT в режиме 'Вручную' или устанавливается на фиксированное значение в 0, 90, 180 или 270 градусов против часовой стрелки."
 #define OPTION_VAL_AUTO_RU "Авто"
 #define OPTION_VAL_MANUAL_RU "Вручную"
 #define LYNX_PIX_FORMAT_LABEL_RU "Глубина цвета (требуется перезапуск)"
@@ -2140,7 +2200,7 @@ struct retro_core_options_v2 options_sv = {
 /* RETRO_LANGUAGE_TR */
 
 #define LYNX_ROT_SCREEN_LABEL_TR "Ekranı Otomatik Döndür"
-#define LYNX_ROT_SCREEN_INFO_0_TR NULL
+#define LYNX_ROT_SCREEN_INFO_0_TR "Bilinen oyunlar için ekran yönünü ve düğme eşlemelerini sanal olarak döndürün. 'El ile' olarak ayarlandığında, SELECT düğmesine basılarak ekran dönüşü ayarlanır, öyle değilse sabit bir dönüş saat yönünün tersine 0, 90, 180 veya 270 dereceye ayarlanabilir."
 #define OPTION_VAL_AUTO_TR "Otomatik"
 #define OPTION_VAL_MANUAL_TR "El İle"
 #define LYNX_PIX_FORMAT_LABEL_TR "Renk Biçimi (Yeniden Başlatılmalı)"
@@ -2199,11 +2259,11 @@ struct retro_core_options_v2 options_tr = {
 
 /* RETRO_LANGUAGE_UK */
 
-#define LYNX_ROT_SCREEN_LABEL_UK NULL
-#define LYNX_ROT_SCREEN_INFO_0_UK NULL
+#define LYNX_ROT_SCREEN_LABEL_UK "Автоповорот екрана"
+#define LYNX_ROT_SCREEN_INFO_0_UK "По суті, поворот орієнтації екрану та розташування кнопок автоматично для відомих ігор. Якщо встановлено \"Вручну\", обертання екрана визначається за допомогою кнопки SELECT, інакше фіксований поворот можна встановити на 0, 90, 180 або 270 градусів проти годинникової стрілки."
 #define OPTION_VAL_AUTO_UK "Авто"
-#define OPTION_VAL_MANUAL_UK "Ручний"
-#define LYNX_PIX_FORMAT_LABEL_UK NULL
+#define OPTION_VAL_MANUAL_UK "Вручну"
+#define LYNX_PIX_FORMAT_LABEL_UK "Формат кольору (потрібний перезапуск)"
 #define OPTION_VAL_16_UK NULL
 #define OPTION_VAL_32_UK NULL
 
@@ -2259,13 +2319,13 @@ struct retro_core_options_v2 options_uk = {
 
 /* RETRO_LANGUAGE_VAL */
 
-#define LYNX_ROT_SCREEN_LABEL_VAL NULL
+#define LYNX_ROT_SCREEN_LABEL_VAL "Rotació automàtica de la pantalla"
 #define LYNX_ROT_SCREEN_INFO_0_VAL "Gira virtualment l'orientació de la pantalla i el mapejat dels botons automàticament per a jocs coneguts. Quan s'ajusta com a \"Manual\", la rotació de la pantalla canvia prement el botó SELECT, en cas contrari, es pot definir una rotació fixa a 0, 90, 180 o 270 graus en sentit contrari a les agulles del rellotge."
-#define OPTION_VAL_AUTO_VAL NULL
-#define OPTION_VAL_MANUAL_VAL NULL
-#define LYNX_PIX_FORMAT_LABEL_VAL NULL
-#define OPTION_VAL_16_VAL NULL
-#define OPTION_VAL_32_VAL NULL
+#define OPTION_VAL_AUTO_VAL "Selecció automàtica"
+#define OPTION_VAL_MANUAL_VAL "Selecció manual"
+#define LYNX_PIX_FORMAT_LABEL_VAL "Format de color (requerix reiniciar)"
+#define OPTION_VAL_16_VAL "16 bits (RGB565)"
+#define OPTION_VAL_32_VAL "32 bits (RGB8888)"
 
 struct retro_core_option_v2_category option_cats_val[] = {
    { NULL, NULL, NULL },
@@ -2319,13 +2379,13 @@ struct retro_core_options_v2 options_val = {
 
 /* RETRO_LANGUAGE_VN */
 
-#define LYNX_ROT_SCREEN_LABEL_VN NULL
-#define LYNX_ROT_SCREEN_INFO_0_VN NULL
+#define LYNX_ROT_SCREEN_LABEL_VN "Tự động xoay màn hình"
+#define LYNX_ROT_SCREEN_INFO_0_VN "Tự động xoay hướng màn hình và chọn nút cho các trò chơi đã biết. Khi được đặt thành 'Thủ công', xoay màn hình được điều chỉnh bằng cách nhấn nút CHỌN, nếu không, xoay cố định có thể được đặt thành 0, 90, 180 hoặc 270 độ ngược chiều kim đồng hồ."
 #define OPTION_VAL_AUTO_VN "Tự động"
 #define OPTION_VAL_MANUAL_VN "Thủ công"
-#define LYNX_PIX_FORMAT_LABEL_VN NULL
-#define OPTION_VAL_16_VN NULL
-#define OPTION_VAL_32_VN NULL
+#define LYNX_PIX_FORMAT_LABEL_VN "Định dạng màu (Yêu cầu khởi động lại)"
+#define OPTION_VAL_16_VN "16-Bit màu (RGB565)"
+#define OPTION_VAL_32_VN "32-Bit màu (RGB8888)"
 
 struct retro_core_option_v2_category option_cats_vn[] = {
    { NULL, NULL, NULL },
