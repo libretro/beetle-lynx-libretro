@@ -47,8 +47,6 @@
 #include "system.h"
 #include "rom.h"
 
-#include <errno.h>
-
 CRom::CRom(const char *romfile)
 {
 	mWriteEnable=false;
