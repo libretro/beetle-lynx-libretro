@@ -22,12 +22,13 @@
 #include <errno.h>
 #include <vector>
 
-#include "general.h"
-#include "mempatcher.h"
-
 #ifdef _WIN32
 #include "msvc_compat.h"
 #endif
+
+#include "general.h"
+#include "mempatcher.h"
+#include "settings.h"
 
 static uint8 **RAMPtrs = NULL;
 static uint32 PageSize;

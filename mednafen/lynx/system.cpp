@@ -51,12 +51,13 @@
 
 #define SYSTEM_CPP
 
-#include "mednafen/lynx/system.h"
-#include "mednafen/mednafen-endian.h"
+#include "../lynx/system.h"
+#include "../mednafen-endian.h"
 
-#include "mednafen/general.h"
-#include "mednafen/mempatcher.h"
-#include "mednafen/md5.h"
+#include "../general.h"
+#include "../mempatcher.h"
+#include "../md5.h"
+#include "../settings.h"
 
 CSystem::CSystem(MDFNFILE *fp, const char *bios_path)
 	:mCart(NULL),

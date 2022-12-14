@@ -1,7 +1,6 @@
 #ifndef __MDFN_ENDIAN_H
 #define __MDFN_ENDIAN_H
 
-#include <stdio.h>
 #include "mednafen-types.h"
 
 #ifdef MSB_FIRST
