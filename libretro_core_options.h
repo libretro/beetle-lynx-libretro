@@ -94,6 +94,21 @@ struct retro_core_option_v2_definition option_defs_us[] = {
       "16",
    },
 
+   {
+	"lynx_force_60hz",
+	"Force 60Hz",
+	NULL,
+	"Force 60Hz instead of original 75Hz refresh rate, for perfectly smooth movement on 60Hz displays",
+	NULL,
+	NULL,
+	{
+		{ "disabled", NULL },
+		{ "enabled", NULL },
+		{ NULL, NULL },
+	},
+	"disabled"
+   },
+
    { NULL, NULL, NULL, NULL, NULL, NULL, {{0}}, NULL },
 };
 
