@@ -2022,7 +2022,7 @@ struct retro_core_options_v2 options_si = {
 #define LYNX_ROT_SCREEN_LABEL_SK NULL
 #define LYNX_ROT_SCREEN_INFO_0_SK NULL
 #define OPTION_VAL_AUTO_SK NULL
-#define OPTION_VAL_MANUAL_SK NULL
+#define OPTION_VAL_MANUAL_SK "Ručne"
 #define LYNX_PIX_FORMAT_LABEL_SK NULL
 #define OPTION_VAL_16_SK NULL
 #define OPTION_VAL_32_SK NULL
