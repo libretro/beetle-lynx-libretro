@@ -219,13 +219,13 @@ struct retro_core_options_v2 options_ca = {
 
 /* RETRO_LANGUAGE_CHS */
 
-#define LYNX_ROT_SCREEN_LABEL_CHS NULL
-#define LYNX_ROT_SCREEN_INFO_0_CHS NULL
+#define LYNX_ROT_SCREEN_LABEL_CHS "自动旋转屏幕"
+#define LYNX_ROT_SCREEN_INFO_0_CHS "为已知游戏自动旋转虚拟屏幕方向和按钮映射。 当设置为'手动'时，按选择按钮调整屏幕旋转，否则可以将固定旋转设置为逆时针旋转 0、90、180 或 270 度。"
 #define OPTION_VAL_AUTO_CHS "自动"
 #define OPTION_VAL_MANUAL_CHS "手工"
-#define LYNX_PIX_FORMAT_LABEL_CHS NULL
-#define OPTION_VAL_16_CHS NULL
-#define OPTION_VAL_32_CHS NULL
+#define LYNX_PIX_FORMAT_LABEL_CHS "聊天格式 (需要重启)"
+#define OPTION_VAL_16_CHS "16位 (RGB565)"
+#define OPTION_VAL_32_CHS "32位 (RGB8888)"
 
 struct retro_core_option_v2_category option_cats_chs[] = {
    { NULL, NULL, NULL },
