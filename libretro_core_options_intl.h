@@ -280,7 +280,7 @@ struct retro_core_options_v2 options_chs = {
 /* RETRO_LANGUAGE_CHT */
 
 #define LYNX_ROT_SCREEN_LABEL_CHT "自動旋轉螢幕"
-#define LYNX_ROT_SCREEN_INFO_0_CHT "設定旋轉螢幕的模式。設定 <手動> 按「選擇鍵」調整畫面逆時針旋轉，90度、180度、270度和0度的順序重複切換。"
+#define LYNX_ROT_SCREEN_INFO_0_CHT "設定旋轉螢幕的模式, 設定<手動>時按[選擇鍵]調整畫面逆時針旋轉, 90度、180度、270度和0度的順序重複切換。"
 #define OPTION_VAL_AUTO_CHT "自動"
 #define OPTION_VAL_MANUAL_CHT "手動"
 #define LYNX_PIX_FORMAT_LABEL_CHT "色彩格式 (需要重新啟動)"
