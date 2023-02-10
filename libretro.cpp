@@ -509,7 +509,7 @@ void retro_set_environment(retro_environment_t cb)
    environ_cb = cb;
 
    struct retro_vfs_interface_info vfs_iface_info = {
-      1,
+      2,
       NULL
    };
 
