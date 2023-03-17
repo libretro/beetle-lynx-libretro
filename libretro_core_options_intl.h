@@ -1239,11 +1239,11 @@ struct retro_core_options_v2 options_hu = {
 
 /* RETRO_LANGUAGE_ID */
 
-#define LYNX_ROT_SCREEN_LABEL_ID NULL
-#define LYNX_ROT_SCREEN_INFO_0_ID NULL
+#define LYNX_ROT_SCREEN_LABEL_ID "Putar-layar Otomatis"
+#define LYNX_ROT_SCREEN_INFO_0_ID "Putar orientasi layar dan pemetaan tombol secara virtual secara otomatis untuk game yang dikenal. Saat disetel ke 'Manual', rotasi layar disesuaikan dengan menekan tombol PILIH, jika tidak, rotasi tetap dapat disetel ke 0, 90, 180, atau 270 derajat berlawanan arah jarum jam."
 #define OPTION_VAL_AUTO_ID "Otomatis"
 #define OPTION_VAL_MANUAL_ID NULL
-#define LYNX_PIX_FORMAT_LABEL_ID NULL
+#define LYNX_PIX_FORMAT_LABEL_ID "Format Warna (Diperlukan Mulai Ulang)"
 #define OPTION_VAL_16_ID NULL
 #define OPTION_VAL_32_ID NULL
 
