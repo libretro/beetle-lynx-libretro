@@ -157,6 +157,66 @@ struct retro_core_options_v2 options_ast = {
    option_defs_ast
 };
 
+/* RETRO_LANGUAGE_BE */
+
+#define LYNX_ROT_SCREEN_LABEL_BE NULL
+#define LYNX_ROT_SCREEN_INFO_0_BE NULL
+#define OPTION_VAL_AUTO_BE NULL
+#define OPTION_VAL_MANUAL_BE NULL
+#define LYNX_PIX_FORMAT_LABEL_BE NULL
+#define OPTION_VAL_16_BE NULL
+#define OPTION_VAL_32_BE NULL
+
+struct retro_core_option_v2_category option_cats_be[] = {
+   { NULL, NULL, NULL },
+};
+struct retro_core_option_v2_definition option_defs_be[] = {
+
+   /* These variable names and possible values constitute an ABI with ZMZ (ZSNES Libretro player).
+    * Changing "Show layer 1" is fine, but don't change "layer_1"/etc or the possible values ("Yes|No").
+    * Adding more variables and rearranging them is safe. */
+
+   {
+      "lynx_rot_screen",
+      LYNX_ROT_SCREEN_LABEL_BE,
+      NULL,
+      LYNX_ROT_SCREEN_INFO_0_BE,
+      NULL,
+      NULL,
+      {
+         { "auto", OPTION_VAL_AUTO_BE },
+         { "manual", OPTION_VAL_MANUAL_BE },
+         { "0",    NULL },
+         { "90",   NULL },
+         { "180",  NULL },
+         { "270",  NULL },
+         { NULL, NULL},
+      },
+      "auto",
+   },
+
+   {
+      "lynx_pix_format",
+      LYNX_PIX_FORMAT_LABEL_BE,
+      NULL,
+      "",
+      NULL,
+      NULL,
+      {
+         { "16", OPTION_VAL_16_BE },
+         { "32", OPTION_VAL_32_BE },
+         { NULL, NULL},
+      },
+      "16",
+   },
+
+   { NULL, NULL, NULL, NULL, NULL, NULL, {{0}}, NULL },
+};
+struct retro_core_options_v2 options_be = {
+   option_cats_be,
+   option_defs_be
+};
+
 /* RETRO_LANGUAGE_CA */
 
 #define LYNX_ROT_SCREEN_LABEL_CA NULL
