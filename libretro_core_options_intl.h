@@ -280,12 +280,12 @@ struct retro_core_options_v2 options_ca = {
 /* RETRO_LANGUAGE_CHS */
 
 #define LYNX_ROT_SCREEN_LABEL_CHS "自动旋转屏幕"
-#define LYNX_ROT_SCREEN_INFO_0_CHS "为已知游戏自动旋转虚拟屏幕方向和按钮映射。 当设置为'手动'时，按选择按钮调整屏幕旋转，否则可以将固定旋转设置为逆时针旋转 0、90、180 或 270 度。"
+#define LYNX_ROT_SCREEN_INFO_0_CHS "为已知游戏自动旋转虚拟屏幕方向和按键映射。当设置为“手动”时，按选择按钮调整屏幕旋转，否则可以设置 逆时针旋转0°、90°、180° 或 270 °为固定旋转角度。"
 #define OPTION_VAL_AUTO_CHS "自动"
-#define OPTION_VAL_MANUAL_CHS "手工"
-#define LYNX_PIX_FORMAT_LABEL_CHS "聊天格式 (需要重启)"
-#define OPTION_VAL_16_CHS "16位 (RGB565)"
-#define OPTION_VAL_32_CHS "32位 (RGB8888)"
+#define OPTION_VAL_MANUAL_CHS "手动"
+#define LYNX_PIX_FORMAT_LABEL_CHS "色彩格式 (需要重启)"
+#define OPTION_VAL_16_CHS "16位格式 (RGB565格式)"
+#define OPTION_VAL_32_CHS "32位 格式(RGB8888格式)"
 
 struct retro_core_option_v2_category option_cats_chs[] = {
    { NULL, NULL, NULL },
@@ -939,8 +939,8 @@ struct retro_core_options_v2 options_fa = {
 
 /* RETRO_LANGUAGE_FI */
 
-#define LYNX_ROT_SCREEN_LABEL_FI "Näytön automaattinen kierto"
-#define LYNX_ROT_SCREEN_INFO_0_FI "Kierrä virtuaalisesti näytön ja painikkeiden suuntaa automaattisesti tunnetuille peleille. Kun asetus on \"Manuaalinen\", näytön kierto säädetään painamalla SELECT-painiketta, muuten kiinteä kierto voidaan asettaa joko 0, 90, 180, tai 270 asteen vastapäivään."
+#define LYNX_ROT_SCREEN_LABEL_FI "Näytön kierto"
+#define LYNX_ROT_SCREEN_INFO_0_FI "Virtuaalisesti kierrä näytön ja painikkeiden suuntaa tunnetuille peleille. Kun asetus on \"Manuaalinen\", näytön kierto säädetään painamalla SELECT-painiketta, muuten kiinteä kierto voidaan asettaa joko 0, 90, 180, tai 270 asteen vastapäivään."
 #define OPTION_VAL_AUTO_FI "Automaattinen"
 #define OPTION_VAL_MANUAL_FI "Manuaalinen"
 #define LYNX_PIX_FORMAT_LABEL_FI "Väriformaatti (Uudelleenkäynnistys vaaditaan)"
