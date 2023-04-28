@@ -219,11 +219,11 @@ struct retro_core_options_v2 options_be = {
 
 /* RETRO_LANGUAGE_CA */
 
-#define LYNX_ROT_SCREEN_LABEL_CA NULL
-#define LYNX_ROT_SCREEN_INFO_0_CA NULL
+#define LYNX_ROT_SCREEN_LABEL_CA "Gir de Pantalla Automàtic"
+#define LYNX_ROT_SCREEN_INFO_0_CA "Gira virtualment l'orientació de la pantalla i els mapes de botons per a jocs coneguts. Quan s'estableix a \"Manual\", la rotació de la pantalla s'ajusta prement el botó SELECT; en cas contrari, es pot establir una rotació fixa a 0, 90, 180 o 270 graus en sentit contrari a les agulles del rellotge."
 #define OPTION_VAL_AUTO_CA "Automàtic"
 #define OPTION_VAL_MANUAL_CA NULL
-#define LYNX_PIX_FORMAT_LABEL_CA NULL
+#define LYNX_PIX_FORMAT_LABEL_CA "Format de Color (Reinici Necessari)"
 #define OPTION_VAL_16_CA NULL
 #define OPTION_VAL_32_CA NULL
 
