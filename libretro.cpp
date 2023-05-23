@@ -31,6 +31,7 @@ static retro_input_poll_t input_poll_cb;
 static retro_input_state_t input_state_cb;
 
 static bool overscan;
+static bool force_60hz;
 static MDFN_PixelFormat last_pixel_format;
 
 static unsigned rotate_mode;
@@ -149,6 +150,17 @@ static void check_variables(void)
          rotate_mode   = 0;
          rotate_fixed  = 3;
       }
+   }
+
+   var.key = "lynx_force_60hz";
+   var.value = NULL;
+
+   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+   {
+      if (strcmp(var.value, "enabled") == 0)
+	 force_60hz = true;
+      else
+         force_60hz = false;
    }
 }
 
@@ -468,7 +480,10 @@ void retro_get_system_info(struct retro_system_info *info)
 void retro_get_system_av_info(struct retro_system_av_info *info)
 {
    memset(info, 0, sizeof(*info));
-   info->timing.fps            = MEDNAFEN_CORE_TIMING_FPS;
+   if (!force_60hz)
+      info->timing.fps            = MEDNAFEN_CORE_TIMING_FPS;
+   else
+      info->timing.fps            = 60.0;
    info->timing.sample_rate    = 44100.0;
    info->geometry.base_width   = MEDNAFEN_CORE_GEOMETRY_BASE_W;
    info->geometry.base_height  = MEDNAFEN_CORE_GEOMETRY_BASE_H;
