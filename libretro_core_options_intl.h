@@ -46,6 +46,8 @@ extern "C" {
 #define LYNX_PIX_FORMAT_LABEL_AR NULL
 #define OPTION_VAL_16_AR NULL
 #define OPTION_VAL_32_AR NULL
+#define LYNX_FORCE_60HZ_LABEL_AR NULL
+#define LYNX_FORCE_60HZ_INFO_0_AR NULL
 
 struct retro_core_option_v2_category option_cats_ar[] = {
    { NULL, NULL, NULL },
@@ -90,6 +92,21 @@ struct retro_core_option_v2_definition option_defs_ar[] = {
       "16",
    },
 
+   {
+	"lynx_force_60hz",
+	LYNX_FORCE_60HZ_LABEL_AR,
+	NULL,
+	LYNX_FORCE_60HZ_INFO_0_AR,
+	NULL,
+	NULL,
+	{
+		{ "disabled", NULL },
+		{ "enabled", NULL },
+		{ NULL, NULL },
+	},
+	"disabled"
+   },
+
    { NULL, NULL, NULL, NULL, NULL, NULL, {{0}}, NULL },
 };
 struct retro_core_options_v2 options_ar = {
@@ -106,6 +123,8 @@ struct retro_core_options_v2 options_ar = {
 #define LYNX_PIX_FORMAT_LABEL_AST NULL
 #define OPTION_VAL_16_AST NULL
 #define OPTION_VAL_32_AST NULL
+#define LYNX_FORCE_60HZ_LABEL_AST NULL
+#define LYNX_FORCE_60HZ_INFO_0_AST NULL
 
 struct retro_core_option_v2_category option_cats_ast[] = {
    { NULL, NULL, NULL },
@@ -150,6 +169,21 @@ struct retro_core_option_v2_definition option_defs_ast[] = {
       "16",
    },
 
+   {
+	"lynx_force_60hz",
+	LYNX_FORCE_60HZ_LABEL_AST,
+	NULL,
+	LYNX_FORCE_60HZ_INFO_0_AST,
+	NULL,
+	NULL,
+	{
+		{ "disabled", NULL },
+		{ "enabled", NULL },
+		{ NULL, NULL },
+	},
+	"disabled"
+   },
+
    { NULL, NULL, NULL, NULL, NULL, NULL, {{0}}, NULL },
 };
 struct retro_core_options_v2 options_ast = {
@@ -161,11 +195,13 @@ struct retro_core_options_v2 options_ast = {
 
 #define LYNX_ROT_SCREEN_LABEL_BE NULL
 #define LYNX_ROT_SCREEN_INFO_0_BE NULL
-#define OPTION_VAL_AUTO_BE NULL
+#define OPTION_VAL_AUTO_BE "Аўта"
 #define OPTION_VAL_MANUAL_BE NULL
 #define LYNX_PIX_FORMAT_LABEL_BE NULL
 #define OPTION_VAL_16_BE NULL
 #define OPTION_VAL_32_BE NULL
+#define LYNX_FORCE_60HZ_LABEL_BE NULL
+#define LYNX_FORCE_60HZ_INFO_0_BE NULL
 
 struct retro_core_option_v2_category option_cats_be[] = {
    { NULL, NULL, NULL },
@@ -210,6 +246,21 @@ struct retro_core_option_v2_definition option_defs_be[] = {
       "16",
    },
 
+   {
+	"lynx_force_60hz",
+	LYNX_FORCE_60HZ_LABEL_BE,
+	NULL,
+	LYNX_FORCE_60HZ_INFO_0_BE,
+	NULL,
+	NULL,
+	{
+		{ "disabled", NULL },
+		{ "enabled", NULL },
+		{ NULL, NULL },
+	},
+	"disabled"
+   },
+
    { NULL, NULL, NULL, NULL, NULL, NULL, {{0}}, NULL },
 };
 struct retro_core_options_v2 options_be = {
@@ -226,6 +277,8 @@ struct retro_core_options_v2 options_be = {
 #define LYNX_PIX_FORMAT_LABEL_CA "Format de Color (Reinici Necessari)"
 #define OPTION_VAL_16_CA NULL
 #define OPTION_VAL_32_CA NULL
+#define LYNX_FORCE_60HZ_LABEL_CA NULL
+#define LYNX_FORCE_60HZ_INFO_0_CA NULL
 
 struct retro_core_option_v2_category option_cats_ca[] = {
    { NULL, NULL, NULL },
@@ -270,6 +323,21 @@ struct retro_core_option_v2_definition option_defs_ca[] = {
       "16",
    },
 
+   {
+	"lynx_force_60hz",
+	LYNX_FORCE_60HZ_LABEL_CA,
+	NULL,
+	LYNX_FORCE_60HZ_INFO_0_CA,
+	NULL,
+	NULL,
+	{
+		{ "disabled", NULL },
+		{ "enabled", NULL },
+		{ NULL, NULL },
+	},
+	"disabled"
+   },
+
    { NULL, NULL, NULL, NULL, NULL, NULL, {{0}}, NULL },
 };
 struct retro_core_options_v2 options_ca = {
@@ -286,6 +354,8 @@ struct retro_core_options_v2 options_ca = {
 #define LYNX_PIX_FORMAT_LABEL_CHS "色彩格式 (需要重启)"
 #define OPTION_VAL_16_CHS "16位格式 (RGB565格式)"
 #define OPTION_VAL_32_CHS "32位 格式(RGB8888格式)"
+#define LYNX_FORCE_60HZ_LABEL_CHS NULL
+#define LYNX_FORCE_60HZ_INFO_0_CHS NULL
 
 struct retro_core_option_v2_category option_cats_chs[] = {
    { NULL, NULL, NULL },
@@ -330,6 +400,21 @@ struct retro_core_option_v2_definition option_defs_chs[] = {
       "16",
    },
 
+   {
+	"lynx_force_60hz",
+	LYNX_FORCE_60HZ_LABEL_CHS,
+	NULL,
+	LYNX_FORCE_60HZ_INFO_0_CHS,
+	NULL,
+	NULL,
+	{
+		{ "disabled", NULL },
+		{ "enabled", NULL },
+		{ NULL, NULL },
+	},
+	"disabled"
+   },
+
    { NULL, NULL, NULL, NULL, NULL, NULL, {{0}}, NULL },
 };
 struct retro_core_options_v2 options_chs = {
@@ -346,6 +431,8 @@ struct retro_core_options_v2 options_chs = {
 #define LYNX_PIX_FORMAT_LABEL_CHT "色彩格式 (需要重新啟動)"
 #define OPTION_VAL_16_CHT "16位元 (RGB565)"
 #define OPTION_VAL_32_CHT "32位元 (RGB8888)"
+#define LYNX_FORCE_60HZ_LABEL_CHT NULL
+#define LYNX_FORCE_60HZ_INFO_0_CHT NULL
 
 struct retro_core_option_v2_category option_cats_cht[] = {
    { NULL, NULL, NULL },
@@ -390,6 +477,21 @@ struct retro_core_option_v2_definition option_defs_cht[] = {
       "16",
    },
 
+   {
+	"lynx_force_60hz",
+	LYNX_FORCE_60HZ_LABEL_CHT,
+	NULL,
+	LYNX_FORCE_60HZ_INFO_0_CHT,
+	NULL,
+	NULL,
+	{
+		{ "disabled", NULL },
+		{ "enabled", NULL },
+		{ NULL, NULL },
+	},
+	"disabled"
+   },
+
    { NULL, NULL, NULL, NULL, NULL, NULL, {{0}}, NULL },
 };
 struct retro_core_options_v2 options_cht = {
@@ -406,6 +508,8 @@ struct retro_core_options_v2 options_cht = {
 #define LYNX_PIX_FORMAT_LABEL_CS "Formát barev (nutný restart)"
 #define OPTION_VAL_16_CS NULL
 #define OPTION_VAL_32_CS NULL
+#define LYNX_FORCE_60HZ_LABEL_CS NULL
+#define LYNX_FORCE_60HZ_INFO_0_CS NULL
 
 struct retro_core_option_v2_category option_cats_cs[] = {
    { NULL, NULL, NULL },
@@ -450,6 +554,21 @@ struct retro_core_option_v2_definition option_defs_cs[] = {
       "16",
    },
 
+   {
+	"lynx_force_60hz",
+	LYNX_FORCE_60HZ_LABEL_CS,
+	NULL,
+	LYNX_FORCE_60HZ_INFO_0_CS,
+	NULL,
+	NULL,
+	{
+		{ "disabled", NULL },
+		{ "enabled", NULL },
+		{ NULL, NULL },
+	},
+	"disabled"
+   },
+
    { NULL, NULL, NULL, NULL, NULL, NULL, {{0}}, NULL },
 };
 struct retro_core_options_v2 options_cs = {
@@ -466,6 +585,8 @@ struct retro_core_options_v2 options_cs = {
 #define LYNX_PIX_FORMAT_LABEL_CY NULL
 #define OPTION_VAL_16_CY NULL
 #define OPTION_VAL_32_CY NULL
+#define LYNX_FORCE_60HZ_LABEL_CY NULL
+#define LYNX_FORCE_60HZ_INFO_0_CY NULL
 
 struct retro_core_option_v2_category option_cats_cy[] = {
    { NULL, NULL, NULL },
@@ -510,6 +631,21 @@ struct retro_core_option_v2_definition option_defs_cy[] = {
       "16",
    },
 
+   {
+	"lynx_force_60hz",
+	LYNX_FORCE_60HZ_LABEL_CY,
+	NULL,
+	LYNX_FORCE_60HZ_INFO_0_CY,
+	NULL,
+	NULL,
+	{
+		{ "disabled", NULL },
+		{ "enabled", NULL },
+		{ NULL, NULL },
+	},
+	"disabled"
+   },
+
    { NULL, NULL, NULL, NULL, NULL, NULL, {{0}}, NULL },
 };
 struct retro_core_options_v2 options_cy = {
@@ -526,6 +662,8 @@ struct retro_core_options_v2 options_cy = {
 #define LYNX_PIX_FORMAT_LABEL_DA NULL
 #define OPTION_VAL_16_DA NULL
 #define OPTION_VAL_32_DA NULL
+#define LYNX_FORCE_60HZ_LABEL_DA NULL
+#define LYNX_FORCE_60HZ_INFO_0_DA NULL
 
 struct retro_core_option_v2_category option_cats_da[] = {
    { NULL, NULL, NULL },
@@ -570,6 +708,21 @@ struct retro_core_option_v2_definition option_defs_da[] = {
       "16",
    },
 
+   {
+	"lynx_force_60hz",
+	LYNX_FORCE_60HZ_LABEL_DA,
+	NULL,
+	LYNX_FORCE_60HZ_INFO_0_DA,
+	NULL,
+	NULL,
+	{
+		{ "disabled", NULL },
+		{ "enabled", NULL },
+		{ NULL, NULL },
+	},
+	"disabled"
+   },
+
    { NULL, NULL, NULL, NULL, NULL, NULL, {{0}}, NULL },
 };
 struct retro_core_options_v2 options_da = {
@@ -586,6 +739,8 @@ struct retro_core_options_v2 options_da = {
 #define LYNX_PIX_FORMAT_LABEL_DE "Farbformat (Neustart erforderlich)"
 #define OPTION_VAL_16_DE NULL
 #define OPTION_VAL_32_DE NULL
+#define LYNX_FORCE_60HZ_LABEL_DE "60 Hz erzwingen"
+#define LYNX_FORCE_60HZ_INFO_0_DE "60 Hz statt der originalen 75 Hz Bildwiederholrate erzwingen, um perfekt flüssige Bewegungen auf 60-Hz-Bildschirmen zu ermöglichen"
 
 struct retro_core_option_v2_category option_cats_de[] = {
    { NULL, NULL, NULL },
@@ -630,6 +785,21 @@ struct retro_core_option_v2_definition option_defs_de[] = {
       "16",
    },
 
+   {
+	"lynx_force_60hz",
+	LYNX_FORCE_60HZ_LABEL_DE,
+	NULL,
+	LYNX_FORCE_60HZ_INFO_0_DE,
+	NULL,
+	NULL,
+	{
+		{ "disabled", NULL },
+		{ "enabled", NULL },
+		{ NULL, NULL },
+	},
+	"disabled"
+   },
+
    { NULL, NULL, NULL, NULL, NULL, NULL, {{0}}, NULL },
 };
 struct retro_core_options_v2 options_de = {
@@ -646,6 +816,8 @@ struct retro_core_options_v2 options_de = {
 #define LYNX_PIX_FORMAT_LABEL_EL "Μορφή Χρώματος (Απαιτείται Επανεκκίνηση)"
 #define OPTION_VAL_16_EL NULL
 #define OPTION_VAL_32_EL NULL
+#define LYNX_FORCE_60HZ_LABEL_EL NULL
+#define LYNX_FORCE_60HZ_INFO_0_EL NULL
 
 struct retro_core_option_v2_category option_cats_el[] = {
    { NULL, NULL, NULL },
@@ -690,6 +862,21 @@ struct retro_core_option_v2_definition option_defs_el[] = {
       "16",
    },
 
+   {
+	"lynx_force_60hz",
+	LYNX_FORCE_60HZ_LABEL_EL,
+	NULL,
+	LYNX_FORCE_60HZ_INFO_0_EL,
+	NULL,
+	NULL,
+	{
+		{ "disabled", NULL },
+		{ "enabled", NULL },
+		{ NULL, NULL },
+	},
+	"disabled"
+   },
+
    { NULL, NULL, NULL, NULL, NULL, NULL, {{0}}, NULL },
 };
 struct retro_core_options_v2 options_el = {
@@ -706,6 +893,8 @@ struct retro_core_options_v2 options_el = {
 #define LYNX_PIX_FORMAT_LABEL_EN "Colour Format (Restart Required)"
 #define OPTION_VAL_16_EN NULL
 #define OPTION_VAL_32_EN NULL
+#define LYNX_FORCE_60HZ_LABEL_EN NULL
+#define LYNX_FORCE_60HZ_INFO_0_EN NULL
 
 struct retro_core_option_v2_category option_cats_en[] = {
    { NULL, NULL, NULL },
@@ -750,6 +939,21 @@ struct retro_core_option_v2_definition option_defs_en[] = {
       "16",
    },
 
+   {
+	"lynx_force_60hz",
+	LYNX_FORCE_60HZ_LABEL_EN,
+	NULL,
+	LYNX_FORCE_60HZ_INFO_0_EN,
+	NULL,
+	NULL,
+	{
+		{ "disabled", NULL },
+		{ "enabled", NULL },
+		{ NULL, NULL },
+	},
+	"disabled"
+   },
+
    { NULL, NULL, NULL, NULL, NULL, NULL, {{0}}, NULL },
 };
 struct retro_core_options_v2 options_en = {
@@ -766,6 +970,8 @@ struct retro_core_options_v2 options_en = {
 #define LYNX_PIX_FORMAT_LABEL_EO NULL
 #define OPTION_VAL_16_EO NULL
 #define OPTION_VAL_32_EO NULL
+#define LYNX_FORCE_60HZ_LABEL_EO NULL
+#define LYNX_FORCE_60HZ_INFO_0_EO NULL
 
 struct retro_core_option_v2_category option_cats_eo[] = {
    { NULL, NULL, NULL },
@@ -810,6 +1016,21 @@ struct retro_core_option_v2_definition option_defs_eo[] = {
       "16",
    },
 
+   {
+	"lynx_force_60hz",
+	LYNX_FORCE_60HZ_LABEL_EO,
+	NULL,
+	LYNX_FORCE_60HZ_INFO_0_EO,
+	NULL,
+	NULL,
+	{
+		{ "disabled", NULL },
+		{ "enabled", NULL },
+		{ NULL, NULL },
+	},
+	"disabled"
+   },
+
    { NULL, NULL, NULL, NULL, NULL, NULL, {{0}}, NULL },
 };
 struct retro_core_options_v2 options_eo = {
@@ -826,6 +1047,8 @@ struct retro_core_options_v2 options_eo = {
 #define LYNX_PIX_FORMAT_LABEL_ES "Formato de color (es necesario reiniciar)"
 #define OPTION_VAL_16_ES "16 bits (RGB565)"
 #define OPTION_VAL_32_ES "32 bits (RGB8888)"
+#define LYNX_FORCE_60HZ_LABEL_ES "Forzar 60Hz"
+#define LYNX_FORCE_60HZ_INFO_0_ES "Fuerza una frecuencia de actualización de 60 Hz en vez de utilizar la original de 75 Hz. Así, el movimiento será perfectamente suave en pantallas que funcionen a 60 Hz."
 
 struct retro_core_option_v2_category option_cats_es[] = {
    { NULL, NULL, NULL },
@@ -870,6 +1093,21 @@ struct retro_core_option_v2_definition option_defs_es[] = {
       "16",
    },
 
+   {
+	"lynx_force_60hz",
+	LYNX_FORCE_60HZ_LABEL_ES,
+	NULL,
+	LYNX_FORCE_60HZ_INFO_0_ES,
+	NULL,
+	NULL,
+	{
+		{ "disabled", NULL },
+		{ "enabled", NULL },
+		{ NULL, NULL },
+	},
+	"disabled"
+   },
+
    { NULL, NULL, NULL, NULL, NULL, NULL, {{0}}, NULL },
 };
 struct retro_core_options_v2 options_es = {
@@ -886,6 +1124,8 @@ struct retro_core_options_v2 options_es = {
 #define LYNX_PIX_FORMAT_LABEL_FA "فرمت رنگ (نیازمند بازآغاز)"
 #define OPTION_VAL_16_FA "۱۶-بیتی (RGB۵۶۵)"
 #define OPTION_VAL_32_FA "۳۲-بیتی (RGB۸۸۸۸)"
+#define LYNX_FORCE_60HZ_LABEL_FA NULL
+#define LYNX_FORCE_60HZ_INFO_0_FA NULL
 
 struct retro_core_option_v2_category option_cats_fa[] = {
    { NULL, NULL, NULL },
@@ -930,6 +1170,21 @@ struct retro_core_option_v2_definition option_defs_fa[] = {
       "16",
    },
 
+   {
+	"lynx_force_60hz",
+	LYNX_FORCE_60HZ_LABEL_FA,
+	NULL,
+	LYNX_FORCE_60HZ_INFO_0_FA,
+	NULL,
+	NULL,
+	{
+		{ "disabled", NULL },
+		{ "enabled", NULL },
+		{ NULL, NULL },
+	},
+	"disabled"
+   },
+
    { NULL, NULL, NULL, NULL, NULL, NULL, {{0}}, NULL },
 };
 struct retro_core_options_v2 options_fa = {
@@ -946,6 +1201,8 @@ struct retro_core_options_v2 options_fa = {
 #define LYNX_PIX_FORMAT_LABEL_FI "Väriformaatti (Uudelleenkäynnistys vaaditaan)"
 #define OPTION_VAL_16_FI NULL
 #define OPTION_VAL_32_FI NULL
+#define LYNX_FORCE_60HZ_LABEL_FI "Pakota 60 Hz"
+#define LYNX_FORCE_60HZ_INFO_0_FI "Pakota 60 hertsiä alkuperäisen 75 hertsin virkistystaajuuden sijaan, tekee liikkumisesta tasaista 60 hertsin näytöillä"
 
 struct retro_core_option_v2_category option_cats_fi[] = {
    { NULL, NULL, NULL },
@@ -990,6 +1247,21 @@ struct retro_core_option_v2_definition option_defs_fi[] = {
       "16",
    },
 
+   {
+	"lynx_force_60hz",
+	LYNX_FORCE_60HZ_LABEL_FI,
+	NULL,
+	LYNX_FORCE_60HZ_INFO_0_FI,
+	NULL,
+	NULL,
+	{
+		{ "disabled", NULL },
+		{ "enabled", NULL },
+		{ NULL, NULL },
+	},
+	"disabled"
+   },
+
    { NULL, NULL, NULL, NULL, NULL, NULL, {{0}}, NULL },
 };
 struct retro_core_options_v2 options_fi = {
@@ -1006,6 +1278,8 @@ struct retro_core_options_v2 options_fi = {
 #define LYNX_PIX_FORMAT_LABEL_FR "Format des couleurs (Redémarrage requis)"
 #define OPTION_VAL_16_FR "16 bits (RVB565)"
 #define OPTION_VAL_32_FR "32 bits (RVB8888)"
+#define LYNX_FORCE_60HZ_LABEL_FR "Forcer 60 Hz"
+#define LYNX_FORCE_60HZ_INFO_0_FR "Forcer une fréquence de rafraîchissement de 60 Hz au lieu des 75 Hz d'origine, pour un mouvement parfaitement fluide sur les écrans à 60 Hz"
 
 struct retro_core_option_v2_category option_cats_fr[] = {
    { NULL, NULL, NULL },
@@ -1050,6 +1324,21 @@ struct retro_core_option_v2_definition option_defs_fr[] = {
       "16",
    },
 
+   {
+	"lynx_force_60hz",
+	LYNX_FORCE_60HZ_LABEL_FR,
+	NULL,
+	LYNX_FORCE_60HZ_INFO_0_FR,
+	NULL,
+	NULL,
+	{
+		{ "disabled", NULL },
+		{ "enabled", NULL },
+		{ NULL, NULL },
+	},
+	"disabled"
+   },
+
    { NULL, NULL, NULL, NULL, NULL, NULL, {{0}}, NULL },
 };
 struct retro_core_options_v2 options_fr = {
@@ -1066,6 +1355,8 @@ struct retro_core_options_v2 options_fr = {
 #define LYNX_PIX_FORMAT_LABEL_GL NULL
 #define OPTION_VAL_16_GL NULL
 #define OPTION_VAL_32_GL NULL
+#define LYNX_FORCE_60HZ_LABEL_GL NULL
+#define LYNX_FORCE_60HZ_INFO_0_GL NULL
 
 struct retro_core_option_v2_category option_cats_gl[] = {
    { NULL, NULL, NULL },
@@ -1110,6 +1401,21 @@ struct retro_core_option_v2_definition option_defs_gl[] = {
       "16",
    },
 
+   {
+	"lynx_force_60hz",
+	LYNX_FORCE_60HZ_LABEL_GL,
+	NULL,
+	LYNX_FORCE_60HZ_INFO_0_GL,
+	NULL,
+	NULL,
+	{
+		{ "disabled", NULL },
+		{ "enabled", NULL },
+		{ NULL, NULL },
+	},
+	"disabled"
+   },
+
    { NULL, NULL, NULL, NULL, NULL, NULL, {{0}}, NULL },
 };
 struct retro_core_options_v2 options_gl = {
@@ -1126,6 +1432,8 @@ struct retro_core_options_v2 options_gl = {
 #define LYNX_PIX_FORMAT_LABEL_HE NULL
 #define OPTION_VAL_16_HE NULL
 #define OPTION_VAL_32_HE NULL
+#define LYNX_FORCE_60HZ_LABEL_HE NULL
+#define LYNX_FORCE_60HZ_INFO_0_HE NULL
 
 struct retro_core_option_v2_category option_cats_he[] = {
    { NULL, NULL, NULL },
@@ -1170,6 +1478,21 @@ struct retro_core_option_v2_definition option_defs_he[] = {
       "16",
    },
 
+   {
+	"lynx_force_60hz",
+	LYNX_FORCE_60HZ_LABEL_HE,
+	NULL,
+	LYNX_FORCE_60HZ_INFO_0_HE,
+	NULL,
+	NULL,
+	{
+		{ "disabled", NULL },
+		{ "enabled", NULL },
+		{ NULL, NULL },
+	},
+	"disabled"
+   },
+
    { NULL, NULL, NULL, NULL, NULL, NULL, {{0}}, NULL },
 };
 struct retro_core_options_v2 options_he = {
@@ -1186,6 +1509,8 @@ struct retro_core_options_v2 options_he = {
 #define LYNX_PIX_FORMAT_LABEL_HR NULL
 #define OPTION_VAL_16_HR NULL
 #define OPTION_VAL_32_HR NULL
+#define LYNX_FORCE_60HZ_LABEL_HR NULL
+#define LYNX_FORCE_60HZ_INFO_0_HR NULL
 
 struct retro_core_option_v2_category option_cats_hr[] = {
    { NULL, NULL, NULL },
@@ -1230,6 +1555,21 @@ struct retro_core_option_v2_definition option_defs_hr[] = {
       "16",
    },
 
+   {
+	"lynx_force_60hz",
+	LYNX_FORCE_60HZ_LABEL_HR,
+	NULL,
+	LYNX_FORCE_60HZ_INFO_0_HR,
+	NULL,
+	NULL,
+	{
+		{ "disabled", NULL },
+		{ "enabled", NULL },
+		{ NULL, NULL },
+	},
+	"disabled"
+   },
+
    { NULL, NULL, NULL, NULL, NULL, NULL, {{0}}, NULL },
 };
 struct retro_core_options_v2 options_hr = {
@@ -1246,6 +1586,8 @@ struct retro_core_options_v2 options_hr = {
 #define LYNX_PIX_FORMAT_LABEL_HU "Színformátum (újraindítás szükséges)"
 #define OPTION_VAL_16_HU "16 bites (RGB565)"
 #define OPTION_VAL_32_HU "32 bites (RGB8888)"
+#define LYNX_FORCE_60HZ_LABEL_HU "Mindenképpen 60 Hz"
+#define LYNX_FORCE_60HZ_INFO_0_HU "Az eredeti 75 Hz-es képfrissítés helyett 60 Hz használata, a teljesen sima mozgásért 60 Hz-es kijelzőkön"
 
 struct retro_core_option_v2_category option_cats_hu[] = {
    { NULL, NULL, NULL },
@@ -1290,6 +1632,21 @@ struct retro_core_option_v2_definition option_defs_hu[] = {
       "16",
    },
 
+   {
+	"lynx_force_60hz",
+	LYNX_FORCE_60HZ_LABEL_HU,
+	NULL,
+	LYNX_FORCE_60HZ_INFO_0_HU,
+	NULL,
+	NULL,
+	{
+		{ "disabled", NULL },
+		{ "enabled", NULL },
+		{ NULL, NULL },
+	},
+	"disabled"
+   },
+
    { NULL, NULL, NULL, NULL, NULL, NULL, {{0}}, NULL },
 };
 struct retro_core_options_v2 options_hu = {
@@ -1306,6 +1663,8 @@ struct retro_core_options_v2 options_hu = {
 #define LYNX_PIX_FORMAT_LABEL_ID "Format Warna (Diperlukan Mulai Ulang)"
 #define OPTION_VAL_16_ID NULL
 #define OPTION_VAL_32_ID NULL
+#define LYNX_FORCE_60HZ_LABEL_ID NULL
+#define LYNX_FORCE_60HZ_INFO_0_ID NULL
 
 struct retro_core_option_v2_category option_cats_id[] = {
    { NULL, NULL, NULL },
@@ -1350,6 +1709,21 @@ struct retro_core_option_v2_definition option_defs_id[] = {
       "16",
    },
 
+   {
+	"lynx_force_60hz",
+	LYNX_FORCE_60HZ_LABEL_ID,
+	NULL,
+	LYNX_FORCE_60HZ_INFO_0_ID,
+	NULL,
+	NULL,
+	{
+		{ "disabled", NULL },
+		{ "enabled", NULL },
+		{ NULL, NULL },
+	},
+	"disabled"
+   },
+
    { NULL, NULL, NULL, NULL, NULL, NULL, {{0}}, NULL },
 };
 struct retro_core_options_v2 options_id = {
@@ -1366,6 +1740,8 @@ struct retro_core_options_v2 options_id = {
 #define LYNX_PIX_FORMAT_LABEL_IT "Formato Colore (Riavvio Richiesto)"
 #define OPTION_VAL_16_IT NULL
 #define OPTION_VAL_32_IT NULL
+#define LYNX_FORCE_60HZ_LABEL_IT "Forza 60Hz"
+#define LYNX_FORCE_60HZ_INFO_0_IT "Forza 60Hz invece della frequenza di aggiornamento 75Hz originale, per un movimento perfettamente fluido sui display a 60Hz"
 
 struct retro_core_option_v2_category option_cats_it[] = {
    { NULL, NULL, NULL },
@@ -1410,6 +1786,21 @@ struct retro_core_option_v2_definition option_defs_it[] = {
       "16",
    },
 
+   {
+	"lynx_force_60hz",
+	LYNX_FORCE_60HZ_LABEL_IT,
+	NULL,
+	LYNX_FORCE_60HZ_INFO_0_IT,
+	NULL,
+	NULL,
+	{
+		{ "disabled", NULL },
+		{ "enabled", NULL },
+		{ NULL, NULL },
+	},
+	"disabled"
+   },
+
    { NULL, NULL, NULL, NULL, NULL, NULL, {{0}}, NULL },
 };
 struct retro_core_options_v2 options_it = {
@@ -1426,6 +1817,8 @@ struct retro_core_options_v2 options_it = {
 #define LYNX_PIX_FORMAT_LABEL_JA "色深度 (再起動が必要)"
 #define OPTION_VAL_16_JA NULL
 #define OPTION_VAL_32_JA NULL
+#define LYNX_FORCE_60HZ_LABEL_JA NULL
+#define LYNX_FORCE_60HZ_INFO_0_JA NULL
 
 struct retro_core_option_v2_category option_cats_ja[] = {
    { NULL, NULL, NULL },
@@ -1470,6 +1863,21 @@ struct retro_core_option_v2_definition option_defs_ja[] = {
       "16",
    },
 
+   {
+	"lynx_force_60hz",
+	LYNX_FORCE_60HZ_LABEL_JA,
+	NULL,
+	LYNX_FORCE_60HZ_INFO_0_JA,
+	NULL,
+	NULL,
+	{
+		{ "disabled", NULL },
+		{ "enabled", NULL },
+		{ NULL, NULL },
+	},
+	"disabled"
+   },
+
    { NULL, NULL, NULL, NULL, NULL, NULL, {{0}}, NULL },
 };
 struct retro_core_options_v2 options_ja = {
@@ -1486,6 +1894,8 @@ struct retro_core_options_v2 options_ja = {
 #define LYNX_PIX_FORMAT_LABEL_KO "색 포맷 (재시작 필요)"
 #define OPTION_VAL_16_KO "16비트 (RGB565)"
 #define OPTION_VAL_32_KO "32비트 (RGB8888)"
+#define LYNX_FORCE_60HZ_LABEL_KO NULL
+#define LYNX_FORCE_60HZ_INFO_0_KO NULL
 
 struct retro_core_option_v2_category option_cats_ko[] = {
    { NULL, NULL, NULL },
@@ -1530,6 +1940,21 @@ struct retro_core_option_v2_definition option_defs_ko[] = {
       "16",
    },
 
+   {
+	"lynx_force_60hz",
+	LYNX_FORCE_60HZ_LABEL_KO,
+	NULL,
+	LYNX_FORCE_60HZ_INFO_0_KO,
+	NULL,
+	NULL,
+	{
+		{ "disabled", NULL },
+		{ "enabled", NULL },
+		{ NULL, NULL },
+	},
+	"disabled"
+   },
+
    { NULL, NULL, NULL, NULL, NULL, NULL, {{0}}, NULL },
 };
 struct retro_core_options_v2 options_ko = {
@@ -1546,6 +1971,8 @@ struct retro_core_options_v2 options_ko = {
 #define LYNX_PIX_FORMAT_LABEL_NL NULL
 #define OPTION_VAL_16_NL NULL
 #define OPTION_VAL_32_NL NULL
+#define LYNX_FORCE_60HZ_LABEL_NL NULL
+#define LYNX_FORCE_60HZ_INFO_0_NL NULL
 
 struct retro_core_option_v2_category option_cats_nl[] = {
    { NULL, NULL, NULL },
@@ -1590,6 +2017,21 @@ struct retro_core_option_v2_definition option_defs_nl[] = {
       "16",
    },
 
+   {
+	"lynx_force_60hz",
+	LYNX_FORCE_60HZ_LABEL_NL,
+	NULL,
+	LYNX_FORCE_60HZ_INFO_0_NL,
+	NULL,
+	NULL,
+	{
+		{ "disabled", NULL },
+		{ "enabled", NULL },
+		{ NULL, NULL },
+	},
+	"disabled"
+   },
+
    { NULL, NULL, NULL, NULL, NULL, NULL, {{0}}, NULL },
 };
 struct retro_core_options_v2 options_nl = {
@@ -1606,6 +2048,8 @@ struct retro_core_options_v2 options_nl = {
 #define LYNX_PIX_FORMAT_LABEL_NO NULL
 #define OPTION_VAL_16_NO NULL
 #define OPTION_VAL_32_NO NULL
+#define LYNX_FORCE_60HZ_LABEL_NO NULL
+#define LYNX_FORCE_60HZ_INFO_0_NO NULL
 
 struct retro_core_option_v2_category option_cats_no[] = {
    { NULL, NULL, NULL },
@@ -1650,6 +2094,21 @@ struct retro_core_option_v2_definition option_defs_no[] = {
       "16",
    },
 
+   {
+	"lynx_force_60hz",
+	LYNX_FORCE_60HZ_LABEL_NO,
+	NULL,
+	LYNX_FORCE_60HZ_INFO_0_NO,
+	NULL,
+	NULL,
+	{
+		{ "disabled", NULL },
+		{ "enabled", NULL },
+		{ NULL, NULL },
+	},
+	"disabled"
+   },
+
    { NULL, NULL, NULL, NULL, NULL, NULL, {{0}}, NULL },
 };
 struct retro_core_options_v2 options_no = {
@@ -1666,6 +2125,8 @@ struct retro_core_options_v2 options_no = {
 #define LYNX_PIX_FORMAT_LABEL_OR NULL
 #define OPTION_VAL_16_OR NULL
 #define OPTION_VAL_32_OR NULL
+#define LYNX_FORCE_60HZ_LABEL_OR NULL
+#define LYNX_FORCE_60HZ_INFO_0_OR NULL
 
 struct retro_core_option_v2_category option_cats_or[] = {
    { NULL, NULL, NULL },
@@ -1710,6 +2171,21 @@ struct retro_core_option_v2_definition option_defs_or[] = {
       "16",
    },
 
+   {
+	"lynx_force_60hz",
+	LYNX_FORCE_60HZ_LABEL_OR,
+	NULL,
+	LYNX_FORCE_60HZ_INFO_0_OR,
+	NULL,
+	NULL,
+	{
+		{ "disabled", NULL },
+		{ "enabled", NULL },
+		{ NULL, NULL },
+	},
+	"disabled"
+   },
+
    { NULL, NULL, NULL, NULL, NULL, NULL, {{0}}, NULL },
 };
 struct retro_core_options_v2 options_or = {
@@ -1726,6 +2202,8 @@ struct retro_core_options_v2 options_or = {
 #define LYNX_PIX_FORMAT_LABEL_PL "Format Kolorów (Wymagany Restart)"
 #define OPTION_VAL_16_PL NULL
 #define OPTION_VAL_32_PL NULL
+#define LYNX_FORCE_60HZ_LABEL_PL "Wymuś 60Hz"
+#define LYNX_FORCE_60HZ_INFO_0_PL "Wymuś 60Hz zamiast oryginalnej szybkości odświeżania 75Hz, dla doskonale płynnego ruchu na wyświetlaczach 60Hz"
 
 struct retro_core_option_v2_category option_cats_pl[] = {
    { NULL, NULL, NULL },
@@ -1770,6 +2248,21 @@ struct retro_core_option_v2_definition option_defs_pl[] = {
       "16",
    },
 
+   {
+	"lynx_force_60hz",
+	LYNX_FORCE_60HZ_LABEL_PL,
+	NULL,
+	LYNX_FORCE_60HZ_INFO_0_PL,
+	NULL,
+	NULL,
+	{
+		{ "disabled", NULL },
+		{ "enabled", NULL },
+		{ NULL, NULL },
+	},
+	"disabled"
+   },
+
    { NULL, NULL, NULL, NULL, NULL, NULL, {{0}}, NULL },
 };
 struct retro_core_options_v2 options_pl = {
@@ -1786,6 +2279,8 @@ struct retro_core_options_v2 options_pl = {
 #define LYNX_PIX_FORMAT_LABEL_PT_BR "Formato de cor (requer reinício)"
 #define OPTION_VAL_16_PT_BR "16 bits (RGB565)"
 #define OPTION_VAL_32_PT_BR "32 bits (RGB8888)"
+#define LYNX_FORCE_60HZ_LABEL_PT_BR NULL
+#define LYNX_FORCE_60HZ_INFO_0_PT_BR NULL
 
 struct retro_core_option_v2_category option_cats_pt_br[] = {
    { NULL, NULL, NULL },
@@ -1830,6 +2325,21 @@ struct retro_core_option_v2_definition option_defs_pt_br[] = {
       "16",
    },
 
+   {
+	"lynx_force_60hz",
+	LYNX_FORCE_60HZ_LABEL_PT_BR,
+	NULL,
+	LYNX_FORCE_60HZ_INFO_0_PT_BR,
+	NULL,
+	NULL,
+	{
+		{ "disabled", NULL },
+		{ "enabled", NULL },
+		{ NULL, NULL },
+	},
+	"disabled"
+   },
+
    { NULL, NULL, NULL, NULL, NULL, NULL, {{0}}, NULL },
 };
 struct retro_core_options_v2 options_pt_br = {
@@ -1846,6 +2356,8 @@ struct retro_core_options_v2 options_pt_br = {
 #define LYNX_PIX_FORMAT_LABEL_PT_PT "Formato de cores (reinicialização necessária)"
 #define OPTION_VAL_16_PT_PT NULL
 #define OPTION_VAL_32_PT_PT NULL
+#define LYNX_FORCE_60HZ_LABEL_PT_PT NULL
+#define LYNX_FORCE_60HZ_INFO_0_PT_PT NULL
 
 struct retro_core_option_v2_category option_cats_pt_pt[] = {
    { NULL, NULL, NULL },
@@ -1890,6 +2402,21 @@ struct retro_core_option_v2_definition option_defs_pt_pt[] = {
       "16",
    },
 
+   {
+	"lynx_force_60hz",
+	LYNX_FORCE_60HZ_LABEL_PT_PT,
+	NULL,
+	LYNX_FORCE_60HZ_INFO_0_PT_PT,
+	NULL,
+	NULL,
+	{
+		{ "disabled", NULL },
+		{ "enabled", NULL },
+		{ NULL, NULL },
+	},
+	"disabled"
+   },
+
    { NULL, NULL, NULL, NULL, NULL, NULL, {{0}}, NULL },
 };
 struct retro_core_options_v2 options_pt_pt = {
@@ -1906,6 +2433,8 @@ struct retro_core_options_v2 options_pt_pt = {
 #define LYNX_PIX_FORMAT_LABEL_RU "Глубина цвета (требуется перезапуск)"
 #define OPTION_VAL_16_RU "16-битный (RGB565)"
 #define OPTION_VAL_32_RU "32-битный (RGB8888)"
+#define LYNX_FORCE_60HZ_LABEL_RU "Форсировать 60 Гц"
+#define LYNX_FORCE_60HZ_INFO_0_RU "Принудительно использовать частоту обновления 60 Гц вместо оригинальной 75 Гц для идеально плавного перемещения на 60 Гц дисплеях."
 
 struct retro_core_option_v2_category option_cats_ru[] = {
    { NULL, NULL, NULL },
@@ -1950,6 +2479,21 @@ struct retro_core_option_v2_definition option_defs_ru[] = {
       "16",
    },
 
+   {
+	"lynx_force_60hz",
+	LYNX_FORCE_60HZ_LABEL_RU,
+	NULL,
+	LYNX_FORCE_60HZ_INFO_0_RU,
+	NULL,
+	NULL,
+	{
+		{ "disabled", NULL },
+		{ "enabled", NULL },
+		{ NULL, NULL },
+	},
+	"disabled"
+   },
+
    { NULL, NULL, NULL, NULL, NULL, NULL, {{0}}, NULL },
 };
 struct retro_core_options_v2 options_ru = {
@@ -1966,6 +2510,8 @@ struct retro_core_options_v2 options_ru = {
 #define LYNX_PIX_FORMAT_LABEL_SK NULL
 #define OPTION_VAL_16_SK NULL
 #define OPTION_VAL_32_SK NULL
+#define LYNX_FORCE_60HZ_LABEL_SK NULL
+#define LYNX_FORCE_60HZ_INFO_0_SK NULL
 
 struct retro_core_option_v2_category option_cats_sk[] = {
    { NULL, NULL, NULL },
@@ -2010,6 +2556,21 @@ struct retro_core_option_v2_definition option_defs_sk[] = {
       "16",
    },
 
+   {
+	"lynx_force_60hz",
+	LYNX_FORCE_60HZ_LABEL_SK,
+	NULL,
+	LYNX_FORCE_60HZ_INFO_0_SK,
+	NULL,
+	NULL,
+	{
+		{ "disabled", NULL },
+		{ "enabled", NULL },
+		{ NULL, NULL },
+	},
+	"disabled"
+   },
+
    { NULL, NULL, NULL, NULL, NULL, NULL, {{0}}, NULL },
 };
 struct retro_core_options_v2 options_sk = {
@@ -2026,6 +2587,8 @@ struct retro_core_options_v2 options_sk = {
 #define LYNX_PIX_FORMAT_LABEL_SR NULL
 #define OPTION_VAL_16_SR NULL
 #define OPTION_VAL_32_SR NULL
+#define LYNX_FORCE_60HZ_LABEL_SR NULL
+#define LYNX_FORCE_60HZ_INFO_0_SR NULL
 
 struct retro_core_option_v2_category option_cats_sr[] = {
    { NULL, NULL, NULL },
@@ -2070,6 +2633,21 @@ struct retro_core_option_v2_definition option_defs_sr[] = {
       "16",
    },
 
+   {
+	"lynx_force_60hz",
+	LYNX_FORCE_60HZ_LABEL_SR,
+	NULL,
+	LYNX_FORCE_60HZ_INFO_0_SR,
+	NULL,
+	NULL,
+	{
+		{ "disabled", NULL },
+		{ "enabled", NULL },
+		{ NULL, NULL },
+	},
+	"disabled"
+   },
+
    { NULL, NULL, NULL, NULL, NULL, NULL, {{0}}, NULL },
 };
 struct retro_core_options_v2 options_sr = {
@@ -2086,6 +2664,8 @@ struct retro_core_options_v2 options_sr = {
 #define LYNX_PIX_FORMAT_LABEL_SV NULL
 #define OPTION_VAL_16_SV NULL
 #define OPTION_VAL_32_SV NULL
+#define LYNX_FORCE_60HZ_LABEL_SV "Tvinga 60Hz"
+#define LYNX_FORCE_60HZ_INFO_0_SV "Tvinga 60Hz istället för original 75Hz uppdateringsfrekvens, för perfekt jämn rörelse på 60Hz-skärmar"
 
 struct retro_core_option_v2_category option_cats_sv[] = {
    { NULL, NULL, NULL },
@@ -2130,6 +2710,21 @@ struct retro_core_option_v2_definition option_defs_sv[] = {
       "16",
    },
 
+   {
+	"lynx_force_60hz",
+	LYNX_FORCE_60HZ_LABEL_SV,
+	NULL,
+	LYNX_FORCE_60HZ_INFO_0_SV,
+	NULL,
+	NULL,
+	{
+		{ "disabled", NULL },
+		{ "enabled", NULL },
+		{ NULL, NULL },
+	},
+	"disabled"
+   },
+
    { NULL, NULL, NULL, NULL, NULL, NULL, {{0}}, NULL },
 };
 struct retro_core_options_v2 options_sv = {
@@ -2146,6 +2741,8 @@ struct retro_core_options_v2 options_sv = {
 #define LYNX_PIX_FORMAT_LABEL_TR "Renk Biçimi (Yeniden Başlatılmalı)"
 #define OPTION_VAL_16_TR NULL
 #define OPTION_VAL_32_TR NULL
+#define LYNX_FORCE_60HZ_LABEL_TR "60Hz Olarak Zorla"
+#define LYNX_FORCE_60HZ_INFO_0_TR "60 Hz ekranlarda kusursuz hareket için orijinal 75 Hz yenileme hızı yerine 60 Hz olarak zorlayın"
 
 struct retro_core_option_v2_category option_cats_tr[] = {
    { NULL, NULL, NULL },
@@ -2190,6 +2787,21 @@ struct retro_core_option_v2_definition option_defs_tr[] = {
       "16",
    },
 
+   {
+	"lynx_force_60hz",
+	LYNX_FORCE_60HZ_LABEL_TR,
+	NULL,
+	LYNX_FORCE_60HZ_INFO_0_TR,
+	NULL,
+	NULL,
+	{
+		{ "disabled", NULL },
+		{ "enabled", NULL },
+		{ NULL, NULL },
+	},
+	"disabled"
+   },
+
    { NULL, NULL, NULL, NULL, NULL, NULL, {{0}}, NULL },
 };
 struct retro_core_options_v2 options_tr = {
@@ -2206,6 +2818,8 @@ struct retro_core_options_v2 options_tr = {
 #define LYNX_PIX_FORMAT_LABEL_UK "Формат кольору (потрібний перезапуск)"
 #define OPTION_VAL_16_UK NULL
 #define OPTION_VAL_32_UK NULL
+#define LYNX_FORCE_60HZ_LABEL_UK NULL
+#define LYNX_FORCE_60HZ_INFO_0_UK NULL
 
 struct retro_core_option_v2_category option_cats_uk[] = {
    { NULL, NULL, NULL },
@@ -2250,6 +2864,21 @@ struct retro_core_option_v2_definition option_defs_uk[] = {
       "16",
    },
 
+   {
+	"lynx_force_60hz",
+	LYNX_FORCE_60HZ_LABEL_UK,
+	NULL,
+	LYNX_FORCE_60HZ_INFO_0_UK,
+	NULL,
+	NULL,
+	{
+		{ "disabled", NULL },
+		{ "enabled", NULL },
+		{ NULL, NULL },
+	},
+	"disabled"
+   },
+
    { NULL, NULL, NULL, NULL, NULL, NULL, {{0}}, NULL },
 };
 struct retro_core_options_v2 options_uk = {
@@ -2266,6 +2895,8 @@ struct retro_core_options_v2 options_uk = {
 #define LYNX_PIX_FORMAT_LABEL_VAL "Format de color (requerix reiniciar)"
 #define OPTION_VAL_16_VAL "16 bits (RGB565)"
 #define OPTION_VAL_32_VAL "32 bits (RGB8888)"
+#define LYNX_FORCE_60HZ_LABEL_VAL NULL
+#define LYNX_FORCE_60HZ_INFO_0_VAL NULL
 
 struct retro_core_option_v2_category option_cats_val[] = {
    { NULL, NULL, NULL },
@@ -2310,6 +2941,21 @@ struct retro_core_option_v2_definition option_defs_val[] = {
       "16",
    },
 
+   {
+	"lynx_force_60hz",
+	LYNX_FORCE_60HZ_LABEL_VAL,
+	NULL,
+	LYNX_FORCE_60HZ_INFO_0_VAL,
+	NULL,
+	NULL,
+	{
+		{ "disabled", NULL },
+		{ "enabled", NULL },
+		{ NULL, NULL },
+	},
+	"disabled"
+   },
+
    { NULL, NULL, NULL, NULL, NULL, NULL, {{0}}, NULL },
 };
 struct retro_core_options_v2 options_val = {
@@ -2326,6 +2972,8 @@ struct retro_core_options_v2 options_val = {
 #define LYNX_PIX_FORMAT_LABEL_VN "Định dạng màu (Yêu cầu khởi động lại)"
 #define OPTION_VAL_16_VN "16-Bit màu (RGB565)"
 #define OPTION_VAL_32_VN "32-Bit màu (RGB8888)"
+#define LYNX_FORCE_60HZ_LABEL_VN NULL
+#define LYNX_FORCE_60HZ_INFO_0_VN NULL
 
 struct retro_core_option_v2_category option_cats_vn[] = {
    { NULL, NULL, NULL },
@@ -2368,6 +3016,21 @@ struct retro_core_option_v2_definition option_defs_vn[] = {
          { NULL, NULL},
       },
       "16",
+   },
+
+   {
+	"lynx_force_60hz",
+	LYNX_FORCE_60HZ_LABEL_VN,
+	NULL,
+	LYNX_FORCE_60HZ_INFO_0_VN,
+	NULL,
+	NULL,
+	{
+		{ "disabled", NULL },
+		{ "enabled", NULL },
+		{ NULL, NULL },
+	},
+	"disabled"
    },
 
    { NULL, NULL, NULL, NULL, NULL, NULL, {{0}}, NULL },
