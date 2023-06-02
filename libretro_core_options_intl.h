@@ -508,8 +508,8 @@ struct retro_core_options_v2 options_cht = {
 #define LYNX_PIX_FORMAT_LABEL_CS "Formát barev (nutný restart)"
 #define OPTION_VAL_16_CS NULL
 #define OPTION_VAL_32_CS NULL
-#define LYNX_FORCE_60HZ_LABEL_CS NULL
-#define LYNX_FORCE_60HZ_INFO_0_CS NULL
+#define LYNX_FORCE_60HZ_LABEL_CS "Vynutit 60Hz"
+#define LYNX_FORCE_60HZ_INFO_0_CS "Vynucení 60 Hz namísto původní obnovovací frekvence 75 Hz pro dokonale plynulý pohyb na 60Hz displejích"
 
 struct retro_core_option_v2_category option_cats_cs[] = {
    { NULL, NULL, NULL },
