@@ -1894,8 +1894,8 @@ struct retro_core_options_v2 options_ja = {
 #define LYNX_PIX_FORMAT_LABEL_KO "색 포맷 (재시작 필요)"
 #define OPTION_VAL_16_KO "16비트 (RGB565)"
 #define OPTION_VAL_32_KO "32비트 (RGB8888)"
-#define LYNX_FORCE_60HZ_LABEL_KO NULL
-#define LYNX_FORCE_60HZ_INFO_0_KO NULL
+#define LYNX_FORCE_60HZ_LABEL_KO "강제 60Hz"
+#define LYNX_FORCE_60HZ_INFO_0_KO "60Hz 디스플레이에서 완벽하게 부드러운 움직임을 위해 원래 75Hz 재생률 대신 60Hz를 강제 적용"
 
 struct retro_core_option_v2_category option_cats_ko[] = {
    { NULL, NULL, NULL },
