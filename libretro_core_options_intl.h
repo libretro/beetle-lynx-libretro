@@ -2199,7 +2199,7 @@ struct retro_core_options_v2 options_or = {
 #define LYNX_ROT_SCREEN_INFO_0_PL "Automatycznie obracaj orietancję ekranu i przypisania klawiszy dla znanych gier. Po ustawieniu na 'Ręcznie', obrót ekranu jest regulowany poprzez naciśnięcie przycisku SELECT, w przeciwnym wypadku stałą wartość obrótu można ustawić na 0, 90, 180 lub 270 stopni w kierunku przeciwnym do ruchu wskazówek zegara."
 #define OPTION_VAL_AUTO_PL NULL
 #define OPTION_VAL_MANUAL_PL "Ręcznie"
-#define LYNX_PIX_FORMAT_LABEL_PL "Format Kolorów (Wymagany Restart)"
+#define LYNX_PIX_FORMAT_LABEL_PL "Format kolorów (wymagany restart)"
 #define OPTION_VAL_16_PL NULL
 #define OPTION_VAL_32_PL NULL
 #define LYNX_FORCE_60HZ_LABEL_PL "Wymuś 60Hz"
