@@ -2657,13 +2657,13 @@ struct retro_core_options_v2 options_sr = {
 
 /* RETRO_LANGUAGE_SV */
 
-#define LYNX_ROT_SCREEN_LABEL_SV NULL
-#define LYNX_ROT_SCREEN_INFO_0_SV NULL
+#define LYNX_ROT_SCREEN_LABEL_SV "Rotera skärmen automatiskt"
+#define LYNX_ROT_SCREEN_INFO_0_SV "Rotera skärmens orientering och knappmappningar automatiskt virtuellt för välkända spel. När det är inställt på 'Manuell' justeras skärmens rotation genom att trycka på 'SELECT'-knappen, annars kan en fast rotation ställas in till antingen 0, 90, 180 eller 270 grader moturs."
 #define OPTION_VAL_AUTO_SV "Automatiskt"
-#define OPTION_VAL_MANUAL_SV NULL
-#define LYNX_PIX_FORMAT_LABEL_SV NULL
-#define OPTION_VAL_16_SV NULL
-#define OPTION_VAL_32_SV NULL
+#define OPTION_VAL_MANUAL_SV "Manuell"
+#define LYNX_PIX_FORMAT_LABEL_SV "Färgformat (Omstart Krävs)"
+#define OPTION_VAL_16_SV "16-Bitar (RGB565)"
+#define OPTION_VAL_32_SV "32-Bitar (RGB8888)"
 #define LYNX_FORCE_60HZ_LABEL_SV "Tvinga 60Hz"
 #define LYNX_FORCE_60HZ_INFO_0_SV "Tvinga 60Hz istället för original 75Hz uppdateringsfrekvens, för perfekt jämn rörelse på 60Hz-skärmar"
 
